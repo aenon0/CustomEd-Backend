@@ -549,3 +549,5 @@ logs/
 *.DS_Store
 *.suo
 obj/*
+appsettings.Development.json
+appsettings.json
