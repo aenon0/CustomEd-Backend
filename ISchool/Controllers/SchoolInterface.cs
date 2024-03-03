@@ -18,36 +18,6 @@ namespace ISchool.Controllers
             _studentRepository = studentRepository;
             _teacherRepository = teacherRepository;
         }
-
-        //     new Student
-        //     {
-        //         Id = Guid.NewGuid(),
-        //         Name = "Student1",
-        //         Email = "student1@example.com",
-        //         Phone = "1234567890",
-        //         Address = "Address1",
-        //         City = "City1",
-        //         State = "State1",
-        //         Country = "Country1",
-        //         Zip = "Zip1",
-        //         Section = "Section1",
-        //         Year = 1,
-        //         Department = Department.ComputerScience
-        //     },
-
-        //     new Teacher
-        //     {
-        //         Id = Guid.NewGuid(),
-        //         Name = "Teacher1",
-        //         Email = "teacher1@example.com",
-        //         Phone = "1234567891",
-        //         Address = "Address1",
-        //         City = "City1",
-        //         State = "State1",
-        //         Country = "Country1",
-        //         Zip = "Zip1",
-        //         Department = Department.ComputerScience
-        //     },
       
 
         [HttpGet("isStudent")]
