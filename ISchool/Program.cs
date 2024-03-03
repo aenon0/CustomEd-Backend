@@ -1,4 +1,6 @@
 using ISchool.Repositories;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
@@ -6,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.WebHost.UseUrls("http://*:8080");
 
-
+BsonSerializer.RegisterSerializer(new GuidSerializer(MongoDB.Bson.BsonType.String));
 
 builder.Services.AddControllers();
 builder.Services.AddHttpClient();
