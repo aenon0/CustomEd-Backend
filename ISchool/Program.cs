@@ -1,42 +1,45 @@
 using ISchool.Repositories;
 using MongoDB.Driver;
+using Swashbuckle.AspNetCore.SwaggerUI;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.WebHost.UseUrls("http://*:8080");
+
+
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddHttpClient();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
 
 
-var configuration = builder.Configuration; 
-var connectionString = configuration.GetConnectionString("MongoConnectionString"); 
-builder.Services.AddSingleton<IMongoClient>(sp => 
-{ 
-    return new MongoClient(connectionString); 
-}); 
- 
- 
-var databaseName = configuration.GetValue<string>("MongoDatabaseName"); 
- 
-builder.Services.AddScoped(sp => 
-{ 
-    var mongoClient = sp.GetRequiredService<IMongoClient>(); 
-    var database = mongoClient.GetDatabase(databaseName); 
-    var collectionNames = database.ListCollectionNames().ToList(); 
-    if (!collectionNames.Contains("Student")) 
-    { 
-        database.CreateCollection("Student"); 
-    }; 
-    if (!collectionNames.Contains("Teacher")) 
-    { 
-        database.CreateCollection("Teacher"); 
+var configuration = builder.Configuration;
+var connectionString = configuration.GetConnectionString("MongoConnectionString");
+builder.Services.AddSingleton<IMongoClient>(sp =>
+{
+    return new MongoClient(connectionString);
+});
+
+
+var databaseName = configuration.GetValue<string>("MongoDatabaseName");
+
+builder.Services.AddScoped(sp =>
+{
+    var mongoClient = sp.GetRequiredService<IMongoClient>();
+    var database = mongoClient.GetDatabase(databaseName);
+    var collectionNames = database.ListCollectionNames().ToList();
+    if (!collectionNames.Contains("Student"))
+    {
+        database.CreateCollection("Student");
     };
-    return database; 
+    if (!collectionNames.Contains("Teacher"))
+    {
+        database.CreateCollection("Teacher");
+    };
+    return database;
 });
 
 builder.Services.AddScoped<StudentRepository>();
@@ -53,7 +56,17 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+app.UseSwagger();
+
+// Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
+// specifying the Swagger JSON endpoint.
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Rideshare API V1");
+    c.RoutePrefix = "swagger"; // This will set the swagger UI route to 'http://localhost:8080/swagger'
+    c.DocExpansion(DocExpansion.None);
+});
+
 
 app.UseAuthorization();
 
