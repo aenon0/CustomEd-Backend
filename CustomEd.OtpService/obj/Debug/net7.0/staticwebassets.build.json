@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "jjXUD3MxlGavqUz4tNdo8yf7weO/WZUce7kVT8nhq2Q=",
+  "Source": "CustomEd.OtpService",
+  "BasePath": "_content/CustomEd.OtpService",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
