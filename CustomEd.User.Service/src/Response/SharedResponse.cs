@@ -5,9 +5,9 @@ public class SharedResponse<T>
     public bool IsSuccess { get; set; }
     public string? Message { get; set; } = null!;
     public T? Data { get; set; }
-    public List<string> Errors { get; set; } = new List<string>();
+    public List<string>? Errors { get; set; }
 
-    public static SharedResponse<T> Success(T data, string? message)
+    public static SharedResponse<T> Success(T? data, string? message)
     {
         return new SharedResponse<T>
         {
@@ -16,7 +16,7 @@ public class SharedResponse<T>
             Data = data
         };
     }
-    public static SharedResponse<T> Fail(string? message, List<string> errors)
+    public static SharedResponse<T> Fail(string? message, List<string>? errors)
     {
         return new SharedResponse<T>
         {

@@ -1,49 +1,49 @@
-// using System.Collections.Generic;
-// using Microsoft.AspNetCore.Mvc;
-// using CustomEd.User.Service.Model;
-// using CustomEd.User.Service.Data.Interfaces;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
+using CustomEd.User.Service.Model;
+using CustomEd.User.Service.Data.Interfaces;
+using CustomEd.User.Service.Response;
 
-// namespace CustomEd.User.Service.Controllers
-// {
-//     [ApiController]
-//     [Route("/api/user")]
-//     public class UserController : ControllerBase
-//     {
+namespace CustomEd.User.Service.Controllers
+{
+    [ApiController]
+    [Route("/api/user")]
+    public class UserController : ControllerBase
+    {
+        private readonly IGenericRepository<Model.User> _userRepository; 
 
-//         [HttpGet]
-//         public IEnumerable<> Get()
-//         {
-//             // TODO: Implement this method to return a list of users
-//             return null;
-//         }
+        public UserController(IGenericRepository<Model.User> userRepository)
+        {
+            _userRepository = userRepository;
+        }
 
-//         // GET: api/User/5
-//         [HttpGet("{id}", Name = "Get")]
-//         public User Get(int id)
-//         {
-//             // TODO: Implement this method to return a user by id
-//             return null;
-//         }
+        [HttpGet]
+        public  async Task<ActionResult<SharedResponse<IEnumerable<Model.User>>>> GetUsers()
+        {
+            var users = await _userRepository.GetAllAsync();
+            return Ok(SharedResponse<IEnumerable<Model.User>>.Success(users, "Users retrieved successfully"));
+        }
 
-//         // POST: api/User
-//         [HttpPost]
-//         public void Post([FromBody] User user)
-//         {
-//             // TODO: Implement this method to add a new user
-//         }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<SharedResponse<Model.User>>> GetUser(Guid id)
+        {
+            var user = await _userRepository.GetAsync(id);
+            if (user == null)
+            {
+                return NotFound(SharedResponse<Model.User>.Fail("User not found", null));
+            }
+            return Ok(SharedResponse<Model.User>.Success(user, "User retrieved successfully"));
+        }
+        
 
-//         // PUT: api/User/5
-//         [HttpPut("{id}")]
-//         public void Put(int id, [FromBody] User user)
-//         {
-//             // TODO: Implement this method to update a user
-//         }
+        [HttpPost]
+        public async Task<ActionResult<SharedResponse<Model.User>>> CreateUser([FromBody] Model.User user)
+        {
+            await _userRepository.CreateAsync(user);
+            return CreatedAtAction(nameof(GetUser), new { id = user.Id }, SharedResponse<Model.User>.Success(user, "User created successfully"));
+            
+        }
 
-//         // DELETE: api/User/5
-//         [HttpDelete("{id}")]
-//         public void Delete(int id)
-//         {
-//             // TODO: Implement this method to delete a user
-//         }
-//     }
-// }
+        
+    }
+}

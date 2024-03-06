@@ -1,5 +1,5 @@
 namespace CustomEd.User.Service.Model;
-public class User 
+public class User : BaseEntity
 {
     public Guid UserId { get; set; }
     public string Email { get; set; } = null!;
