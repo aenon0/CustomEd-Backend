@@ -8,41 +8,50 @@ namespace CustomEd.User.Service.Controllers
 {
     [ApiController]
     [Route("/api/user")]
-    public class UserController : ControllerBase
+    public abstract class UserController<T> : ControllerBase where T : Model.User
     {
-        private readonly IGenericRepository<Model.User> _userRepository; 
+        protected readonly IGenericRepository<T> _userRepository; 
 
-        public UserController(IGenericRepository<Model.User> userRepository)
+        public UserController(IGenericRepository<T> userRepository)
         {
             _userRepository = userRepository;
         }
 
         [HttpGet]
-        public  async Task<ActionResult<SharedResponse<IEnumerable<Model.User>>>> GetUsers()
+        public  async Task<ActionResult<SharedResponse<IEnumerable<T>>>> GetUsers()
         {
             var users = await _userRepository.GetAllAsync();
-            return Ok(SharedResponse<IEnumerable<Model.User>>.Success(users, "Users retrieved successfully"));
+            return Ok(SharedResponse<IEnumerable<T>>.Success(users, "Users retrieved successfully"));
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<SharedResponse<Model.User>>> GetUser(Guid id)
+        public async Task<ActionResult<SharedResponse<T>>> GetUser(Guid id)
         {
             var user = await _userRepository.GetAsync(id);
             if (user == null)
             {
-                return NotFound(SharedResponse<Model.User>.Fail("User not found", null));
+                return NotFound(SharedResponse<T>.Fail("User not found", null));
             }
-            return Ok(SharedResponse<Model.User>.Success(user, "User retrieved successfully"));
+            return Ok(SharedResponse<T>.Success(user, "User retrieved successfully"));
         }
         
 
         [HttpPost]
-        public async Task<ActionResult<SharedResponse<Model.User>>> CreateUser([FromBody] Model.User user)
+        public async Task<ActionResult<SharedResponse<T>>> CreateUser([FromBody] T user)
         {
             await _userRepository.CreateAsync(user);
-            return CreatedAtAction(nameof(GetUser), new { id = user.Id }, SharedResponse<Model.User>.Success(user, "User created successfully"));
+            return CreatedAtAction(nameof(GetUser), new { id = user.Id }, SharedResponse<T>.Success(user, "User created successfully"));
             
         }
+
+        [HttpDelete]
+        public async Task<ActionResult<SharedResponse<T>>> DeleteUser(Guid id)
+        {
+            await _userRepository.RemoveAsync(id);
+            return Ok(SharedResponse<T>.Success(null, "User deleted successfully"));
+        }
+
+        
 
         
     }
