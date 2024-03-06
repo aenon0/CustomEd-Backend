@@ -1,0 +1,37 @@
+# docker run -d --rm  --name mongo -p 27017:27017 -v mongodbdata:/data/db mongo
+
+version: "3.8"
+services:
+#   board-user-service:
+#     build:
+#       context: ../Board.User/src/
+#       dockerfile: Dockerfile
+#     ports:
+#       - "5006:80" # Adjust the port mapping as needed
+#     depends_on:
+#       - mongo
+#       - rabbitmq
+  mongo:
+    image: mongo
+    container_name: customed-mongo
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodbdata:/data/db mongo
+
+  # rabbitmq:
+  #   image: rabbitmq:management
+  #   container_name: rabbitmq
+  #   ports:
+  #     - 5672:5672
+  #     - 15672:15672
+
+  #   hostname: rabbitmq
+  #   volumes:
+  #     - rabbitmqdata:/var/lib/rabbitmq
+
+
+
+volumes:
+  mongodbdata:
+  # rabbitmqdata:
