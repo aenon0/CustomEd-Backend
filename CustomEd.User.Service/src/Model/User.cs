@@ -1,5 +1,4 @@
 namespace CustomEd.User.Service.Model;
-namespace CustomEd.User.Service.Model;
 public class User 
 {
     public Guid UserId { get; set; }

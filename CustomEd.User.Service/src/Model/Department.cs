@@ -1,4 +1,4 @@
- namespace ISchool.Model;
+ namespace CustomEd.User.Service.Model;
  public enum Department
     {
         ComputerScience,
