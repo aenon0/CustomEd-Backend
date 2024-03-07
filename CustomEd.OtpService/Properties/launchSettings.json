@@ -17,8 +17,8 @@
       "applicationUrl": "http://localhost:5068",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "SENDER_EMAIL" : "aenonsolomon0@gmail.com",
-        "SENDER_PASSWORD" : "xbewgantectjtgmx"
+        "EMAIL_ADDRESS" : "CustomEducation@outlook.com",
+        "EMAIL_PASSWORD" : "Notsimple"
       }
     },
     "https": {
@@ -28,9 +28,7 @@
       "launchUrl": "swagger",
       "applicationUrl": "https://localhost:7214;http://localhost:5068",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "SENDER_EMAIL" : "aenonsolomon0@gmail.com",
-        "SENDER_PASSWORD" : "xbewgantectjtgmx"
+        "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
     "IIS Express": {
