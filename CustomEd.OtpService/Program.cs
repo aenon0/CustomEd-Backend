@@ -1,3 +1,4 @@
+using Swashbuckle.AspNetCore.SwaggerUI;
 using CustomEd.OtpService.Repository;
 using CustomEd.OtpService.Service;
 using MongoDB.Driver;
@@ -5,6 +6,7 @@ using MongoDB.Driver;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.WebHost.UseUrls("http://*:8080");
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -39,11 +41,6 @@ builder.Services.AddScoped(sp =>
 
 
 
-
-
-
-
-
 builder.Services.AddScoped<IOtpRepository, OtpRepository>();
 var app = builder.Build();
 
@@ -53,6 +50,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+   c.SwaggerEndpoint("/swagger/v1/swagger.json", "Rideshare API V1");
+   c.RoutePrefix = "swagger"; // This will set the swagger UI route to 'http://localhost:8080/swagger'
+   c.DocExpansion(DocExpansion.None);
+});
 
 app.UseHttpsRedirection();
 
