@@ -13,11 +13,11 @@ namespace CustomEd.User.Service.Controllers
         {
         }
 
-        [HttpGet("/teacher")]
-        public async Task<ActionResult<SharedResponse<IEnumerable<Model.Teacher>>>> GetTeachers()
+        [HttpGet("teacher-name")]
+        public async Task<ActionResult<SharedResponse<Model.Teacher>>> SearchTeacherByName([FromQuery] string name)
         {
-            var teachers = await _userRepository.GetAllAsync();
-            return Ok(SharedResponse<IEnumerable<Model.Teacher>>.Success(teachers, "Teachers retrieved successfully"));
+            var teacher = await _userRepository.GetAsync(u => u.FirstName!.Contains(name) || u.LastName!.Contains(name));
+            return Ok(SharedResponse<Model.Teacher>.Success(teacher, "Teacher retrieved successfully"));
         }
     }
 }
