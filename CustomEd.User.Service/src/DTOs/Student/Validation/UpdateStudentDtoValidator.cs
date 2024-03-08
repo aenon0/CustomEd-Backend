@@ -1,12 +1,27 @@
 using FluentValidation;
 using CustomEd.User.Service.DTOs;
+using CustomEd.User.Service.Data.Interfaces;
+using CustomEd.User.Service.Model;
 
 namespace CustomEd.User.Service.Validators
 {
     public class UpdateStudentDtoValidator : AbstractValidator<UpdateStudentDto>
     {
-        public UpdateStudentDtoValidator()
+        private readonly IGenericRepository<Student> _studentRepository;
+        public UpdateStudentDtoValidator(IGenericRepository<Student> studentRepository)
         {
+            _studentRepository = studentRepository;
+
+            RuleFor(dto => dto.Id)
+                .NotEmpty()
+                .WithMessage("Student ID is required.")
+                .MustAsync(async (id, cancellation) =>
+                {
+                    var student  = await _studentRepository.GetAsync(id);
+                    return student != null;
+                })
+                .WithMessage("Student does not exist.");
+    
             RuleFor(dto => dto.StudentId)
                 .NotEmpty()
                 .WithMessage("Student ID is required.")

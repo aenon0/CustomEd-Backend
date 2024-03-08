@@ -7,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddMongo();
+builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddPersistence<User>("Users");
 builder.Services.AddPersistence<Student>("Student");
 builder.Services.AddPersistence<Teacher>("Teacher");

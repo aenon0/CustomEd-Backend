@@ -3,7 +3,7 @@ using CustomEd.User.Service.Model;
 namespace CustomEd.User.Service.DTOs;
 public class TeacherDto
 {
-    public Guid UserId { get; set; }
+    public Guid Id { get; set; }
     public string FirstName { get; set; } = null!;
     public string LastName { get; set; } = null!;
     public string Email { get; set; } = null!;

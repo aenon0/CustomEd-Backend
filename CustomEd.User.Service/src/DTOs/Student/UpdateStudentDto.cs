@@ -4,7 +4,7 @@ namespace CustomEd.User.Service.DTOs
 {
     public class UpdateStudentDto
     {
-        public Guid UserId {get; set;}
+        public Guid Id {get; set;}
         public string? StudentId { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }

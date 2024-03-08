@@ -2,6 +2,10 @@ using Microsoft.AspNetCore.Mvc;
 using CustomEd.User.Service.Model;
 using CustomEd.User.Service.Data.Interfaces;
 using CustomEd.User.Service.Response;
+using AutoMapper;
+using CustomEd.User.Service.DTOs;
+using CustomEd.User.Service.Validators;
+using FluentValidation;
 
 namespace CustomEd.User.Service.Controllers
 {
@@ -9,34 +13,55 @@ namespace CustomEd.User.Service.Controllers
     [Route("api/user/teacher")]
     public class TeacherController : UserController<Model.Teacher>
     {
-        public TeacherController(IGenericRepository<Model.Teacher> userRepository) : base(userRepository)
+        public TeacherController(IGenericRepository<Model.Teacher> userRepository, IMapper mapper) : base(userRepository, mapper)
         {
         }
 
         [HttpGet("teacher-name")]
-        public async Task<ActionResult<SharedResponse<Model.Teacher>>> SearchTeacherByName([FromQuery] string name)
+        public async Task<ActionResult<SharedResponse<TeacherDto>>> SearchTeacherByName([FromQuery] string name)
         {
             var teacher = await _userRepository.GetAsync(u => u.FirstName!.Contains(name) || u.LastName!.Contains(name));
-            return Ok(SharedResponse<Model.Teacher>.Success(teacher, "Teacher retrieved successfully"));
+            var teacherDto = _mapper.Map<TeacherDto>(teacher);
+            return Ok(SharedResponse<TeacherDto>.Success(teacherDto, "Teacher retrieved successfully"));
         }
         [HttpPost]
-        public async Task<ActionResult<SharedResponse<Teacher>>> CreateUser([FromBody] Teacher user)
+        public async Task<ActionResult<SharedResponse<Teacher>>> CreateUser([FromBody] CreateTeacherDto createTeacherDto)
         {
-            await _userRepository.CreateAsync(user);
-            return CreatedAtAction(nameof(GetUserById), new { id = user.Id }, SharedResponse<Teacher>.Success(user, "User created successfully"));
+
+        var createTeacherDtoValidator = new CreateTeacherDtoValidator();
+        var validationResult = await createTeacherDtoValidator.ValidateAsync(createTeacherDto);
+        if (!validationResult.IsValid)
+        {
+            return BadRequest(SharedResponse<Teacher>.Fail("Invalid input", validationResult.Errors.Select(e => e.ErrorMessage).ToList()));
+        }
+
+        var teacher = _mapper.Map<Model.Teacher>(createTeacherDto);
+        await _userRepository.CreateAsync(teacher);
+        return CreatedAtAction(nameof(GetUserById), new { id = teacher.Id }, SharedResponse<Teacher>.Success(teacher, "User created successfully"));
             
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<ActionResult<SharedResponse<Teacher>>> RemoveUser(Guid id)
         {
+            if (id == Guid.Empty || await _userRepository.GetAsync(id) == null)
+            {
+                return BadRequest(SharedResponse<Teacher>.Fail("Invalid Id", new List<string> { "Invalid id" }));
+            }
             await _userRepository.RemoveAsync(id);
             return Ok(SharedResponse<Teacher>.Success(null, "User deleted successfully"));
         }
 
         [HttpPut]
-        public async Task<ActionResult<SharedResponse<Teacher>>> UpdateUser([FromBody] Teacher user)
+        public async Task<ActionResult<SharedResponse<Teacher>>> UpdateUser([FromBody] UpdateTeacherDto updateTeacherDto)
         {
+            var updateTeacherDtoValidator = new UpdateTeacherDtoValidator(_userRepository);
+            var validationResult = await updateTeacherDtoValidator.ValidateAsync(updateTeacherDto);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(SharedResponse<Teacher>.Fail("Invalid input", validationResult.Errors.Select(e => e.ErrorMessage).ToList()));
+            }
+            var user = _mapper.Map<Model.Teacher>(updateTeacherDto);
             await _userRepository.UpdateAsync(user);
             return Ok(SharedResponse<Teacher>.Success(null, "User updated successfully"));
             

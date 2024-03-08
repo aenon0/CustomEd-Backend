@@ -4,6 +4,7 @@ using CustomEd.User.Service.Model;
 using CustomEd.User.Service.Data.Interfaces;
 using CustomEd.User.Service.Response;
 using MongoDB.Driver;
+using AutoMapper;
 
 namespace CustomEd.User.Service.Controllers
 {
@@ -12,11 +13,14 @@ namespace CustomEd.User.Service.Controllers
     public abstract class UserController<T> : ControllerBase where T : Model.User 
     {
         protected readonly IGenericRepository<T> _userRepository; 
+        protected readonly IMapper _mapper;
 
-        public UserController(IGenericRepository<T> userRepository)
+        public UserController(IGenericRepository<T> userRepository, IMapper mapper)
         {
             _userRepository = userRepository;
+            _mapper = mapper;
         }
+
 
         [HttpGet]
         public  async Task<ActionResult<SharedResponse<IEnumerable<T>>>> GetAllUsers()
