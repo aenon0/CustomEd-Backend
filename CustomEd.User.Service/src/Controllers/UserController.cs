@@ -6,6 +6,7 @@ using CustomEd.User.Service.Response;
 using MongoDB.Driver;
 using AutoMapper;
 using CustomEd.User.Service.PasswordService.Interfaces;
+using CusotmEd.User.Servce.DTOs;
 
 namespace CustomEd.User.Service.Controllers
 {
@@ -41,6 +42,21 @@ namespace CustomEd.User.Service.Controllers
                 return NotFound(SharedResponse<T>.Fail("User not found", null));
             }
             return Ok(SharedResponse<T>.Success(user, "User retrieved successfully"));
+        }
+
+        [HttpPost("login")]
+        public async Task<ActionResult<SharedResponse<bool>>> SignIn([FromBody] LoginRequestDto request)
+        {
+            var user = await _userRepository.GetAsync(x => x.Email == request.Email);
+            if(user == null)
+            {
+                return BadRequest(SharedResponse<bool>.Fail(null, null));
+            }
+            if(!_passwordHasher.VerifyPassword(request.Password, user.Password))
+            {
+                return BadRequest(SharedResponse<bool>.Fail(null, null));
+            }
+            return Ok(SharedResponse<bool>.Success(true, null));
         }
 
     }
