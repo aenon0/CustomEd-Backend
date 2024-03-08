@@ -1,3 +1,4 @@
+using Board.User.Service.Settings;
 using CustomEd.User.Service.Data;
 using CustomEd.User.Service.Model;
 using CustomEd.User.Service.Password;
@@ -14,6 +15,7 @@ builder.Services.AddPersistence<User>("Users");
 builder.Services.AddPersistence<Student>("Student");
 builder.Services.AddPersistence<Teacher>("Teacher");
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+builder.Services.AddAuth();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

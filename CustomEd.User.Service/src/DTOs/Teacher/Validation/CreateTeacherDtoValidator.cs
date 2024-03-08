@@ -1,12 +1,17 @@
+using CustomEd.User.Service.Data.Interfaces;
 using CustomEd.User.Service.DTOs;
+using CustomEd.User.Service.Model;
 using FluentValidation;
 
 namespace CustomEd.User.Service.Validators
 {
     public class CreateTeacherDtoValidator : AbstractValidator<CreateTeacherDto>
     {
-        public CreateTeacherDtoValidator()
+        private readonly IGenericRepository<Teacher> _teacherRepository;
+
+        public CreateTeacherDtoValidator(IGenericRepository<Teacher> teacherRepository)
         {
+            _teacherRepository = teacherRepository;
             RuleFor(dto => dto.FirstName)
                 .NotEmpty()
                 .WithMessage("First name is required.")
@@ -41,14 +46,25 @@ namespace CustomEd.User.Service.Validators
                 .WithMessage("Join date is required.")
                 .LessThan(System.DateTime.Now)
                 .WithMessage("Join date cannot be later than today.");
-                
+
             RuleFor(dto => dto.Email)
                 .NotEmpty()
                 .WithMessage("Email is required.")
                 .MaximumLength(100)
                 .WithMessage("Email must not exceed 100 characters.")
                 .EmailAddress()
-                .WithMessage("Invalid email format.");
+                .WithMessage("Invalid email format.")
+                .MustAsync(
+                    async (email, cancellation) =>
+                    {
+                        var existingStudent = await _teacherRepository.GetAsync(s =>
+                            s.Email == email
+                        );
+                        return existingStudent == null;
+                    }
+                )
+                .WithMessage("Email must be unique.");
+                
             RuleFor(dto => dto.Password)
                 .NotEmpty()
                 .WithMessage("Password is required.")

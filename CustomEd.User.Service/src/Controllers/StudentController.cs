@@ -6,6 +6,9 @@ using CustomEd.User.Service.DTOs;
 using AutoMapper;
 using CustomEd.User.Service.Validators;
 using CustomEd.User.Service.PasswordService.Interfaces;
+using CustomEd.Shared.JWT.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using CustomEd.Shared.JWT;
 
 namespace CustomEd.User.Service.Controllers
 {
@@ -13,9 +16,10 @@ namespace CustomEd.User.Service.Controllers
     [Route("api/user/student")]
     public class StudentController : UserController<Model.Student>
     {
-        public StudentController(IGenericRepository<Model.Student> userRepository, IMapper mapper, IPasswordHasher passwordHasher) : base(userRepository, mapper, passwordHasher)
+        public StudentController(IGenericRepository<Model.Student> userRepository, IMapper mapper, IPasswordHasher passwordHasher, IJwtService jwtService) : base(userRepository, mapper, passwordHasher, jwtService)
         {
         }
+
 
         [HttpGet("student-id")]
         public async Task<ActionResult<SharedResponse<StudentDto>>> SearchStudentBySchoolId([FromQuery] string id)
@@ -37,7 +41,7 @@ namespace CustomEd.User.Service.Controllers
         public async Task<ActionResult<SharedResponse<Model.Student>>> CreateUser([FromBody] CreateStudentDto studentDto)
         {
 
-            var createStudentDtoValidator = new CreateStudentDtoValidator();
+            var createStudentDtoValidator = new CreateStudentDtoValidator(_userRepository);
             var validationResult = await createStudentDtoValidator.ValidateAsync(studentDto);
             if (!validationResult.IsValid)
             {
@@ -54,6 +58,8 @@ namespace CustomEd.User.Service.Controllers
             
         }
 
+
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<ActionResult<SharedResponse<StudentDto>>> RemoveUser(Guid id)
         {
@@ -62,11 +68,20 @@ namespace CustomEd.User.Service.Controllers
                 return BadRequest(SharedResponse<StudentDto>.Fail("Invalid Id", new List<string> { "Invalid id" }));
             }
 
+            var identityProvider = new IdentityProvider(HttpContext, _jwtService);
+            var currentUserId = identityProvider.GetUserId();
+
+            if(currentUserId != id)
+            {
+                return Unauthorized(SharedResponse<StudentDto>.Fail("Unauthorized", new List<string> { "Unauthorized" }));
+            }
+
 
             await _userRepository.RemoveAsync(id);
             return Ok(SharedResponse<StudentDto>.Success(null, "User deleted successfully"));
         }
 
+        [Authorize]
         [HttpPut]
         public async Task<ActionResult<SharedResponse<StudentDto>>> UpdateUser([FromBody] UpdateStudentDto studentDto)
         {
@@ -75,6 +90,14 @@ namespace CustomEd.User.Service.Controllers
             if (!validationResult.IsValid)
             {
                 return BadRequest(SharedResponse<StudentDto>.Fail("Invalid input", validationResult.Errors.Select(e => e.ErrorMessage).ToList()));
+            }
+
+            var identityProvider = new IdentityProvider(HttpContext, _jwtService);
+            var currentUserId = identityProvider.GetUserId();
+
+            if(currentUserId != studentDto.Id)
+            {
+                return Unauthorized(SharedResponse<StudentDto>.Fail("Unauthorized", new List<string> { "Unauthorized" }));
             }
 
             var passwordHash = _passwordHasher.HashPassword(studentDto.Password);

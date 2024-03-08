@@ -7,6 +7,8 @@ using MongoDB.Driver;
 using AutoMapper;
 using CustomEd.User.Service.PasswordService.Interfaces;
 using CusotmEd.User.Servce.DTOs;
+using CustomEd.Shared.JWT.Contracts;
+using CustomEd.Shared.JWT.Interfaces;
 
 namespace CustomEd.User.Service.Controllers
 {
@@ -17,13 +19,16 @@ namespace CustomEd.User.Service.Controllers
         protected readonly IGenericRepository<T> _userRepository; 
         protected readonly IMapper _mapper;
         protected readonly IPasswordHasher _passwordHasher;
+        protected readonly IJwtService _jwtService;
 
-        public UserController(IGenericRepository<T> userRepository, IMapper mapper, IPasswordHasher passwordHasher)
+        public UserController(IGenericRepository<T> userRepository, IMapper mapper, IPasswordHasher passwordHasher, IJwtService jwtService)
         {
             _userRepository = userRepository;
             _mapper = mapper;
             _passwordHasher = passwordHasher;
+            _jwtService = jwtService;
         }
+    
 
 
         [HttpGet]
@@ -45,18 +50,29 @@ namespace CustomEd.User.Service.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<SharedResponse<bool>>> SignIn([FromBody] LoginRequestDto request)
+        public async Task<ActionResult<SharedResponse<UserDto>>> SignIn([FromBody] LoginRequestDto request)
         {
+
             var user = await _userRepository.GetAsync(x => x.Email == request.Email);
             if(user == null)
             {
-                return BadRequest(SharedResponse<bool>.Fail(null, null));
+                return BadRequest(SharedResponse<UserDto>.Fail("User not found", null));
             }
             if(!_passwordHasher.VerifyPassword(request.Password, user.Password))
             {
-                return BadRequest(SharedResponse<bool>.Fail(null, null));
+                return BadRequest(SharedResponse<bool>.Fail("Incorrect Password", null));
             }
-            return Ok(SharedResponse<bool>.Success(true, null));
+            var userDto = new UserDto
+            {
+                Id = user.Id,
+                Email = user.Email,
+                Role = (Shared.JWT.Contracts.Role) user.Role
+            };
+
+            var token = _jwtService.GenerateToken(userDto);
+            userDto.Token = token;
+
+            return Ok(SharedResponse<UserDto>.Success(userDto, null));
         }
 
     }
