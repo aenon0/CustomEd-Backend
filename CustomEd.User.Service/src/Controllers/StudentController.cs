@@ -5,6 +5,7 @@ using CustomEd.User.Service.Response;
 using CustomEd.User.Service.DTOs;
 using AutoMapper;
 using CustomEd.User.Service.Validators;
+using CustomEd.User.Service.PasswordService.Interfaces;
 
 namespace CustomEd.User.Service.Controllers
 {
@@ -12,7 +13,7 @@ namespace CustomEd.User.Service.Controllers
     [Route("api/user/student")]
     public class StudentController : UserController<Model.Student>
     {
-        public StudentController(IGenericRepository<Model.Student> userRepository, IMapper mapper) : base(userRepository, mapper)
+        public StudentController(IGenericRepository<Model.Student> userRepository, IMapper mapper, IPasswordHasher passwordHasher) : base(userRepository, mapper, passwordHasher)
         {
         }
 
@@ -42,6 +43,9 @@ namespace CustomEd.User.Service.Controllers
             {
                 return BadRequest(SharedResponse<Model.Student>.Fail("Invalid input", validationResult.Errors.Select(e => e.ErrorMessage).ToList()));
             }
+            var passwordHash = _passwordHasher.HashPassword(studentDto.Password);
+            studentDto.Password = passwordHash;
+
 
             var student = _mapper.Map<Model.Student>(studentDto);
             
@@ -72,6 +76,10 @@ namespace CustomEd.User.Service.Controllers
             {
                 return BadRequest(SharedResponse<StudentDto>.Fail("Invalid input", validationResult.Errors.Select(e => e.ErrorMessage).ToList()));
             }
+
+            var passwordHash = _passwordHasher.HashPassword(studentDto.Password);
+            studentDto.Password = passwordHash;
+            studentDto.JoinDate = DateTime.UtcNow;
 
             var student = _mapper.Map<Model.Student>(studentDto);
             await _userRepository.UpdateAsync(student);

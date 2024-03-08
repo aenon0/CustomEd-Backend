@@ -69,6 +69,8 @@ public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
     /// <param name="entity">The entity to create.</param>
     public async Task CreateAsync(T entity)
     {
+        entity.CreatedAt = DateTime.UtcNow;
+        entity.UpdatedAt = DateTime.UtcNow;
         await _collection.InsertOneAsync(entity);
     }
 
@@ -79,6 +81,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
     public async Task UpdateAsync(T entity)
     {
         var filter = Builders<T>.Filter.Eq(x => x.Id, entity.Id);
+        entity.UpdatedAt = DateTime.UtcNow;
         await _collection.ReplaceOneAsync(filter, entity);
     }
 

@@ -5,6 +5,7 @@ using CustomEd.User.Service.Data.Interfaces;
 using CustomEd.User.Service.Response;
 using MongoDB.Driver;
 using AutoMapper;
+using CustomEd.User.Service.PasswordService.Interfaces;
 
 namespace CustomEd.User.Service.Controllers
 {
@@ -14,11 +15,13 @@ namespace CustomEd.User.Service.Controllers
     {
         protected readonly IGenericRepository<T> _userRepository; 
         protected readonly IMapper _mapper;
+        protected readonly IPasswordHasher _passwordHasher;
 
-        public UserController(IGenericRepository<T> userRepository, IMapper mapper)
+        public UserController(IGenericRepository<T> userRepository, IMapper mapper, IPasswordHasher passwordHasher)
         {
             _userRepository = userRepository;
             _mapper = mapper;
+            _passwordHasher = passwordHasher;
         }
 
 

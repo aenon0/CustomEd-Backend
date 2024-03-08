@@ -6,6 +6,7 @@ using AutoMapper;
 using CustomEd.User.Service.DTOs;
 using CustomEd.User.Service.Validators;
 using FluentValidation;
+using CustomEd.User.Service.PasswordService.Interfaces;
 
 namespace CustomEd.User.Service.Controllers
 {
@@ -13,7 +14,7 @@ namespace CustomEd.User.Service.Controllers
     [Route("api/user/teacher")]
     public class TeacherController : UserController<Model.Teacher>
     {
-        public TeacherController(IGenericRepository<Model.Teacher> userRepository, IMapper mapper) : base(userRepository, mapper)
+        public TeacherController(IGenericRepository<Model.Teacher> userRepository, IMapper mapper, IPasswordHasher passwordHasher) : base(userRepository, mapper, passwordHasher)
         {
         }
 
@@ -34,6 +35,10 @@ namespace CustomEd.User.Service.Controllers
         {
             return BadRequest(SharedResponse<Teacher>.Fail("Invalid input", validationResult.Errors.Select(e => e.ErrorMessage).ToList()));
         }
+
+        var passwordHash = _passwordHasher.HashPassword(createTeacherDto.Password);
+        createTeacherDto.Password = passwordHash;
+        createTeacherDto.JoinDate = DateTime.Now;
 
         var teacher = _mapper.Map<Model.Teacher>(createTeacherDto);
         await _userRepository.CreateAsync(teacher);
@@ -61,6 +66,10 @@ namespace CustomEd.User.Service.Controllers
             {
                 return BadRequest(SharedResponse<Teacher>.Fail("Invalid input", validationResult.Errors.Select(e => e.ErrorMessage).ToList()));
             }
+
+            var passwordHash = _passwordHasher.HashPassword(updateTeacherDto.Password);
+            updateTeacherDto.Password = passwordHash;
+
             var user = _mapper.Map<Model.Teacher>(updateTeacherDto);
             await _userRepository.UpdateAsync(user);
             return Ok(SharedResponse<Teacher>.Success(null, "User updated successfully"));
