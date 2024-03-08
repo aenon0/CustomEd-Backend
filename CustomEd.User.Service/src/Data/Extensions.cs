@@ -29,7 +29,7 @@ namespace CustomEd.User.Service.Data
                 _mongoSettings = configuration!.GetSection(nameof(MongoSettings)).Get<MongoSettings>()!;
 
                 var mongoClient = new MongoClient(_mongoSettings!.ConnectionString);
-                Console.WriteLine($"MongoDB connected to {_mongoSettings.ConnectionString}");
+                // Console.WriteLine($"MongoDB connected to {_mongoSettings.ConnectionString}");
                 return mongoClient.GetDatabase(_serviceSettings!.ServiceName);
             });
 

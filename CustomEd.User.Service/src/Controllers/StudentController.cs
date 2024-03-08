@@ -27,6 +27,29 @@ namespace CustomEd.User.Service.Controllers
             return Ok(SharedResponse<IEnumerable<Model.Student>>.Success(students, "Students retrieved successfully"));
         }
 
+        [HttpPost]
+        public async Task<ActionResult<SharedResponse<Model.Student>>> CreateUser([FromBody] Model.Student user)
+        {
+            await _userRepository.CreateAsync(user);
+            return CreatedAtAction(nameof(GetUserById), new { id = user.Id }, SharedResponse<Model.Student>.Success(user, "User created successfully"));
+            
+        }
+
+        [HttpDelete]
+        public async Task<ActionResult<SharedResponse<Model.Student>>> RemoveUser(Guid id)
+        {
+            await _userRepository.RemoveAsync(id);
+            return Ok(SharedResponse<Model.Student>.Success(null, "User deleted successfully"));
+        }
+
+        [HttpPut]
+        public async Task<ActionResult<SharedResponse<Model.Student>>> UpdateUser([FromBody] Model.Student user)
+        {
+            await _userRepository.UpdateAsync(user);
+            return Ok(SharedResponse<Model.Student>.Success(null, "User updated successfully"));
+            
+        } 
+
         
     }
 }

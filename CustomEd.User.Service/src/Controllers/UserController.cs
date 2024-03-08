@@ -35,29 +35,6 @@ namespace CustomEd.User.Service.Controllers
             }
             return Ok(SharedResponse<T>.Success(user, "User retrieved successfully"));
         }
-        
 
-        [HttpPost]
-        public async Task<ActionResult<SharedResponse<T>>> CreateUser([FromBody] T user)
-        {
-            await _userRepository.CreateAsync(user);
-            return CreatedAtAction(nameof(GetUserById), new { id = user.Id }, SharedResponse<T>.Success(user, "User created successfully"));
-            
-        }
-
-        [HttpDelete]
-        public async Task<ActionResult<SharedResponse<T>>> RemoveUser(Guid id)
-        {
-            await _userRepository.RemoveAsync(id);
-            return Ok(SharedResponse<T>.Success(null, "User deleted successfully"));
-        }
-
-        [HttpPut]
-        public async Task<ActionResult<SharedResponse<T>>> UpdateUser([FromBody] T user)
-        {
-            await _userRepository.UpdateAsync(user);
-            return Ok(SharedResponse<T>.Success(null, "User updated successfully"));
-            
-        } 
     }
 }
