@@ -14,7 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 /// </summary>
 /// <param name="services">The <see cref="IServiceCollection"/> to add the services to.</param>
 /// <returns>The modified <see cref="IServiceCollection"/>.</returns>
-namespace Board.User.Service.Settings;
+namespace CustomEd.Shared.Settings;
 
 public static class Extensions
 {
