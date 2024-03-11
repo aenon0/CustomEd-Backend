@@ -1,14 +1,13 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
-using CustomEd.User.Service.Model;
-using CustomEd.User.Service.Data.Interfaces;
-using CustomEd.User.Service.Response;
 using MongoDB.Driver;
 using AutoMapper;
 using CustomEd.User.Service.PasswordService.Interfaces;
 using CusotmEd.User.Servce.DTOs;
 using CustomEd.Shared.JWT.Contracts;
 using CustomEd.Shared.JWT.Interfaces;
+using CustomEd.Shared.Data.Interfaces;
+using CustomEd.Shared.Response;
 
 namespace CustomEd.User.Service.Controllers
 {

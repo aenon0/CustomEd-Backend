@@ -1,7 +1,7 @@
 using FluentValidation;
 using CustomEd.User.Service.DTOs;
-using CustomEd.User.Service.Data.Interfaces;
 using CustomEd.User.Service.Model;
+using CustomEd.Shared.Data.Interfaces;
 
 namespace CustomEd.User.Service.Validators
 {

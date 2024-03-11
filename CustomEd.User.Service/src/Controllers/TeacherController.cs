@@ -1,15 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
-using CustomEd.User.Service.Model;
-using CustomEd.User.Service.Data.Interfaces;
-using CustomEd.User.Service.Response;
 using AutoMapper;
 using CustomEd.User.Service.DTOs;
 using CustomEd.User.Service.Validators;
-using FluentValidation;
 using CustomEd.User.Service.PasswordService.Interfaces;
 using CustomEd.Shared.JWT.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using CustomEd.Shared.JWT;
+using CustomEd.Shared.Data.Interfaces;
+using CustomEd.Shared.Response;
+using CustomEd.User.Service.Model;
 
 namespace CustomEd.User.Service.Controllers
 {

@@ -1,5 +1,5 @@
-using Board.User.Service.Settings;
-using CustomEd.User.Service.Data;
+using CustomEd.Shared.Data;
+using CustomEd.Shared.Settings;
 using CustomEd.User.Service.Model;
 using CustomEd.User.Service.Password;
 using CustomEd.User.Service.PasswordService.Interfaces;
@@ -11,7 +11,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddMongo();
 builder.Services.AddAutoMapper(typeof(Program));
-builder.Services.AddPersistence<User>("Users");
 builder.Services.AddPersistence<Student>("Student");
 builder.Services.AddPersistence<Teacher>("Teacher");
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
