@@ -1,9 +1,9 @@
 //Purpose : Represents a generic repository interface for CRUD operations on entities.
 
 using System.Linq.Expressions;
-using CustomEd.User.Service.Model;
+using CustomEd.Shared.Model;
 
-namespace CustomEd.User.Service.Data.Interfaces;
+namespace CustomEd.Shared.Data.Interfaces;
 
 /// <summary>
 /// Represents a generic repository interface for CRUD operations on entities.

@@ -1,4 +1,4 @@
-namespace CustomEd.User.Service.Model;
+namespace CustomEd.Shared.Model;
 public abstract class BaseEntity
 {
     public Guid Id { get; set; }

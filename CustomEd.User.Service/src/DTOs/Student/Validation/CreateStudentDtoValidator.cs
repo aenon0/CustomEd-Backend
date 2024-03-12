@@ -1,12 +1,17 @@
-using FluentValidation;
+using CustomEd.Shared.Data.Interfaces;
 using CustomEd.User.Service.DTOs;
+using CustomEd.User.Service.Model;
+using FluentValidation;
 
 namespace CustomEd.User.Service.Validators
 {
     public class CreateStudentDtoValidator : AbstractValidator<CreateStudentDto>
     {
-        public CreateStudentDtoValidator()
+
+        private readonly IGenericRepository<Student> _studentRepository;
+        public CreateStudentDtoValidator(IGenericRepository<Student> studentRepository)
         {
+            _studentRepository = studentRepository;
             RuleFor(dto => dto.StudentId)
                 .NotEmpty()
                 .WithMessage("Student ID is required.")
@@ -67,7 +72,13 @@ namespace CustomEd.User.Service.Validators
                 .MaximumLength(100)
                 .WithMessage("Email must not exceed 100 characters.")
                 .EmailAddress()
-                .WithMessage("Invalid email format.");
+                .WithMessage("Invalid email format.")
+                .MustAsync(async (email, cancellation) => 
+                {
+                    var existingStudent = await _studentRepository.GetAsync(s => s.Email == email);
+                    return existingStudent == null;
+                })
+                .WithMessage("Email must be unique.");
 
             RuleFor(dto => dto.Password)
                 .NotEmpty()

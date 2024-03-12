@@ -1,4 +1,4 @@
-namespace CustomEd.User.Service.Settings
+namespace CustomEd.Shared.Settings
 {
     public class ServiceSettings
     {

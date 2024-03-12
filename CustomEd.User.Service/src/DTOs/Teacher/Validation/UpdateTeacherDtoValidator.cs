@@ -1,7 +1,7 @@
 using FluentValidation;
 using CustomEd.User.Service.DTOs;
-using CustomEd.User.Service.Data.Interfaces;
 using CustomEd.User.Service.Model;
+using CustomEd.Shared.Data.Interfaces;
 
 namespace CustomEd.User.Service.Validators
 {
@@ -64,7 +64,17 @@ namespace CustomEd.User.Service.Validators
                 .MaximumLength(100)
                 .WithMessage("Email must not exceed 100 characters.")
                 .EmailAddress()
-                .WithMessage("Invalid email format.");
+                .WithMessage("Invalid email format.")
+                .MustAsync(
+                    async (email, cancellation) =>
+                    {
+                        var existingStudent = await _teacherRepository.GetAsync(s =>
+                            s.Email == email
+                        );
+                        return existingStudent == null;
+                    }
+                )
+                .WithMessage("Email must be unique.");
 
             RuleFor(dto => dto.Password)
                 .NotEmpty()

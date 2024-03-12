@@ -1,11 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
-using CustomEd.User.Service.Model;
-using CustomEd.User.Service.Data.Interfaces;
-using CustomEd.User.Service.Response;
 using AutoMapper;
 using CustomEd.User.Service.DTOs;
 using CustomEd.User.Service.Validators;
-using FluentValidation;
+using CustomEd.User.Service.PasswordService.Interfaces;
+using CustomEd.Shared.JWT.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using CustomEd.Shared.JWT;
+using CustomEd.Shared.Data.Interfaces;
+using CustomEd.Shared.Response;
+using CustomEd.User.Service.Model;
 
 namespace CustomEd.User.Service.Controllers
 {
@@ -13,7 +16,7 @@ namespace CustomEd.User.Service.Controllers
     [Route("api/user/teacher")]
     public class TeacherController : UserController<Model.Teacher>
     {
-        public TeacherController(IGenericRepository<Model.Teacher> userRepository, IMapper mapper) : base(userRepository, mapper)
+        public TeacherController(IGenericRepository<Model.Teacher> userRepository, IMapper mapper, IPasswordHasher passwordHasher, IJwtService jwtService) : base(userRepository, mapper, passwordHasher, jwtService)
         {
         }
 
@@ -28,12 +31,16 @@ namespace CustomEd.User.Service.Controllers
         public async Task<ActionResult<SharedResponse<Teacher>>> CreateUser([FromBody] CreateTeacherDto createTeacherDto)
         {
 
-        var createTeacherDtoValidator = new CreateTeacherDtoValidator();
+        var createTeacherDtoValidator = new CreateTeacherDtoValidator(_userRepository);
         var validationResult = await createTeacherDtoValidator.ValidateAsync(createTeacherDto);
         if (!validationResult.IsValid)
         {
             return BadRequest(SharedResponse<Teacher>.Fail("Invalid input", validationResult.Errors.Select(e => e.ErrorMessage).ToList()));
         }
+
+        var passwordHash = _passwordHasher.HashPassword(createTeacherDto.Password);
+        createTeacherDto.Password = passwordHash;
+        createTeacherDto.JoinDate = DateTime.Now;
 
         var teacher = _mapper.Map<Model.Teacher>(createTeacherDto);
         await _userRepository.CreateAsync(teacher);
@@ -41,6 +48,7 @@ namespace CustomEd.User.Service.Controllers
             
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<ActionResult<SharedResponse<Teacher>>> RemoveUser(Guid id)
         {
@@ -48,6 +56,14 @@ namespace CustomEd.User.Service.Controllers
             {
                 return BadRequest(SharedResponse<Teacher>.Fail("Invalid Id", new List<string> { "Invalid id" }));
             }
+
+            var identityProvider = new IdentityProvider(HttpContext, _jwtService);
+            var currentUserId = identityProvider.GetUserId();
+            if (currentUserId != id)
+            {
+                return Unauthorized(SharedResponse<Teacher>.Fail("Unauthorized to delete user", null));
+            }
+
             await _userRepository.RemoveAsync(id);
             return Ok(SharedResponse<Teacher>.Success(null, "User deleted successfully"));
         }
@@ -61,6 +77,17 @@ namespace CustomEd.User.Service.Controllers
             {
                 return BadRequest(SharedResponse<Teacher>.Fail("Invalid input", validationResult.Errors.Select(e => e.ErrorMessage).ToList()));
             }
+
+            var identityProvider = new IdentityProvider(HttpContext, _jwtService);
+            var currentUserId = identityProvider.GetUserId();
+            if (currentUserId != updateTeacherDto.Id)
+            {
+                return Unauthorized(SharedResponse<Teacher>.Fail("Unauthorized to update user", null));
+            }
+
+            var passwordHash = _passwordHasher.HashPassword(updateTeacherDto.Password);
+            updateTeacherDto.Password = passwordHash;
+
             var user = _mapper.Map<Model.Teacher>(updateTeacherDto);
             await _userRepository.UpdateAsync(user);
             return Ok(SharedResponse<Teacher>.Success(null, "User updated successfully"));

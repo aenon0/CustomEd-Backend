@@ -1,11 +1,11 @@
-using CustomEd.User.Service.Data.Interfaces;
-using CustomEd.User.Service.Model;
-using CustomEd.User.Service.Settings;
+using CustomEd.Shared.Data.Interfaces;
+using CustomEd.Shared.Model;
+using CustomEd.Shared.Settings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 
-namespace CustomEd.User.Service.Data
+namespace CustomEd.Shared.Data
 {
     /// <summary>
     /// Provides extension methods for configuring MongoDB in the service collection.
