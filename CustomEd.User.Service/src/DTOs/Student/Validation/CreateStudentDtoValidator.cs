@@ -8,8 +8,8 @@ namespace CustomEd.User.Service.Validators
     public class CreateStudentDtoValidator : AbstractValidator<CreateStudentDto>
     {
 
-        private readonly IGenericRepository<Student> _studentRepository;
-        public CreateStudentDtoValidator(IGenericRepository<Student> studentRepository)
+        private readonly IGenericRepository<Model.Student> _studentRepository;
+        public CreateStudentDtoValidator(IGenericRepository<Model.Student> studentRepository)
         {
             _studentRepository = studentRepository;
             RuleFor(dto => dto.StudentId)

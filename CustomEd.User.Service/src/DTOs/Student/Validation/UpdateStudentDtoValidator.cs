@@ -7,8 +7,8 @@ namespace CustomEd.User.Service.Validators
 {
     public class UpdateStudentDtoValidator : AbstractValidator<UpdateStudentDto>
     {
-        private readonly IGenericRepository<Student> _studentRepository;
-        public UpdateStudentDtoValidator(IGenericRepository<Student> studentRepository)
+        private readonly IGenericRepository<Model.Student> _studentRepository;
+        public UpdateStudentDtoValidator(IGenericRepository<Model.Student> studentRepository)
         {
             _studentRepository = studentRepository;
 
