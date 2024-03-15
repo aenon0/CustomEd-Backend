@@ -7,6 +7,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddMongo();
 builder.Services.AddPersistence<Classroom>("Classroom");
+builder.Services.AddPersistence<Teacher>("Teacher");
+builder.Services.AddPersistence<Student>("Student");
+builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

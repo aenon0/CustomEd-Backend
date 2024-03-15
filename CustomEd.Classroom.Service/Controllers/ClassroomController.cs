@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using CustomEd.Classroom.Service.DTOs;
 using CustomEd.Shared.Data.Interfaces;
 using CustomEd.Shared.Response;
 using Microsoft.AspNetCore.Mvc;
@@ -13,21 +15,24 @@ namespace CustomEd.Classroom.Service.Controllers
     public class ClassroomController : ControllerBase
     {
         private readonly IGenericRepository<Model.Classroom> _classroomRepository;
+        private readonly IMapper _mapper;
 
-        public ClassroomController(IGenericRepository<Model.Classroom> classroomRepository)
+        public ClassroomController(IGenericRepository<Model.Classroom> classroomRepository, IMapper mapper)
         {
            _classroomRepository = classroomRepository;
+           _mapper = mapper;
         }
 
         [HttpGet]
-        public async Task<ActionResult<SharedResponse<IEnumerable<Model.Classroom>>>> GetClassrooms()
+        public async Task<ActionResult<SharedResponse<IEnumerable<ClassroomDto>>>> GetAllRooms()
         {
             var classrooms = await _classroomRepository.GetAllAsync();
-            return Ok(SharedResponse<IEnumerable<Model.Classroom>>.Success(classrooms, null));
+            var classroomDtos = _mapper.Map<IEnumerable<ClassroomDto>>(classrooms);
+            return Ok(SharedResponse<IEnumerable<ClassroomDto>>.Success(classroomDtos, null));
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<SharedResponse<Model.Classroom>>> GetClassroom(Guid id)
+        public async Task<ActionResult<SharedResponse<ClassroomDto>>> GetRoomById(Guid id)
         {
             var classroom = await _classroomRepository.GetAsync(id);
 
@@ -36,11 +41,13 @@ namespace CustomEd.Classroom.Service.Controllers
                 return NotFound(SharedResponse<Model.Classroom>.Fail("No classroom with such id", null));
             }
 
-            return Ok(SharedResponse<Model.Classroom>.Success(classroom, null));
+            var dto = _mapper.Map<ClassroomDto>(classroom);
+
+            return Ok(SharedResponse<ClassroomDto>.Success(dto, null));
         }
 
         [HttpPut]
-        public async Task<ActionResult<SharedResponse<Model.Classroom>>> UpdateClassroom(Model.Classroom classroom)
+        public async Task<ActionResult<SharedResponse<ClassroomDto>>> UpdateClassroom(Model.Classroom classroom)
         {
             var room = await _classroomRepository.GetAsync(classroom.Id);
             if (room == null)
@@ -53,14 +60,14 @@ namespace CustomEd.Classroom.Service.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Model.Classroom>> CreateClassroom(Model.Classroom classroom)
+        public async Task<ActionResult<ClassroomDto>> CreateClassroom(Model.Classroom classroom)
         {
             await _classroomRepository.CreateAsync(classroom);
-            return CreatedAtAction("GetClassroom", new { id = classroom.Id }, classroom);
+            return CreatedAtAction("GetRoomById", new { id = classroom.Id }, classroom);
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteClassroom(Guid id)
+        public async Task<IActionResult> RemoveRoom(Guid id)
         {
             var room = await _classroomRepository.GetAsync(id);
             if (room == null)
