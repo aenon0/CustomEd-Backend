@@ -1,5 +1,6 @@
 // Purpose: This file contains the mapping profiles for the user service.
 using AutoMapper;
+using CustomEd.User.Contracts;
 using CustomEd.User.Service.DTOs;
 
 namespace CustomEd.User.Service.Profiles.MapperProfile;
@@ -14,6 +15,10 @@ public class MappingProfile: Profile{
         CreateMap<Model.Teacher,  CreateTeacherDto>().ReverseMap();
         CreateMap<Model.Teacher,  TeacherDto>().ReverseMap();
         CreateMap<Model.Teacher,  UpdateTeacherDto>().ReverseMap();
+
+        CreateMap<Model.Teacher,  TeacherCreatedEvent>().ReverseMap();
+
+
     }
 
 }

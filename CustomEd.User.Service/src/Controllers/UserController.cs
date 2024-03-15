@@ -8,24 +8,25 @@ using CustomEd.Shared.JWT.Contracts;
 using CustomEd.Shared.JWT.Interfaces;
 using CustomEd.Shared.Data.Interfaces;
 using CustomEd.Shared.Response;
+using MassTransit;
 
 namespace CustomEd.User.Service.Controllers
 {
     [ApiController]
-    [Route("/api/user")]
     public abstract class UserController<T> : ControllerBase where T : Model.User 
     {
         protected readonly IGenericRepository<T> _userRepository; 
         protected readonly IMapper _mapper;
         protected readonly IPasswordHasher _passwordHasher;
         protected readonly IJwtService _jwtService;
-
-        public UserController(IGenericRepository<T> userRepository, IMapper mapper, IPasswordHasher passwordHasher, IJwtService jwtService)
+        protected readonly IPublishEndpoint _publishEndpoint;
+        public UserController(IGenericRepository<T> userRepository, IMapper mapper, IPasswordHasher passwordHasher, IJwtService jwtService, IPublishEndpoint publishEndpoint)
         {
             _userRepository = userRepository;
             _mapper = mapper;
             _passwordHasher = passwordHasher;
             _jwtService = jwtService;
+            _publishEndpoint = publishEndpoint;
         }
     
 
@@ -48,8 +49,8 @@ namespace CustomEd.User.Service.Controllers
             return Ok(SharedResponse<T>.Success(user, "User retrieved successfully"));
         }
 
-        [HttpPost("login")]
-        public async Task<ActionResult<SharedResponse<UserDto>>> SignIn([FromBody] LoginRequestDto request)
+        [HttpPost("user/login")]
+        public virtual async Task<ActionResult<SharedResponse<UserDto>>> SignIn([FromBody] LoginRequestDto request)
         {
 
             var user = await _userRepository.GetAsync(x => x.Email == request.Email);
@@ -65,7 +66,7 @@ namespace CustomEd.User.Service.Controllers
             {
                 Id = user.Id,
                 Email = user.Email,
-                Role = (Shared.JWT.Contracts.Role) user.Role
+                Role = (IdentityRole) user.Role
             };
 
             var token = _jwtService.GenerateToken(userDto);

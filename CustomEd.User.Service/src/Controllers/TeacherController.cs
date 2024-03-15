@@ -9,6 +9,10 @@ using CustomEd.Shared.JWT;
 using CustomEd.Shared.Data.Interfaces;
 using CustomEd.Shared.Response;
 using CustomEd.User.Service.Model;
+using MassTransit;
+using CustomEd.User.Contracts;
+using CustomEd.Shared.JWT.Contracts;
+using CusotmEd.User.Servce.DTOs;
 
 namespace CustomEd.User.Service.Controllers
 {
@@ -16,7 +20,7 @@ namespace CustomEd.User.Service.Controllers
     [Route("api/user/teacher")]
     public class TeacherController : UserController<Model.Teacher>
     {
-        public TeacherController(IGenericRepository<Model.Teacher> userRepository, IMapper mapper, IPasswordHasher passwordHasher, IJwtService jwtService) : base(userRepository, mapper, passwordHasher, jwtService)
+        public TeacherController(IGenericRepository<Model.Teacher> userRepository, IMapper mapper, IPasswordHasher passwordHasher, IJwtService jwtService, IPublishEndpoint publishEndpoint) : base(userRepository, mapper, passwordHasher, jwtService, publishEndpoint)
         {
         }
 
@@ -43,7 +47,11 @@ namespace CustomEd.User.Service.Controllers
         createTeacherDto.JoinDate = DateTime.Now;
 
         var teacher = _mapper.Map<Model.Teacher>(createTeacherDto);
+        
+        
         await _userRepository.CreateAsync(teacher);
+        var teacherCreatedEvent = _mapper.Map<TeacherCreatedEvent>(teacher);
+        await _publishEndpoint.Publish(teacherCreatedEvent);
         return CreatedAtAction(nameof(GetUserById), new { id = teacher.Id }, SharedResponse<Teacher>.Success(teacher, "User created successfully"));
             
         }
@@ -93,5 +101,13 @@ namespace CustomEd.User.Service.Controllers
             return Ok(SharedResponse<Teacher>.Success(null, "User updated successfully"));
             
         } 
+
+        [HttpPost("login")]
+        public override async Task<ActionResult<SharedResponse<UserDto>>> SignIn([FromBody] LoginRequestDto request)
+        {
+
+            return await base.SignIn(request);
+            
+        }
     }
 }

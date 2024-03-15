@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Authorization;
 using CustomEd.Shared.JWT;
 using CustomEd.Shared.Data.Interfaces;
 using CustomEd.Shared.Response;
+using MassTransit;
+using CustomEd.Shared.JWT.Contracts;
+using CusotmEd.User.Servce.DTOs;
 
 namespace CustomEd.User.Service.Controllers
 {
@@ -15,7 +18,7 @@ namespace CustomEd.User.Service.Controllers
     [Route("api/user/student")]
     public class StudentController : UserController<Model.Student>
     {
-        public StudentController(IGenericRepository<Model.Student> userRepository, IMapper mapper, IPasswordHasher passwordHasher, IJwtService jwtService) : base(userRepository, mapper, passwordHasher, jwtService)
+        public StudentController(IGenericRepository<Model.Student> userRepository, IMapper mapper, IPasswordHasher passwordHasher, IJwtService jwtService, IPublishEndpoint publishEndpoint) : base(userRepository, mapper, passwordHasher, jwtService, publishEndpoint)
         {
         }
 
@@ -106,6 +109,14 @@ namespace CustomEd.User.Service.Controllers
             var student = _mapper.Map<Model.Student>(studentDto);
             await _userRepository.UpdateAsync(student);
             return Ok(SharedResponse<StudentDto>.Success(null, "User updated successfully"));
+            
+        }
+
+        [HttpPost("login")]
+        public override async Task<ActionResult<SharedResponse<UserDto>>> SignIn([FromBody] LoginRequestDto request)
+        {
+
+            return await base.SignIn(request);
             
         }
         
