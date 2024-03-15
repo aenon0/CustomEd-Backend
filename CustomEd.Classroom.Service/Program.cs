@@ -1,7 +1,12 @@
+using CustomEd.Classroom.Service.Model;
+using CustomEd.Shared.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Services.AddMongo();
+builder.Services.AddPersistence<Classroom>("Classroom");
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
