@@ -1,5 +1,6 @@
 using CustomEd.Classroom.Service.Model;
 using CustomEd.Shared.Data;
+using CustomEd.Shared.RabbitMQ;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,7 @@ builder.Services.AddPersistence<Classroom>("Classroom");
 builder.Services.AddPersistence<Teacher>("Teacher");
 builder.Services.AddPersistence<Student>("Student");
 builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddMassTransitWithRabbitMQ();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
