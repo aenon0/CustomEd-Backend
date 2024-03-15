@@ -11,6 +11,7 @@ using CustomEd.Shared.Response;
 using MassTransit;
 using CustomEd.Shared.JWT.Contracts;
 using CusotmEd.User.Servce.DTOs;
+using CustomEd.User.Student.Events;
 
 namespace CustomEd.User.Service.Controllers
 {
@@ -56,6 +57,9 @@ namespace CustomEd.User.Service.Controllers
             var student = _mapper.Map<Model.Student>(studentDto);
             
             await _userRepository.CreateAsync(student);
+            
+            var studentCreatedEvent = _mapper.Map<StudentCreatedEvent>(student);
+            await _publishEndpoint.Publish(studentCreatedEvent);
             return CreatedAtAction(nameof(GetUserById), new { id = student.Id }, SharedResponse<Model.Student>.Success(student, "User created successfully"));
             
         }
@@ -80,6 +84,8 @@ namespace CustomEd.User.Service.Controllers
 
 
             await _userRepository.RemoveAsync(id);
+            var studentDeletedEvent = new StudentDeletedEvent{Id = id};
+            await _publishEndpoint.Publish(studentDeletedEvent);
             return Ok(SharedResponse<StudentDto>.Success(null, "User deleted successfully"));
         }
 
@@ -108,6 +114,8 @@ namespace CustomEd.User.Service.Controllers
 
             var student = _mapper.Map<Model.Student>(studentDto);
             await _userRepository.UpdateAsync(student);
+            var studentUpdatedEvent = _mapper.Map<StudentCreatedEvent>(student);
+            await _publishEndpoint.Publish(studentUpdatedEvent);
             return Ok(SharedResponse<StudentDto>.Success(null, "User updated successfully"));
             
         }

@@ -14,6 +14,7 @@ using CustomEd.User.Contracts;
 using CustomEd.Shared.JWT.Contracts;
 using CusotmEd.User.Servce.DTOs;
 using CustomEd.User.Teacher.Events;
+using CustomEd.User.Contracts.Teacher.Events;
 
 namespace CustomEd.User.Service.Controllers
 {
@@ -76,6 +77,8 @@ namespace CustomEd.User.Service.Controllers
             }
 
             await _userRepository.RemoveAsync(id);
+            var teacherDeletedEvent = new TeacherDeletedEvent{ Id = id};
+            await _publishEndpoint.Publish(teacherDeletedEvent);
             return Ok(SharedResponse<Model.Teacher>.Success(null, "User deleted successfully"));
         }
 
@@ -102,6 +105,8 @@ namespace CustomEd.User.Service.Controllers
             var user = _mapper.Map<Model.Teacher>(updateTeacherDto);
             await _userRepository.UpdateAsync(user);
 
+            var teacherUpdatedEvent =_mapper.Map<TeacherUpdatedEvent>(user);
+            await _publishEndpoint.Publish(teacherUpdatedEvent);
             var dto = _mapper.Map<TeacherDto>(user);
             return Ok(SharedResponse<TeacherDto>.Success(dto, "User updated successfully"));
             
