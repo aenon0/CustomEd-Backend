@@ -1,5 +1,5 @@
 namespace CustomEd.Shared.JWT.Contracts;
-public enum Role
+public enum IdentityRole
 {
     Student,
     Teacher,
