@@ -110,7 +110,6 @@ namespace CustomEd.User.Service.Controllers
 
             var passwordHash = _passwordHasher.HashPassword(studentDto.Password);
             studentDto.Password = passwordHash;
-            studentDto.JoinDate = DateTime.UtcNow;
 
             var student = _mapper.Map<Model.Student>(studentDto);
             await _userRepository.UpdateAsync(student);

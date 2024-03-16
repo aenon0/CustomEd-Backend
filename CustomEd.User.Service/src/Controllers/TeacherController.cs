@@ -47,7 +47,6 @@ namespace CustomEd.User.Service.Controllers
 
         var passwordHash = _passwordHasher.HashPassword(createTeacherDto.Password);
         createTeacherDto.Password = passwordHash;
-        createTeacherDto.JoinDate = DateTime.Now;
 
         var teacher = _mapper.Map<Model.Teacher>(createTeacherDto);
         
