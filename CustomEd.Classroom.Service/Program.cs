@@ -1,4 +1,5 @@
 using CustomEd.Classroom.Service.Model;
+using CustomEd.Classroom.Service.Search.Service;
 using CustomEd.Shared.Data;
 using CustomEd.Shared.RabbitMQ;
 

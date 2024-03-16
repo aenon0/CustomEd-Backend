@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using CustomEd.Classroom.Service.DTOs;
 using CustomEd.Classroom.Service.DTOs.Validation;
+using CustomEd.Classroom.Service.Search.Service;
 using CustomEd.Shared.Data.Interfaces;
 using CustomEd.Shared.Response;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +20,6 @@ namespace CustomEd.Classroom.Service.Controllers
         private readonly IGenericRepository<Model.Teacher> _teacherRepository;
         private readonly IGenericRepository<Model.Student> _studentRepository;
         private readonly IMapper _mapper;
-
         public ClassroomController(IGenericRepository<Model.Classroom> classroomRepository, IMapper mapper, IGenericRepository<Model.Teacher> teacherRepository, IGenericRepository<Model.Student> studentRepository)
         {
             _classroomRepository = classroomRepository;
@@ -135,5 +135,27 @@ namespace CustomEd.Classroom.Service.Controllers
             await _classroomRepository.UpdateAsync(classroom);
             return Ok(SharedResponse<ClassroomDto>.Success(_mapper.Map<ClassroomDto>(classroom), null));
         }
+
+        [HttpGet("search")]
+        public async Task<ActionResult<SharedResponse<SearchResult<ClassroomDto>>>> SearchClassrooms([FromQuery] string query, int pageNumber = 1, int pageSize = 10)
+        {
+            var classrooms = await _classroomRepository.GetAllAsync();
+            var _searchService = new SearchService(classrooms.ToList());
+            var matches = _searchService.FindClosestMatchs(query);
+            var totalClassrooms = matches.Count;
+            var res = _classroomRepository.GetAllAsync(x => matches.Contains(x.Id)).Result.ToList();
+
+            var searchResult = new SearchResult<ClassroomDto>
+            {
+                TotalCount = totalClassrooms,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                Results = _mapper.Map<IEnumerable<ClassroomDto>>(res).ToList()
+            };
+
+            return Ok(SharedResponse<SearchResult<ClassroomDto>>.Success(searchResult, null));
+        }
+    
+        
     }
 }
