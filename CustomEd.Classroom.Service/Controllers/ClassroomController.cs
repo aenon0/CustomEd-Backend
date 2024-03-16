@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using CustomEd.Classroom.Service.DTOs;
+using CustomEd.Classroom.Service.DTOs.Validation;
 using CustomEd.Shared.Data.Interfaces;
 using CustomEd.Shared.Response;
 using Microsoft.AspNetCore.Mvc;
@@ -15,12 +16,16 @@ namespace CustomEd.Classroom.Service.Controllers
     public class ClassroomController : ControllerBase
     {
         private readonly IGenericRepository<Model.Classroom> _classroomRepository;
+        private readonly IGenericRepository<Model.Teacher> _teacherRepository;
+        private readonly IGenericRepository<Model.Student> _studentRepository;
         private readonly IMapper _mapper;
 
-        public ClassroomController(IGenericRepository<Model.Classroom> classroomRepository, IMapper mapper)
+        public ClassroomController(IGenericRepository<Model.Classroom> classroomRepository, IMapper mapper, IGenericRepository<Model.Teacher> teacherRepository, IGenericRepository<Model.Student> studentRepository)
         {
-           _classroomRepository = classroomRepository;
-           _mapper = mapper;
+            _classroomRepository = classroomRepository;
+            _mapper = mapper;
+            _teacherRepository = teacherRepository;
+            _studentRepository = studentRepository;
         }
 
         [HttpGet]
@@ -47,21 +52,36 @@ namespace CustomEd.Classroom.Service.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult<SharedResponse<ClassroomDto>>> UpdateClassroom(Model.Classroom classroom)
+        public async Task<ActionResult<SharedResponse<ClassroomDto>>> UpdateClassroom(UpdateClassroomDto updateClassroomDto)
         {
-            var room = await _classroomRepository.GetAsync(classroom.Id);
+            var updateClassroomDtoValidator = new UpdateClassroomDtoValidator(_teacherRepository, _classroomRepository);
+            var validationResult = await updateClassroomDtoValidator.ValidateAsync(updateClassroomDto);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(SharedResponse<ClassroomDto>.Fail("Invalid input", validationResult.Errors.Select(x => x.ErrorMessage).ToList()));
+            }
+            
+            var room = await _classroomRepository.GetAsync(updateClassroomDto.Id);
             if (room == null)
             {
                 return NotFound(SharedResponse<Model.Classroom>.Fail("No classroom with such id", null));
             }
 
+            var classroom = _mapper.Map<Model.Classroom>(updateClassroomDto);
             await _classroomRepository.UpdateAsync(classroom);
             return Ok(SharedResponse<Model.Classroom>.Success(classroom, null));
         }
 
         [HttpPost]
-        public async Task<ActionResult<ClassroomDto>> CreateClassroom(Model.Classroom classroom)
+        public async Task<ActionResult<ClassroomDto>> CreateClassroom(CreateClassroomDto createClassroomDto)
         {
+            var createClassroomDtoValidator = new CreateClassroomDtoValidator(_teacherRepository);
+            var validationResult = await createClassroomDtoValidator.ValidateAsync(createClassroomDto);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(SharedResponse<ClassroomDto>.Fail("Invalid input", validationResult.Errors.Select(x => x.ErrorMessage).ToList()));
+            }
+            var classroom = _mapper.Map<Model.Classroom>(createClassroomDto); 
             await _classroomRepository.CreateAsync(classroom);
             return CreatedAtAction("GetRoomById", new { id = classroom.Id }, classroom);
         }
@@ -76,6 +96,44 @@ namespace CustomEd.Classroom.Service.Controllers
             }
             await _classroomRepository.RemoveAsync(id);
             return NoContent();
+        }
+
+        [HttpGet("teacher/{teacherId}")]
+        public async Task<ActionResult<SharedResponse<IEnumerable<ClassroomDto>>>> GetRoomsByTeacherId(Guid teacherId)
+        {
+            var classrooms = await _classroomRepository.GetAllAsync(x => x.Creator.Id == teacherId);
+            var classroomDtos = _mapper.Map<IEnumerable<ClassroomDto>>(classrooms);
+            return Ok(SharedResponse<IEnumerable<ClassroomDto>>.Success(classroomDtos, null));
+        }
+
+        [HttpGet("student/{studentId}")]
+        public async Task<ActionResult<SharedResponse<IEnumerable<ClassroomDto>>>> GetRoomsByStudentId(Guid studentId)
+        {
+            var classrooms = await _classroomRepository.GetAllAsync(x => x.Members.Any(s => s.Id == studentId));
+            var classroomDtos = _mapper.Map<IEnumerable<ClassroomDto>>(classrooms);
+            return Ok(SharedResponse<IEnumerable<ClassroomDto>>.Success(classroomDtos, null));
+        }
+
+        [HttpPost("add-batch")]
+        public async Task<ActionResult<SharedResponse<ClassroomDto>>> AddBatch([FromBody] AddBatchDto batchDto)
+        {
+            var addBatchDtoValidator = new AddBatchDtoValidator(_classroomRepository);
+            var validationResult = await addBatchDtoValidator.ValidateAsync(batchDto);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(SharedResponse<ClassroomDto>.Fail("Invalid input", validationResult.Errors.Select(x => x.ErrorMessage).ToList()));
+            }
+            var students = await _studentRepository.GetAllAsync(x => x.Section == batchDto.Section && x.Year == batchDto.Year && x.Department == batchDto.Department);
+
+            var classroom = await _classroomRepository.GetAsync(batchDto.ClassRoomId);
+            
+            foreach (var student in students)
+            {
+                classroom.Members.Add(student);
+
+            }
+            await _classroomRepository.UpdateAsync(classroom);
+            return Ok(SharedResponse<ClassroomDto>.Success(_mapper.Map<ClassroomDto>(classroom), null));
         }
     }
 }

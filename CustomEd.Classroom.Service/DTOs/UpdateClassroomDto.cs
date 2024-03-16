@@ -8,6 +8,6 @@ namespace CustomEd.Classroom.Service.DTOs
         public string Name { get; set; } = null!;
         public string CourseNo { get; set; } = null!;
         public string Description { get; set; } = null!;
-        public Guid Creator { get; set; }
+        public Guid CreatorId { get; set; }
     }
 }

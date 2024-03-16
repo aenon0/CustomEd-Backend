@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "BY8tpQM6ZPBN8MxctZHaVApcjtk7bU3jTwkvtS0miNRBaTUs2DPzCMrG29qbmoJ5XQm3XdiqSWChfC72TcQ0Kw==",
+  "dgSpecHash": "1JnkkoSZ3e69yldbUELNVtSM5jI8eRWMqnBXXHdxlpuZ5rGHXiMEwbUuRXLc4GyuJiOdwUkfI1AfSE7JK80u6w==",
   "success": true,
   "projectFilePath": "/home/dirichletian/Documents/Final year project/Implementaion/FlexEd/CustomEd.Classroom.Service/CustomEd.Classroom.Service.csproj",
   "expectedPackageFiles": [
@@ -11,6 +11,8 @@
     "/home/dirichletian/.nuget/packages/customed.contracts/1.1.0/customed.contracts.1.1.0.nupkg.sha512",
     "/home/dirichletian/.nuget/packages/customed.shared/1.1.0/customed.shared.1.1.0.nupkg.sha512",
     "/home/dirichletian/.nuget/packages/dnsclient/1.6.1/dnsclient.1.6.1.nupkg.sha512",
+    "/home/dirichletian/.nuget/packages/fluentvalidation/11.9.0/fluentvalidation.11.9.0.nupkg.sha512",
+    "/home/dirichletian/.nuget/packages/fluentvalidation.dependencyinjectionextensions/11.9.0/fluentvalidation.dependencyinjectionextensions.11.9.0.nupkg.sha512",
     "/home/dirichletian/.nuget/packages/masstransit/8.1.2/masstransit.8.1.2.nupkg.sha512",
     "/home/dirichletian/.nuget/packages/masstransit.abstractions/8.1.2/masstransit.abstractions.8.1.2.nupkg.sha512",
     "/home/dirichletian/.nuget/packages/masstransit.aspnetcore/7.3.1/masstransit.aspnetcore.7.3.1.nupkg.sha512",

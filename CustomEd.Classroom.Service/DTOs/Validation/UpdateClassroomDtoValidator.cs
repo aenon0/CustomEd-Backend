@@ -4,13 +4,22 @@ using CustomEd.Shared.Data.Interfaces;
 using CustomEd.Classroom.Service.Model;
 
 namespace CustomEd.Classroom.Service.DTOs.Validation;
-public class CreateClassroomDtoValidator : AbstractValidator<CreateClassroomDto>
+public class UpdateClassroomDtoValidator : AbstractValidator<UpdateClassroomDto>
 {
     private readonly IGenericRepository<Teacher> _teacherRepository;
+    private readonly IGenericRepository<Model.Classroom> _classroomRepository;
 
-    public CreateClassroomDtoValidator(IGenericRepository<Teacher> teacherRepository)
+    public UpdateClassroomDtoValidator(IGenericRepository<Teacher> teacherRepository, IGenericRepository<Model.Classroom> classroomRepository)
     {
         _teacherRepository = teacherRepository;
+        _classroomRepository = classroomRepository;
+
+        RuleFor(x => x.Id)
+            .NotEmpty().WithMessage("Id is required.")
+            .MustAsync(async (id, cancellation) => {
+                var classroomExists = await _classroomRepository.GetAsync(id);
+                return classroomExists != null;
+            }).WithMessage("Id must exist in the Classroom repository.");
 
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("Name is required.")
