@@ -72,7 +72,7 @@
           "lib/net7.0/CustomEd.Contracts.dll": {}
         }
       },
-      "CustomEd.Shared/1.1.0": {
+      "CustomEd.Shared/1.1.4": {
         "type": "package",
         "dependencies": {
           "MassTransit.AspNetCore": "7.3.1",
@@ -1108,13 +1108,13 @@
         "lib/net7.0/CustomEd.Contracts.dll"
       ]
     },
-    "CustomEd.Shared/1.1.0": {
-      "sha512": "i6gzHruA/QJXxPNxCBkRyHU+RzlaMWbYtahh78xVsGC95QpDvLSiUt7CF9bYx44o1gXh7+XFdSArqYNDLHtIkA==",
+    "CustomEd.Shared/1.1.4": {
+      "sha512": "CBE8RhSllLjM5az9odv3PX+hKyrpdK8f0mtbtFFJbF1gbPGrzwMbK4RwBV7IrSRPd9kk6jtXGn5ob1HOlgSAyQ==",
       "type": "package",
-      "path": "customed.shared/1.1.0",
+      "path": "customed.shared/1.1.4",
       "files": [
         ".nupkg.metadata",
-        "customed.shared.1.1.0.nupkg.sha512",
+        "customed.shared.1.1.4.nupkg.sha512",
         "customed.shared.nuspec",
         "lib/net7.0/CustomEd.Shared.dll"
       ]
@@ -2903,7 +2903,7 @@
     "net7.0": [
       "AutoMapper.Extensions.Microsoft.DependencyInjection >= 12.0.1",
       "CustomEd.Contracts >= 1.1.0",
-      "CustomEd.Shared >= 1.1.0",
+      "CustomEd.Shared >= 1.1.4",
       "FluentValidation.DependencyInjectionExtensions >= 11.9.0",
       "Microsoft.AspNetCore.OpenApi >= 7.0.16",
       "Swashbuckle.AspNetCore >= 6.5.0"
@@ -2962,7 +2962,7 @@
           },
           "CustomEd.Shared": {
             "target": "Package",
-            "version": "[1.1.0, )"
+            "version": "[1.1.4, )"
           },
           "FluentValidation.DependencyInjectionExtensions": {
             "target": "Package",

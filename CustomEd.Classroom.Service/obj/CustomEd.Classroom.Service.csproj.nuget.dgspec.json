@@ -54,7 +54,7 @@
             },
             "CustomEd.Shared": {
               "target": "Package",
-              "version": "[1.1.0, )"
+              "version": "[1.1.4, )"
             },
             "FluentValidation.DependencyInjectionExtensions": {
               "target": "Package",

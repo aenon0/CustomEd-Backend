@@ -8,6 +8,7 @@ using CustomEd.Classroom.Service.DTOs.Validation;
 using CustomEd.Classroom.Service.Search.Service;
 using CustomEd.Shared.Data.Interfaces;
 using CustomEd.Shared.Response;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CustomEd.Classroom.Service.Controllers
@@ -28,6 +29,8 @@ namespace CustomEd.Classroom.Service.Controllers
             _studentRepository = studentRepository;
         }
 
+
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<SharedResponse<IEnumerable<ClassroomDto>>>> GetAllRooms()
         {
@@ -36,6 +39,7 @@ namespace CustomEd.Classroom.Service.Controllers
             return Ok(SharedResponse<IEnumerable<ClassroomDto>>.Success(classroomDtos, null));
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<SharedResponse<ClassroomDto>>> GetRoomById(Guid id)
         {
@@ -51,6 +55,7 @@ namespace CustomEd.Classroom.Service.Controllers
             return Ok(SharedResponse<ClassroomDto>.Success(dto, null));
         }
 
+        [Authorize]
         [HttpPut]
         public async Task<ActionResult<SharedResponse<ClassroomDto>>> UpdateClassroom(UpdateClassroomDto updateClassroomDto)
         {
@@ -72,6 +77,7 @@ namespace CustomEd.Classroom.Service.Controllers
             return Ok(SharedResponse<Model.Classroom>.Success(classroom, null));
         }
 
+        [Authorize(Policy = "TeacherOnlyPolicy")]
         [HttpPost]
         public async Task<ActionResult<ClassroomDto>> CreateClassroom(CreateClassroomDto createClassroomDto)
         {
@@ -86,6 +92,7 @@ namespace CustomEd.Classroom.Service.Controllers
             return CreatedAtAction("GetRoomById", new { id = classroom.Id }, classroom);
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> RemoveRoom(Guid id)
         {
@@ -98,6 +105,7 @@ namespace CustomEd.Classroom.Service.Controllers
             return NoContent();
         }
 
+        [Authorize]
         [HttpGet("teacher/{teacherId}")]
         public async Task<ActionResult<SharedResponse<IEnumerable<ClassroomDto>>>> GetRoomsByTeacherId(Guid teacherId)
         {
@@ -106,6 +114,7 @@ namespace CustomEd.Classroom.Service.Controllers
             return Ok(SharedResponse<IEnumerable<ClassroomDto>>.Success(classroomDtos, null));
         }
 
+        [Authorize]
         [HttpGet("student/{studentId}")]
         public async Task<ActionResult<SharedResponse<IEnumerable<ClassroomDto>>>> GetRoomsByStudentId(Guid studentId)
         {
@@ -114,6 +123,7 @@ namespace CustomEd.Classroom.Service.Controllers
             return Ok(SharedResponse<IEnumerable<ClassroomDto>>.Success(classroomDtos, null));
         }
 
+        [Authorize]
         [HttpPost("add-batch")]
         public async Task<ActionResult<SharedResponse<ClassroomDto>>> AddBatch([FromBody] AddBatchDto batchDto)
         {
@@ -136,8 +146,9 @@ namespace CustomEd.Classroom.Service.Controllers
             return Ok(SharedResponse<ClassroomDto>.Success(_mapper.Map<ClassroomDto>(classroom), null));
         }
 
+        [Authorize]
         [HttpGet("search")]
-        public async Task<ActionResult<SharedResponse<SearchResult<ClassroomDto>>>> SearchClassrooms([FromQuery] string query, int pageNumber = 1, int pageSize = 10)
+        public async Task<ActionResult<SharedResponse<SearchResult<ClassroomDto>>>> SearchClassrooms([FromQuery] string query, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             var classrooms = await _classroomRepository.GetAllAsync();
             var _searchService = new SearchService(classrooms.ToList());
