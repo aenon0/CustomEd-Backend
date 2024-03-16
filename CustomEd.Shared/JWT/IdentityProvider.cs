@@ -18,14 +18,15 @@ namespace CustomEd.Shared.JWT
         private readonly HttpContext _httpContext;
         private readonly IJwtService _jwtService;
 
+
         /// <summary>
         /// Initializes a new instance of the <see cref="IdentityProvider"/> class.
         /// </summary>
         /// <param name="httpContext">The HTTP context.</param>
         /// <param name="jwtService">The JWT service.</param>
-        public IdentityProvider(HttpContext httpContext, IJwtService jwtService)
+        public IdentityProvider(IHttpContextAccessor httpContextAccessor, IJwtService jwtService)
         {
-            _httpContext = httpContext;
+            _httpContext = httpContextAccessor.HttpContext!;
             _jwtService = jwtService;
         }
 
