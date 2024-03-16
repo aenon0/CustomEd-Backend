@@ -4,6 +4,7 @@
 
 using System.IdentityModel.Tokens.Jwt;
 using CustomEd.Shared.JWT.Interfaces;
+using CustomEd.Shared.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 
@@ -49,6 +50,26 @@ namespace CustomEd.Shared.JWT
             else
             {
                 return Guid.Empty;
+            }
+        }
+
+        public Role? GetUserRole()
+        {
+            if (_httpContext.Request.Headers.TryGetValue("Authorization", out StringValues authHeader))
+            {
+                string bearerToken = authHeader.ToString().Replace("Bearer ", "");
+                if (_jwtService.IsTokenValid(bearerToken) == false)
+                {
+                    return null;
+                }
+                var tokenHandler = new JwtSecurityTokenHandler();
+                JwtSecurityToken jwt = tokenHandler.ReadJwtToken(bearerToken);
+                var userRole = jwt.Claims.First(x => x.Type == "role").Value;
+                return (Role)Enum.Parse(typeof(Role), userRole);
+            }
+            else
+            {
+                return null;
             }
         }
     }
