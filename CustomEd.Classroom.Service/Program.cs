@@ -1,8 +1,11 @@
+using System.Security.Claims;
 using CustomEd.Classroom.Service.Model;
 using CustomEd.Shared.Data;
 using CustomEd.Shared.JWT;
 using CustomEd.Shared.JWT.Interfaces;
 using CustomEd.Shared.RabbitMQ;
+using CustomEd.Shared.Settings;
+using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,14 +17,19 @@ builder.Services.AddPersistence<Teacher>("Teacher");
 builder.Services.AddPersistence<Student>("Student");
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddMassTransitWithRabbitMQ();
-builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddAuth();
+builder.Services.AddSingleton<IJwtService, JwtService>();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<IdentityProvider>();
+builder.Services.AddSingleton<IdentityProvider>();
 
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("TeacherOnlyPolicy", policy =>
-        policy.Requirements.Add(new TeacherOnlyRequirement()));
+        {
+            policy.RequireAuthenticatedUser();
+            policy.RequireClaim(ClaimTypes.Role, CustomEd.Shared.Model.Role.Teacher.ToString());
+        
+        });
 });
 
 

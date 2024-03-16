@@ -49,7 +49,7 @@ namespace CustomEd.User.Service.Controllers
         createTeacherDto.Password = passwordHash;
 
         var teacher = _mapper.Map<Model.Teacher>(createTeacherDto);
-        
+        teacher.Role = Model.Role.Teacher;
         
         await _userRepository.CreateAsync(teacher);
         var teacherCreatedEvent = _mapper.Map<TeacherCreatedEvent>(teacher);
@@ -102,6 +102,7 @@ namespace CustomEd.User.Service.Controllers
             updateTeacherDto.Password = passwordHash;
 
             var user = _mapper.Map<Model.Teacher>(updateTeacherDto);
+            user.Role = Model.Role.Teacher;
             await _userRepository.UpdateAsync(user);
 
             var teacherUpdatedEvent =_mapper.Map<TeacherUpdatedEvent>(user);

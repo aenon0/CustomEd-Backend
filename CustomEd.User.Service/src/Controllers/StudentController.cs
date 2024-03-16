@@ -55,6 +55,7 @@ namespace CustomEd.User.Service.Controllers
 
 
             var student = _mapper.Map<Model.Student>(studentDto);
+            student.Role = Model.Role.Student;
             
             await _userRepository.CreateAsync(student);
             
@@ -112,6 +113,8 @@ namespace CustomEd.User.Service.Controllers
             studentDto.Password = passwordHash;
 
             var student = _mapper.Map<Model.Student>(studentDto);
+            student.Role = Model.Role.Student;
+            
             await _userRepository.UpdateAsync(student);
             var studentUpdatedEvent = _mapper.Map<StudentCreatedEvent>(student);
             await _publishEndpoint.Publish(studentUpdatedEvent);

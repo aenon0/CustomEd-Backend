@@ -73,6 +73,9 @@ namespace CustomEd.Classroom.Service.Controllers
             }
 
             var classroom = _mapper.Map<Model.Classroom>(updateClassroomDto);
+            classroom.Creator = room.Creator;
+            classroom.Members = room.Members;
+
             await _classroomRepository.UpdateAsync(classroom);
             return Ok(SharedResponse<Model.Classroom>.Success(classroom, null));
         }
@@ -88,6 +91,7 @@ namespace CustomEd.Classroom.Service.Controllers
                 return BadRequest(SharedResponse<ClassroomDto>.Fail("Invalid input", validationResult.Errors.Select(x => x.ErrorMessage).ToList()));
             }
             var classroom = _mapper.Map<Model.Classroom>(createClassroomDto); 
+            classroom.Creator = await _teacherRepository.GetAsync(createClassroomDto.CreatorId);
             await _classroomRepository.CreateAsync(classroom);
             return CreatedAtAction("GetRoomById", new { id = classroom.Id }, classroom);
         }
@@ -123,6 +127,7 @@ namespace CustomEd.Classroom.Service.Controllers
             return Ok(SharedResponse<IEnumerable<ClassroomDto>>.Success(classroomDtos, null));
         }
 
+        [Authorize(Policy = "TeacherOnlyPolicy")]
         [Authorize]
         [HttpPost("add-batch")]
         public async Task<ActionResult<SharedResponse<ClassroomDto>>> AddBatch([FromBody] AddBatchDto batchDto)
@@ -148,7 +153,7 @@ namespace CustomEd.Classroom.Service.Controllers
 
         [Authorize]
         [HttpGet("search")]
-        public async Task<ActionResult<SharedResponse<SearchResult<ClassroomDto>>>> SearchClassrooms([FromQuery] string query, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        public async Task<ActionResult<SharedResponse<SearchResult<ClassroomDto>>>> SearchClassrooms([FromQuery] string query)
         {
             var classrooms = await _classroomRepository.GetAllAsync();
             var _searchService = new SearchService(classrooms.ToList());
@@ -158,9 +163,7 @@ namespace CustomEd.Classroom.Service.Controllers
 
             var searchResult = new SearchResult<ClassroomDto>
             {
-                TotalCount = totalClassrooms,
-                PageNumber = pageNumber,
-                PageSize = pageSize,
+                TotalCount = 10,
                 Results = _mapper.Map<IEnumerable<ClassroomDto>>(res).ToList()
             };
 

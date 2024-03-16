@@ -10,6 +10,8 @@ public class MapperProfile : Profile
     public MapperProfile()
     {
         CreateMap<Classroom, ClassroomDto>().ReverseMap();
+        CreateMap<Classroom, CreateClassroomDto>().ReverseMap();
+        CreateMap<Classroom, UpdateClassroomDto>().ReverseMap();
 
         CreateMap<TeacherCreatedEvent, Teacher>().ReverseMap();
         CreateMap<TeacherUpdatedEvent, Teacher>().ReverseMap();
