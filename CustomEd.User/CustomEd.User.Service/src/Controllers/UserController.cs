@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Driver;
 using AutoMapper;
 using CustomEd.User.Service.PasswordService.Interfaces;
 using CusotmEd.User.Servce.DTOs;

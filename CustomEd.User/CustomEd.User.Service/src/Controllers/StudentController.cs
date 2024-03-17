@@ -18,7 +18,7 @@ namespace CustomEd.User.Service.Controllers
     [Route("api/user/student")]
     public class StudentController : UserController<Model.Student>
     {
-    
+
         public StudentController(IPublishEndpoint publishEndpoint1, IGenericRepository<Model.Student> userRepository, IMapper mapper, IPasswordHasher passwordHasher, IJwtService jwtService, IPublishEndpoint publishEndpoint) : base(userRepository, mapper, passwordHasher, jwtService, publishEndpoint)
         {
         }
@@ -56,13 +56,13 @@ namespace CustomEd.User.Service.Controllers
 
             var student = _mapper.Map<Model.Student>(studentDto);
             student.Role = Model.Role.Student;
-            
+
             await _userRepository.CreateAsync(student);
-            
+
             var studentCreatedEvent = _mapper.Map<StudentCreatedEvent>(student);
             await _publishEndpoint.Publish(studentCreatedEvent);
             return CreatedAtAction(nameof(GetUserById), new { id = student.Id }, SharedResponse<Model.Student>.Success(student, "User created successfully"));
-            
+
         }
 
 
@@ -114,12 +114,12 @@ namespace CustomEd.User.Service.Controllers
 
             // var student = _mapper.Map<Model.Student>(studentDto);
             // student.Role = Model.Role.Student;
-            
+
             // await _userRepository.UpdateAsync(student);
             // var studentUpdatedEvent = _mapper.Map<StudentCreatedEvent>(student);
             // await _publishEndpoint.Publish(studentUpdatedEvent);
             return Ok(SharedResponse<StudentDto>.Success(null, "User updated successfully"));
-            
+
         }
 
         [HttpPost("login")]
@@ -127,8 +127,8 @@ namespace CustomEd.User.Service.Controllers
         {
 
             return await base.SignIn(request);
-            
+
         }
-        
+
     }
 }

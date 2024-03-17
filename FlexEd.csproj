@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CustomEd.Contracts" Version="1.0.0" />
-    <PackageReference Include="CustomEd.Shared" Version="1.1.0" />
+    <PackageReference Include="CustomEd.Contracts" Version="1.1.2" />
+    <PackageReference Include="CustomEd.Shared" Version="1.1.5" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.16" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>

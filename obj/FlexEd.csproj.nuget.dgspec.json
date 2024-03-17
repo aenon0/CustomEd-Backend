@@ -1,32 +1,26 @@
 {
   "format": 1,
   "restore": {
-    "/home/dirichletian/Documents/Final year project/Implementaion/FlexEd/FlexEd.csproj": {}
+    "/Users/henon/Documents/Projects/CustomEd/FlexEd.csproj": {}
   },
   "projects": {
-    "/home/dirichletian/Documents/Final year project/Implementaion/FlexEd/FlexEd.csproj": {
+    "/Users/henon/Documents/Projects/CustomEd/FlexEd.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/dirichletian/Documents/Final year project/Implementaion/FlexEd/FlexEd.csproj",
+        "projectUniqueName": "/Users/henon/Documents/Projects/CustomEd/FlexEd.csproj",
         "projectName": "FlexEd",
-        "projectPath": "/home/dirichletian/Documents/Final year project/Implementaion/FlexEd/FlexEd.csproj",
-        "packagesPath": "/home/dirichletian/.nuget/packages/",
-        "outputPath": "/home/dirichletian/Documents/Final year project/Implementaion/FlexEd/obj/",
+        "projectPath": "/Users/henon/Documents/Projects/CustomEd/FlexEd.csproj",
+        "packagesPath": "/Users/henon/.nuget/packages/",
+        "outputPath": "/Users/henon/Documents/Projects/CustomEd/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/home/dirichletian/.nuget/NuGet/NuGet.Config"
+          "/Users/henon/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net7.0"
         ],
         "sources": {
-          "/home/dirichletian/.nuget/": {},
-          "/home/dirichletian/.nuget/NuGet": {},
-          "/home/dirichletian/Documents/Final year project/Implementaion/FlexEd/Packages/": {},
-          "/home/dirichletian/Documents/Microservices/campus-bulletin-board-api/Packages/": {},
-          "/home/dirichletian/Documents/Mobile/project/microservice/tutorial/7hrtut/packages/": {},
-          "https://api.nuget.org/v3/index.json": {},
-          "https://www.nuget.org/api/v2/": {}
+          "/Users/henon/Documents/Projects/CustomEd/Packages": {}
         },
         "frameworks": {
           "net7.0": {
@@ -46,11 +40,11 @@
           "dependencies": {
             "CustomEd.Contracts": {
               "target": "Package",
-              "version": "[1.0.0, )"
+              "version": "[1.1.2, )"
             },
             "CustomEd.Shared": {
               "target": "Package",
-              "version": "[1.1.0, )"
+              "version": "[1.1.5, )"
             },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
@@ -80,7 +74,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/7.0.117/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.100/RuntimeIdentifierGraph.json"
         }
       }
     }

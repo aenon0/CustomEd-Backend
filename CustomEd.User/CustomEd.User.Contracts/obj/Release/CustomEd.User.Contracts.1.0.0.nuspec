@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>CustomEd.User.Contracts</id>
+    <version>1.0.0</version>
+    <authors>CustomEd.User.Contracts</authors>
+    <description>Package Description</description>
+    <repository type="git" commit="e77573b639d0509ee6b5752f07d7c64a1596ee7e" />
+    <dependencies>
+      <group targetFramework="net7.0">
+        <dependency id="CustomEd.Shared" version="1.1.5" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="/Users/henon/Documents/Projects/CustomEd/CustomEd.User/CustomEd.User.Contracts/bin/Release/net7.0/CustomEd.User.Contracts.dll" target="lib/net7.0/CustomEd.User.Contracts.dll" />
+  </files>
+</package>

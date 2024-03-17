@@ -1,0 +1,13 @@
+/Users/henon/Documents/Projects/CustomEd/CustomEd.User/CustomEd.User.Contracts/bin/Release/net7.0/CustomEd.User.Contracts.deps.json
+/Users/henon/Documents/Projects/CustomEd/CustomEd.User/CustomEd.User.Contracts/bin/Release/net7.0/CustomEd.User.Contracts.dll
+/Users/henon/Documents/Projects/CustomEd/CustomEd.User/CustomEd.User.Contracts/bin/Release/net7.0/CustomEd.User.Contracts.pdb
+/Users/henon/Documents/Projects/CustomEd/CustomEd.User/CustomEd.User.Contracts/obj/Release/net7.0/CustomEd.User.Contracts.GeneratedMSBuildEditorConfig.editorconfig
+/Users/henon/Documents/Projects/CustomEd/CustomEd.User/CustomEd.User.Contracts/obj/Release/net7.0/CustomEd.User.Contracts.AssemblyInfoInputs.cache
+/Users/henon/Documents/Projects/CustomEd/CustomEd.User/CustomEd.User.Contracts/obj/Release/net7.0/CustomEd.User.Contracts.AssemblyInfo.cs
+/Users/henon/Documents/Projects/CustomEd/CustomEd.User/CustomEd.User.Contracts/obj/Release/net7.0/CustomEd.User.Contracts.csproj.CoreCompileInputs.cache
+/Users/henon/Documents/Projects/CustomEd/CustomEd.User/CustomEd.User.Contracts/obj/Release/net7.0/CustomEd.User.Contracts.sourcelink.json
+/Users/henon/Documents/Projects/CustomEd/CustomEd.User/CustomEd.User.Contracts/obj/Release/net7.0/CustomEd.User.Contracts.dll
+/Users/henon/Documents/Projects/CustomEd/CustomEd.User/CustomEd.User.Contracts/obj/Release/net7.0/refint/CustomEd.User.Contracts.dll
+/Users/henon/Documents/Projects/CustomEd/CustomEd.User/CustomEd.User.Contracts/obj/Release/net7.0/CustomEd.User.Contracts.pdb
+/Users/henon/Documents/Projects/CustomEd/CustomEd.User/CustomEd.User.Contracts/obj/Release/net7.0/ref/CustomEd.User.Contracts.dll
+/Users/henon/Documents/Projects/CustomEd/CustomEd.User/CustomEd.User.Contracts/obj/Release/net7.0/CustomEd.User.Contracts.csproj.AssemblyReference.cache
