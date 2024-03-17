@@ -8,6 +8,11 @@ using Microsoft.AspNetCore.Authorization;
 using CustomEd.Shared.JWT;
 using CustomEd.Shared.Data.Interfaces;
 using CustomEd.Shared.Response;
+using MassTransit;
+using CustomEd.User.Contracts;
+
+
+
 
 namespace CustomEd.User.Service.Controllers
 {
@@ -15,8 +20,10 @@ namespace CustomEd.User.Service.Controllers
     [Route("api/user/student")]
     public class StudentController : UserController<Model.Student>
     {
-        public StudentController(IGenericRepository<Model.Student> userRepository, IMapper mapper, IPasswordHasher passwordHasher, IJwtService jwtService) : base(userRepository, mapper, passwordHasher, jwtService)
+        private readonly IPublishEndpoint _publishEndpoint;
+        public StudentController(IGenericRepository<Model.Student> userRepository, IMapper mapper, IPasswordHasher passwordHasher, IJwtService jwtService, IPublishEndpoint publishEndpoint) : base(userRepository, mapper, passwordHasher, jwtService)
         {
+            _publishEndpoint = publishEndpoint;
         }
 
 
@@ -49,12 +56,12 @@ namespace CustomEd.User.Service.Controllers
             var passwordHash = _passwordHasher.HashPassword(studentDto.Password);
             studentDto.Password = passwordHash;
 
-
             var student = _mapper.Map<Model.Student>(studentDto);
-            
+
             await _userRepository.CreateAsync(student);
+            ///PUBLISH USER CREATED EVENT
+            await _publishEndpoint.Publish(new UserCreated(student.Email));
             return CreatedAtAction(nameof(GetUserById), new { id = student.Id }, SharedResponse<Model.Student>.Success(student, "User created successfully"));
-            
         }
 
 

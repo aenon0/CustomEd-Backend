@@ -48,31 +48,31 @@ namespace CustomEd.User.Service.Controllers
             return Ok(SharedResponse<T>.Success(user, "User retrieved successfully"));
         }
 
-        [HttpPost("login")]
-        public async Task<ActionResult<SharedResponse<UserDto>>> SignIn([FromBody] LoginRequestDto request)
-        {
+        // [HttpPost("login")]
+        // public async Task<ActionResult<SharedResponse<UserDto>>> SignIn([FromBody] LoginRequestDto request)
+        // {
 
-            var user = await _userRepository.GetAsync(x => x.Email == request.Email);
-            if(user == null)
-            {
-                return BadRequest(SharedResponse<UserDto>.Fail("User not found", null));
-            }
-            if(!_passwordHasher.VerifyPassword(request.Password, user.Password))
-            {
-                return BadRequest(SharedResponse<bool>.Fail("Incorrect Password", null));
-            }
-            var userDto = new UserDto
-            {
-                Id = user.Id,
-                Email = user.Email,
-                Role = (Shared.JWT.Contracts.Role) user.Role
-            };
+        //     var user = await _userRepository.GetAsync(x => x.Email == request.Email);
+        //     if(user == null)
+        //     {
+        //         return BadRequest(SharedResponse<UserDto>.Fail("User not found", null));
+        //     }
+        //     if(!_passwordHasher.VerifyPassword(request.Password, user.Password))
+        //     {
+        //         return BadRequest(SharedResponse<bool>.Fail("Incorrect Password", null));
+        //     }
+        //     var userDto = new UserDto
+        //     {
+        //         Id = user.Id,
+        //         Email = user.Email,
+        //         Role = (Shared.JWT.Contracts.Role) user.Role
+        //     };
 
-            var token = _jwtService.GenerateToken(userDto);
-            userDto.Token = token;
+        //     var token = _jwtService.GenerateToken(userDto);
+        //     userDto.Token = token;
 
-            return Ok(SharedResponse<UserDto>.Success(userDto, null));
-        }
+        //     return Ok(SharedResponse<UserDto>.Success(userDto, null));
+        // }
 
     }
 }
