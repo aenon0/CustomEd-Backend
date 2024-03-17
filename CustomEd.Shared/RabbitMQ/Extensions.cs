@@ -1,39 +1,35 @@
-// Purpose: Contains extensions for RabbitMQ.
+
 
 using Microsoft.Extensions.DependencyInjection;
 using MassTransit;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using CustomEd.Shared.Settings;
+using System; 
 
-namespace CustomEd.Shared.RabbitMQ
+namespace CustomEd.Shared.RabbitMQ;
+
+public static class Extensions
 {
-    public static class Extensions
+    public static IServiceCollection AddMassTransitWithRabbitMq(this IServiceCollection services)
     {
-        public static IServiceCollection AddMassTransitWithRabbitMQ(this IServiceCollection services)
+        services.AddMassTransit(busConfigurator =>
         {
-
-            services.AddMassTransit(configure =>
+            busConfigurator.SetKebabCaseEndpointNameFormatter();
+            busConfigurator.AddConsumers(Assembly.GetEntryAssembly());
+            busConfigurator.UsingRabbitMq((context, configurator) =>
             {
-                configure.AddConsumers(Assembly.GetEntryAssembly());
-                configure.UsingRabbitMq((context, configurator) =>
+                var rabbitMQSettings = context.GetRequiredService<IConfiguration>().GetSection(nameof(RabbitMQSettings)).Get<RabbitMQSettings>();
+                configurator.Host(rabbitMQSettings.Host);
+                configurator.ConfigureEndpoints(context);
+                configurator.UseMessageRetry(retryConfigurator =>
                 {
-                    var configuration = context.GetService<IConfiguration>();
-                    var rabbitMQSettings = configuration!.GetSection(nameof(RabbitMQSettings)).Get<RabbitMQSettings>();
-                    var serviceSettings = configuration.GetSection(nameof(ServiceSettings)).Get<ServiceSettings>();
-
-
-                    if (rabbitMQSettings == null || string.IsNullOrEmpty(rabbitMQSettings.Host))
-                    {
-                        throw new Exception("RabbitMQ settings are not properly configured.");
-                    }
-
-                    configurator.Host(rabbitMQSettings.Host);
-                    configurator.UseJsonSerializer();
-                    configurator.ConfigureEndpoints(context, new KebabCaseEndpointNameFormatter(serviceSettings!.ServiceName, false));
+                    retryConfigurator.Interval(3, TimeSpan.FromSeconds(5));
                 });
             });
-            return services;
-        }
+        });
+
+        return services;
     }
 }
+
