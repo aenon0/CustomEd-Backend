@@ -70,23 +70,23 @@ namespace CustomEd.User.Service.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<SharedResponse<StudentDto>>> RemoveUser(Guid id)
         {
-            if (id == Guid.Empty || await _userRepository.GetAsync(id) == null)
-            {
-                return BadRequest(SharedResponse<StudentDto>.Fail("Invalid Id", new List<string> { "Invalid id" }));
-            }
+            // if (id == Guid.Empty || await _userRepository.GetAsync(id) == null)
+            // {
+            //     return BadRequest(SharedResponse<StudentDto>.Fail("Invalid Id", new List<string> { "Invalid id" }));
+            // }
 
-            var identityProvider = new IdentityProvider(HttpContext, _jwtService);
-            var currentUserId = identityProvider.GetUserId();
+            // var identityProvider = new IdentityProvider(HttpContext, _jwtService);
+            // var currentUserId = identityProvider.GetUserId();
 
-            if(currentUserId != id)
-            {
-                return Unauthorized(SharedResponse<StudentDto>.Fail("Unauthorized", new List<string> { "Unauthorized" }));
-            }
+            // if(currentUserId != id)
+            // {
+            //     return Unauthorized(SharedResponse<StudentDto>.Fail("Unauthorized", new List<string> { "Unauthorized" }));
+            // }
 
 
-            await _userRepository.RemoveAsync(id);
-            var studentDeletedEvent = new StudentDeletedEvent{Id = id};
-            await _publishEndpoint.Publish(studentDeletedEvent);
+            // await _userRepository.RemoveAsync(id);
+            // var studentDeletedEvent = new StudentDeletedEvent{Id = id};
+            // await _publishEndpoint.Publish(studentDeletedEvent);
             return Ok(SharedResponse<StudentDto>.Success(null, "User deleted successfully"));
         }
 
@@ -94,30 +94,30 @@ namespace CustomEd.User.Service.Controllers
         [HttpPut]
         public async Task<ActionResult<SharedResponse<StudentDto>>> UpdateUser([FromBody] UpdateStudentDto studentDto)
         {
-            var updateStudentDtoValidator = new UpdateStudentDtoValidator(_userRepository);
-            var validationResult = await updateStudentDtoValidator.ValidateAsync(studentDto);
-            if (!validationResult.IsValid)
-            {
-                return BadRequest(SharedResponse<StudentDto>.Fail("Invalid input", validationResult.Errors.Select(e => e.ErrorMessage).ToList()));
-            }
+            // var updateStudentDtoValidator = new UpdateStudentDtoValidator(_userRepository);
+            // var validationResult = await updateStudentDtoValidator.ValidateAsync(studentDto);
+            // if (!validationResult.IsValid)
+            // {
+            //     return BadRequest(SharedResponse<StudentDto>.Fail("Invalid input", validationResult.Errors.Select(e => e.ErrorMessage).ToList()));
+            // }
 
-            var identityProvider = new IdentityProvider(HttpContext, _jwtService);
-            var currentUserId = identityProvider.GetUserId();
+            // var identityProvider = new IdentityProvider(HttpContext, _jwtService);
+            // var currentUserId = identityProvider.GetUserId();
 
-            if(currentUserId != studentDto.Id)
-            {
-                return Unauthorized(SharedResponse<StudentDto>.Fail("Unauthorized", new List<string> { "Unauthorized" }));
-            }
+            // if(currentUserId != studentDto.Id)
+            // {
+            //     return Unauthorized(SharedResponse<StudentDto>.Fail("Unauthorized", new List<string> { "Unauthorized" }));
+            // }
 
-            var passwordHash = _passwordHasher.HashPassword(studentDto.Password);
-            studentDto.Password = passwordHash;
+            // var passwordHash = _passwordHasher.HashPassword(studentDto.Password);
+            // studentDto.Password = passwordHash;
 
-            var student = _mapper.Map<Model.Student>(studentDto);
-            student.Role = Model.Role.Student;
+            // var student = _mapper.Map<Model.Student>(studentDto);
+            // student.Role = Model.Role.Student;
             
-            await _userRepository.UpdateAsync(student);
-            var studentUpdatedEvent = _mapper.Map<StudentCreatedEvent>(student);
-            await _publishEndpoint.Publish(studentUpdatedEvent);
+            // await _userRepository.UpdateAsync(student);
+            // var studentUpdatedEvent = _mapper.Map<StudentCreatedEvent>(student);
+            // await _publishEndpoint.Publish(studentUpdatedEvent);
             return Ok(SharedResponse<StudentDto>.Success(null, "User updated successfully"));
             
         }
