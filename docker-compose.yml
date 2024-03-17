@@ -19,19 +19,19 @@ services:
     volumes:
       - mongodbdata:/data/db mongo
 
-  # rabbitmq:
-  #   image: rabbitmq:management
-  #   container_name: rabbitmq
-  #   ports:
-  #     - 5672:5672
-  #     - 15672:15672
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: customed-rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
 
-  #   hostname: rabbitmq
-  #   volumes:
-  #     - rabbitmqdata:/var/lib/rabbitmq
+    hostname: rabbitmq
+    volumes:
+      - rabbitmqdata:/var/lib/rabbitmq
 
 
 
 volumes:
   mongodbdata:
-  # rabbitmqdata:
+  rabbitmqdata:

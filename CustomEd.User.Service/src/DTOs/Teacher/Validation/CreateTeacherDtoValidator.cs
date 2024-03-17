@@ -7,9 +7,9 @@ namespace CustomEd.User.Service.Validators
 {
     public class CreateTeacherDtoValidator : AbstractValidator<CreateTeacherDto>
     {
-        private readonly IGenericRepository<Teacher> _teacherRepository;
+        private readonly IGenericRepository<Model.Teacher> _teacherRepository;
 
-        public CreateTeacherDtoValidator(IGenericRepository<Teacher> teacherRepository)
+        public CreateTeacherDtoValidator(IGenericRepository<Model.Teacher> teacherRepository)
         {
             _teacherRepository = teacherRepository;
             RuleFor(dto => dto.FirstName)
@@ -26,7 +26,7 @@ namespace CustomEd.User.Service.Validators
             RuleFor(dto => dto.DateOfBirth)
                 .NotNull()
                 .WithMessage("Date of birth is required.")
-                .LessThan(System.DateTime.Now)
+                .LessThan(DateOnly.Parse(DateTime.UtcNow.ToString("yyyy-MM-dd")))
                 .WithMessage("Date of birth cannot be later than today.");
 
             RuleFor(dto => dto.Department)
@@ -44,7 +44,7 @@ namespace CustomEd.User.Service.Validators
             RuleFor(dto => dto.JoinDate)
                 .NotNull()
                 .WithMessage("Join date is required.")
-                .LessThan(System.DateTime.Now)
+                .LessThan(DateOnly.Parse(DateTime.UtcNow.ToString("yyyy-MM-dd")))
                 .WithMessage("Join date cannot be later than today.");
 
             RuleFor(dto => dto.Email)

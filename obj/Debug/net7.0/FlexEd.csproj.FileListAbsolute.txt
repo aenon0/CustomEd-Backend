@@ -1,0 +1,7 @@
+/home/dirichletian/Documents/Final year project/Implementaion/FlexEd/obj/Debug/net7.0/FlexEd.csproj.AssemblyReference.cache
+/home/dirichletian/Documents/Final year project/Implementaion/FlexEd/obj/Debug/net7.0/FlexEd.GeneratedMSBuildEditorConfig.editorconfig
+/home/dirichletian/Documents/Final year project/Implementaion/FlexEd/obj/Debug/net7.0/FlexEd.AssemblyInfoInputs.cache
+/home/dirichletian/Documents/Final year project/Implementaion/FlexEd/obj/Debug/net7.0/FlexEd.AssemblyInfo.cs
+/home/dirichletian/Documents/Final year project/Implementaion/FlexEd/obj/Debug/net7.0/FlexEd.csproj.CoreCompileInputs.cache
+/home/dirichletian/Documents/Final year project/Implementaion/FlexEd/obj/Debug/net7.0/FlexEd.MvcApplicationPartsAssemblyInfo.cs
+/home/dirichletian/Documents/Final year project/Implementaion/FlexEd/obj/Debug/net7.0/FlexEd.MvcApplicationPartsAssemblyInfo.cache

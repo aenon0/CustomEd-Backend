@@ -8,8 +8,8 @@ namespace CustomEd.User.Service.Validators
     public class CreateStudentDtoValidator : AbstractValidator<CreateStudentDto>
     {
 
-        private readonly IGenericRepository<Student> _studentRepository;
-        public CreateStudentDtoValidator(IGenericRepository<Student> studentRepository)
+        private readonly IGenericRepository<Model.Student> _studentRepository;
+        public CreateStudentDtoValidator(IGenericRepository<Model.Student> studentRepository)
         {
             _studentRepository = studentRepository;
             RuleFor(dto => dto.StudentId)
@@ -24,16 +24,10 @@ namespace CustomEd.User.Service.Validators
                 .MaximumLength(50)
                 .WithMessage("First name must not exceed 50 characters.");
 
-            RuleFor(dto => dto.LastName)
-                .NotEmpty()
-                .WithMessage("Last name is required.")
-                .MaximumLength(50)
-                .WithMessage("Last name must not exceed 50 characters.");
-
             RuleFor(dto => dto.DateOfBirth)
                 .NotNull()
                 .WithMessage("Date of birth is required.")
-                .LessThan(System.DateTime.Now)
+                .LessThan(DateOnly.Parse(DateTime.UtcNow.ToString("yyyy-MM-dd")))
                 .WithMessage("Date of birth cannot be later than today.");
 
             RuleFor(dto => dto.Department)
@@ -51,7 +45,7 @@ namespace CustomEd.User.Service.Validators
             RuleFor(dto => dto.JoinDate)
                 .NotNull()
                 .WithMessage("Join date is required.")
-                .LessThan(System.DateTime.Now)
+                .LessThan(DateOnly.Parse(DateTime.UtcNow.ToString("yyyy-MM-dd")))
                 .WithMessage("Join date cannot be later than today.");
 
             RuleFor(dto => dto.Year)
