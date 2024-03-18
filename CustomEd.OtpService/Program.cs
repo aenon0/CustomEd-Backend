@@ -32,11 +32,11 @@ builder.Services.AddScoped(sp =>
     var mongoClient = sp.GetRequiredService<IMongoClient>();
     var database = mongoClient.GetDatabase(databaseName);
     var collectionNames = database.ListCollectionNames().ToList();
-    // if (!collectionNames.Contains("Package"))
-    // {
-    //     // Create the collection if it doesn't exist
-    //     database.CreateCollection("Package");
-    // };
+    if (!collectionNames.Contains("Otp"))
+    {
+        // Create the collection if it doesn't exist
+        database.CreateCollection("Otp");
+    };
     return database;
 });
 

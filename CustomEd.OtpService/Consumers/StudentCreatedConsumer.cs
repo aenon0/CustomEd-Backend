@@ -1,7 +1,9 @@
 using CustomEd.OtpService.Repository;
+using CustomEd.OtpService.Service;
 using CustomEd.User.Events;
 using CustomEd.User.Student.Events;
 using MassTransit;
+using MongoDB.Bson;
 
 namespace CustomEd.OtpService;
 
@@ -9,8 +11,10 @@ public class UserCreatedConsumer : IConsumer<StudentCreatedEvent>
 {
     private readonly IOtpRepository _repository;
     private readonly IPublishEndpoint _publishEndpoint;
-    public UserCreatedConsumer(IOtpRepository repository, IPublishEndpoint publishEndpoint)
+    private readonly IEmailService _emailService;
+    public UserCreatedConsumer(IOtpRepository repository, IPublishEndpoint publishEndpoint, IEmailService emailService)
     {
+        _emailService = emailService;
         _repository = repository;
         _publishEndpoint = publishEndpoint;
         Console.WriteLine("CONSUMERRRRRR");
@@ -29,8 +33,9 @@ public class UserCreatedConsumer : IConsumer<StudentCreatedEvent>
             return;
         }
 
+        await _emailService.SendEmail(message.Email, otpCode);
         await _repository.Add(new Otp{
-           Id = Guid.NewGuid(),
+            Id = ObjectId.GenerateNewId(),
            EmailAddress = message.Email,
            OtpCode = otpCode
         });

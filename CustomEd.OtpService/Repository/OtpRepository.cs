@@ -30,6 +30,6 @@ public class OtpRepository : IOtpRepository
 
     public async Task Update(Otp otp)
     {
-        await _collection.ReplaceOneAsync(x => x.Id == otp.Id, otp);
+        await _collection.ReplaceOneAsync(x => x.EmailAddress == otp.EmailAddress, otp);
     }
 }

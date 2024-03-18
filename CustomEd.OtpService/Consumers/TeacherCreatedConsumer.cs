@@ -1,8 +1,10 @@
 using CustomEd.OtpService.Repository;
+using CustomEd.OtpService.Service;
 using CustomEd.User.Events;
 using CustomEd.User.Student.Events;
 using CustomEd.User.Teacher.Events;
 using MassTransit;
+using MongoDB.Bson;
 
 namespace CustomEd.OtpService;
 
@@ -10,10 +12,12 @@ public class TeacherCreatedConsumer: IConsumer<TeacherCreatedEvent>
 {
     private readonly IOtpRepository _repository;
     private readonly IPublishEndpoint _publishEndpoint;
-    public TeacherCreatedConsumer(IOtpRepository repository, IPublishEndpoint publishEndpoint)
+    private readonly IEmailService _emailService;
+    public TeacherCreatedConsumer(IOtpRepository repository, IPublishEndpoint publishEndpoint, IEmailService emailService)
     {
         _repository = repository;
         _publishEndpoint = publishEndpoint;
+        _emailService = emailService;
     }
 
     public async Task Consume(ConsumeContext<TeacherCreatedEvent> context)
@@ -28,12 +32,13 @@ public class TeacherCreatedConsumer: IConsumer<TeacherCreatedEvent>
             await _repository.Update(otpItem);
             return;
         }
+        await _emailService.SendEmail(message.Email, otpCode);
 
         await _repository.Add(new Otp{
-           Id = Guid.NewGuid(),
+            Id = ObjectId.GenerateNewId(),
            EmailAddress = message.Email,
            OtpCode = otpCode
-        });
+        });    
         await _publishEndpoint.Publish(new OtpGeneratedEvent
         {
             Email = message.Email,
