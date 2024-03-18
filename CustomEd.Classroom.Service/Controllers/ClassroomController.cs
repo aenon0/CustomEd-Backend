@@ -7,6 +7,8 @@ using CustomEd.Classroom.Service.DTOs;
 using CustomEd.Classroom.Service.DTOs.Validation;
 using CustomEd.Classroom.Service.Search.Service;
 using CustomEd.Shared.Data.Interfaces;
+using CustomEd.Shared.JWT;
+using CustomEd.Shared.JWT.Interfaces;
 using CustomEd.Shared.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,13 +22,17 @@ namespace CustomEd.Classroom.Service.Controllers
         private readonly IGenericRepository<Model.Classroom> _classroomRepository;
         private readonly IGenericRepository<Model.Teacher> _teacherRepository;
         private readonly IGenericRepository<Model.Student> _studentRepository;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IJwtService _jwtService;
         private readonly IMapper _mapper;
-        public ClassroomController(IGenericRepository<Model.Classroom> classroomRepository, IMapper mapper, IGenericRepository<Model.Teacher> teacherRepository, IGenericRepository<Model.Student> studentRepository)
+        public ClassroomController(IGenericRepository<Model.Classroom> classroomRepository, IMapper mapper, IGenericRepository<Model.Teacher> teacherRepository, IGenericRepository<Model.Student> studentRepository, IJwtService jwtService, IHttpContextAccessor httpContextAccessor)
         {
             _classroomRepository = classroomRepository;
             _mapper = mapper;
             _teacherRepository = teacherRepository;
             _studentRepository = studentRepository;
+            _jwtService = jwtService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
 
@@ -71,6 +77,12 @@ namespace CustomEd.Classroom.Service.Controllers
             {
                 return NotFound(SharedResponse<Model.Classroom>.Fail("No classroom with such id", null));
             }
+    
+            var currentUserId = new IdentityProvider(_httpContextAccessor, _jwtService).GetUserId();
+            if(room.Creator.Id != currentUserId)
+            {
+                return Unauthorized(SharedResponse<Model.Classroom>.Fail("You are not authorized to update this classroom", null));
+            }
 
             var classroom = _mapper.Map<Model.Classroom>(updateClassroomDto);
             classroom.Creator = room.Creator;
@@ -96,7 +108,7 @@ namespace CustomEd.Classroom.Service.Controllers
             return CreatedAtAction("GetRoomById", new { id = classroom.Id }, classroom);
         }
 
-        [Authorize]
+        [Authorize(Policy = "TeacherOnlyPolicy")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> RemoveRoom(Guid id)
         {
@@ -104,6 +116,11 @@ namespace CustomEd.Classroom.Service.Controllers
             if (room == null)
             {
                 return NotFound(SharedResponse<Model.Classroom>.Fail("No classroom with such id", null));
+            }
+            var currentUserId = new IdentityProvider(_httpContextAccessor, _jwtService).GetUserId();
+            if(room.Creator.Id != currentUserId)
+            {
+                return Unauthorized(SharedResponse<Model.Classroom>.Fail("You are not authorized to delete this classroom", null));
             }
             await _classroomRepository.RemoveAsync(id);
             return NoContent();
@@ -169,6 +186,26 @@ namespace CustomEd.Classroom.Service.Controllers
 
             return Ok(SharedResponse<SearchResult<ClassroomDto>>.Success(searchResult, null));
         }
+
+        [Authorize(Policy = "TeacherOnlyPolicy")]
+        [HttpPost("add-student")]
+        public async Task<ActionResult<SharedResponse<ClassroomDto>>> AddStudent(Guid classroomId, Guid studentId)
+        {
+            var addStudentDtoValidatior = new AddStudentDtoValidator(_studentRepository, _classroomRepository);
+            var validationResult = await addStudentDtoValidatior.ValidateAsync(new AddStudentDto { ClassroomId = classroomId, StudentId = studentId });
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(SharedResponse<ClassroomDto>.Fail("Invalid input", validationResult.Errors.Select(x => x.ErrorMessage).ToList()));
+            }
+            var classroom = await _classroomRepository.GetAsync(classroomId);
+            var student = await _studentRepository.GetAsync(studentId);
+
+            classroom.Members.Add(student);
+            await _classroomRepository.UpdateAsync(classroom);
+
+            return Ok(SharedResponse<ClassroomDto>.Success(_mapper.Map<ClassroomDto>(classroom), null));
+        }
+        
     
         
     }
