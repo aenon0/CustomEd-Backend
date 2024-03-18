@@ -14,7 +14,6 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
     <PackageReference Include="CustomEd.Shared" Version="1.1.5" />
-      <ProjectReference Include="..\..\CustomEd.User.Contracts\CustomEd.User.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

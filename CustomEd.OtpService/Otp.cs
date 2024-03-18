@@ -6,9 +6,8 @@ namespace CustomEd.OtpService;
 public class Otp
 {
     [BsonId]
-    [BsonRepresentation(BsonType.ObjectId)]
-    public ObjectId Id {set; get;}
+    public ObjectId Id { get; set; }
     public string EmailAddress { get; set; }
     public string OtpCode { get; set; }
-    public DateTime SentAt {get; set;} = DateTime.UtcNow;
+    public DateTime SentAt { get; set; } = DateTime.UtcNow;
 }

@@ -2,14 +2,15 @@ using Swashbuckle.AspNetCore.SwaggerUI;
 using CustomEd.OtpService.Repository;
 using CustomEd.OtpService.Service;
 using MongoDB.Driver;
+using CustomEd.Shared.RabbitMQ;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.WebHost.UseUrls("http://*:8080");
 
+// builder.WebHost.UseUrls("http://*:8080");
+
+builder.Services.AddMassTransitWithRabbitMq();
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IOtpRepository, OtpRepository>();
@@ -31,11 +32,11 @@ builder.Services.AddScoped(sp =>
     var mongoClient = sp.GetRequiredService<IMongoClient>();
     var database = mongoClient.GetDatabase(databaseName);
     var collectionNames = database.ListCollectionNames().ToList();
-    // if (!collectionNames.Contains("Package"))
-    // {
-    //     // Create the collection if it doesn't exist
-    //     database.CreateCollection("Package");
-    // };
+    if (!collectionNames.Contains("Otp"))
+    {
+        // Create the collection if it doesn't exist
+        database.CreateCollection("Otp");
+    };
     return database;
 });
 
@@ -51,12 +52,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 app.UseSwagger();
-app.UseSwaggerUI(c =>
-{
-   c.SwaggerEndpoint("/swagger/v1/swagger.json", "Rideshare API V1");
-   c.RoutePrefix = "swagger"; // This will set the swagger UI route to 'http://localhost:8080/swagger'
-   c.DocExpansion(DocExpansion.None);
-});
+// app.UseSwaggerUI(c =>
+// {
+//    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Rideshare API V1");
+//    c.RoutePrefix = "swagger"; // This will set the swagger UI route to 'http://localhost:8080/swagger'
+//    c.DocExpansion(DocExpansion.None);
+// });
 
 app.UseHttpsRedirection();
 
