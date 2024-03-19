@@ -22,7 +22,7 @@ namespace CustomEd.User.Service.Controllers
     [Route("api/user/teacher")]
     public class TeacherController : UserController<Model.Teacher>
     {
-        public TeacherController(IGenericRepository<Model.Teacher> userRepository, IMapper mapper, IPasswordHasher passwordHasher, IJwtService jwtService, IPublishEndpoint publishEndpoint) : base(userRepository, mapper, passwordHasher, jwtService, publishEndpoint)
+        public TeacherController(IGenericRepository<Otp> otpRepository, IGenericRepository<Model.Teacher> userRepository, IMapper mapper, IPasswordHasher passwordHasher, IJwtService jwtService, IPublishEndpoint publishEndpoint) : base(otpRepository, userRepository, mapper, passwordHasher, jwtService, publishEndpoint)
         {
 
         }
@@ -30,7 +30,7 @@ namespace CustomEd.User.Service.Controllers
         [HttpGet("teacher-name")]
         public async Task<ActionResult<SharedResponse<TeacherDto>>> SearchTeacherByName([FromQuery] string name)
         {
-            var teacher = await _userRepository.GetAsync(u => u.FirstName!.Contains(name) || u.LastName!.Contains(name));
+            var teacher = await _userRepository.GetAsync(u => u.IsVerified && (u.FirstName!.Contains(name) || u.LastName!.Contains(name)));
             var teacherDto = _mapper.Map<TeacherDto>(teacher);
             return Ok(SharedResponse<TeacherDto>.Success(teacherDto, "Teacher retrieved successfully"));
         }

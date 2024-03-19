@@ -11,6 +11,7 @@ using MassTransit;
 using CustomEd.Shared.JWT.Contracts;
 using CusotmEd.User.Servce.DTOs;
 using CustomEd.User.Student.Events;
+using CustomEd.User.Service.Model;
 
 namespace CustomEd.User.Service.Controllers
 {
@@ -19,7 +20,7 @@ namespace CustomEd.User.Service.Controllers
     public class StudentController : UserController<Model.Student>
     {
 
-        public StudentController(IPublishEndpoint publishEndpoint1, IGenericRepository<Model.Student> userRepository, IMapper mapper, IPasswordHasher passwordHasher, IJwtService jwtService, IPublishEndpoint publishEndpoint) : base(userRepository, mapper, passwordHasher, jwtService, publishEndpoint)
+        public StudentController(IGenericRepository<Otp> otpRepository, IGenericRepository<Model.Student> userRepository, IMapper mapper, IPasswordHasher passwordHasher, IJwtService jwtService, IPublishEndpoint publishEndpoint) : base(otpRepository, userRepository, mapper, passwordHasher, jwtService, publishEndpoint)
         {
         }
 
@@ -27,7 +28,7 @@ namespace CustomEd.User.Service.Controllers
         [HttpGet("student-id")]
         public async Task<ActionResult<SharedResponse<StudentDto>>> SearchStudentBySchoolId([FromQuery] string id)
         {
-            var student = await _userRepository.GetAsync(u => u.StudentId == id);
+            var student = await _userRepository.GetAsync(u => u.StudentId == id && u.IsVerified == true) ;
             var studentDto = _mapper.Map<StudentDto>(student);
             return Ok(SharedResponse<StudentDto>.Success(studentDto, "Students retrieved successfully"));
         }
@@ -35,7 +36,7 @@ namespace CustomEd.User.Service.Controllers
         [HttpGet("student-name")]
         public async Task<ActionResult<SharedResponse<IEnumerable<StudentDto>>>> SearchStudentByName([FromQuery] string name)
         {
-            var students = await _userRepository.GetAllAsync(u => u.FirstName!.Contains(name) || u.LastName!.Contains(name));
+            var students = await _userRepository.GetAllAsync(u => u.IsVerified && (u.FirstName!.Contains(name) || u.LastName!.Contains(name)));
             var studentsDto = _mapper.Map<IEnumerable<StudentDto>>(students);
             return Ok(SharedResponse<IEnumerable<StudentDto>>.Success(studentsDto, "Students retrieved successfully"));
         }
@@ -43,7 +44,6 @@ namespace CustomEd.User.Service.Controllers
         [HttpPost]
         public async Task<ActionResult<SharedResponse<Model.Student>>> CreateUser([FromBody] CreateStudentDto studentDto)
         {
-
             var createStudentDtoValidator = new CreateStudentDtoValidator(_userRepository);
             var validationResult = await createStudentDtoValidator.ValidateAsync(studentDto);
             if (!validationResult.IsValid)
