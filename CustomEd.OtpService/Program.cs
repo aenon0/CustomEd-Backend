@@ -16,7 +16,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IOtpRepository, OtpRepository>();
 builder.Services.AddTransient<IEmailService, EmailService>();
 
-
+ 
 var configuration = builder.Configuration;
 var connectionString = configuration.GetConnectionString("MongoConnectionString");
 builder.Services.AddSingleton<IMongoClient>(sp =>
