@@ -21,13 +21,15 @@ namespace CustomEd.User.Service.Controllers
         protected readonly IPasswordHasher _passwordHasher;
         protected readonly IJwtService _jwtService;
         protected readonly IPublishEndpoint _publishEndpoint;
-        public UserController(IGenericRepository<Otp> otpRepository, IGenericRepository<T> userRepository, IMapper mapper, IPasswordHasher passwordHasher, IJwtService jwtService, IPublishEndpoint publishEndpoint)
+        protected readonly IHttpContextAccessor _httpContextAccessor;
+        public UserController(IGenericRepository<Otp> otpRepository, IGenericRepository<T> userRepository, IMapper mapper, IPasswordHasher passwordHasher, IJwtService jwtService, IPublishEndpoint publishEndpoint, IHttpContextAccessor httpContextAccessor)
         {
             _userRepository = userRepository;
             _mapper = mapper;
             _passwordHasher = passwordHasher;
             _jwtService = jwtService;
             _publishEndpoint = publishEndpoint;
+            _httpContextAccessor = httpContextAccessor;
             _otpRepository = otpRepository;
         }
     
