@@ -3,6 +3,7 @@ using CustomEd.Announcement.Service.DTOs;
 using CustomEd.Announcement.Service.DTOs.Validtion;
 using CustomEd.Shared.Data.Interfaces;
 using CustomEd.Shared.Response;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CustomEd.Announcement.Service.Controllers
@@ -24,7 +25,9 @@ namespace CustomEd.Announcement.Service.Controllers
             
         }
 
+        
         [HttpGet]
+        [Authorize(policy:"MemberOnlyPolicy")]
         public async Task<ActionResult<SharedResponse<List<AnnouncementDto>>>> GetAll(Guid classRoomId)
         {
             var posts =  await  _announcementRepository.GetAllAsync(x => x.ClassRoom.Id == classRoomId);
@@ -33,6 +36,7 @@ namespace CustomEd.Announcement.Service.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(policy:"MemberOnlyPolicy")]
         public async Task<ActionResult<SharedResponse<SharedResponse<AnnouncementDto>>>>Get(Guid id)
         {
             var post = await _announcementRepository.GetAsync(id);
@@ -47,6 +51,7 @@ namespace CustomEd.Announcement.Service.Controllers
         }
 
         [HttpPost]
+        [Authorize(policy:"CreatorOnlyPolicy")]
         public async Task<ActionResult<SharedResponse<AnnouncementDto>>> Create(CreateAnnouncementDto dto)
         {
             var createAnnouncementDtoValidator = new CreateAnnouncementDtoValidator(_classRoomRepository);
@@ -65,6 +70,7 @@ namespace CustomEd.Announcement.Service.Controllers
         }
 
         [HttpPut]
+        [Authorize(policy:"CreatorOnlyPolicy")]
         public async Task<ActionResult<SharedResponse<AnnouncementDto>>> Update(UpdateAnnouncementDto dto)
         {
             var updateAnnouncementDtoValidator = new UpdateAnnouncementDtoValidator(_classRoomRepository, _announcementRepository);
@@ -81,6 +87,7 @@ namespace CustomEd.Announcement.Service.Controllers
         }
         
         [HttpDelete("{id}")]
+        [Authorize(policy:"CreatorOnlyPolicy")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var announcement =  await _announcementRepository.GetAsync(id);
