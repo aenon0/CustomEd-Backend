@@ -12,6 +12,7 @@ using CustomEd.Shared.JWT.Contracts;
 using CusotmEd.User.Servce.DTOs;
 using CustomEd.User.Student.Events;
 using CustomEd.Shared.JWT;
+using CustomEd.User.Service.Model;
 
 namespace CustomEd.User.Service.Controllers
 {
@@ -20,7 +21,7 @@ namespace CustomEd.User.Service.Controllers
     public class StudentController : UserController<Model.Student>
     {
 
-        public StudentController(IGenericRepository<Otp> otpRepository, IGenericRepository<Model.Student> userRepository, IMapper mapper, IPasswordHasher passwordHasher, IJwtService jwtService, IPublishEndpoint publishEndpoint) : base(otpRepository, userRepository, mapper, passwordHasher, jwtService, publishEndpoint)
+        public StudentController(IGenericRepository<Otp> otpRepository, IGenericRepository<Model.Student> userRepository, IMapper mapper, IPasswordHasher passwordHasher, IJwtService jwtService, IPublishEndpoint publishEndpoint, IHttpContextAccessor httpContextAccessor) : base(otpRepository, userRepository, mapper, passwordHasher, jwtService, publishEndpoint, httpContextAccessor)
         {
         }
 
