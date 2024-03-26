@@ -12,6 +12,7 @@ using CustomEd.Shared.JWT.Contracts;
 using CusotmEd.User.Servce.DTOs;
 using CustomEd.User.Student.Events;
 using CustomEd.Shared.JWT;
+using CustomEd.User.Service.Model;
 
 namespace CustomEd.User.Service.Controllers
 {
@@ -20,7 +21,7 @@ namespace CustomEd.User.Service.Controllers
     public class StudentController : UserController<Model.Student>
     {
 
-        public StudentController(IGenericRepository<Otp> otpRepository, IGenericRepository<Model.Student> userRepository, IMapper mapper, IPasswordHasher passwordHasher, IJwtService jwtService, IPublishEndpoint publishEndpoint) : base(otpRepository, userRepository, mapper, passwordHasher, jwtService, publishEndpoint)
+        public StudentController(IGenericRepository<Otp> otpRepository, IGenericRepository<Model.Student> userRepository, IMapper mapper, IPasswordHasher passwordHasher, IJwtService jwtService, IPublishEndpoint publishEndpoint, IHttpContextAccessor httpContextAccessor) : base(otpRepository, userRepository, mapper, passwordHasher, jwtService, publishEndpoint, httpContextAccessor)
         {
         }
 
@@ -74,13 +75,7 @@ namespace CustomEd.User.Service.Controllers
             {
                 return BadRequest(SharedResponse<StudentDto>.Fail("Invalid Id", new List<string> { "Invalid id" }));
             }
-            if (id == Guid.Empty || await _userRepository.GetAsync(id) == null)
-            {
-                return BadRequest(SharedResponse<StudentDto>.Fail("Invalid Id", new List<string> { "Invalid id" }));
-            }
 
-            var identityProvider = new IdentityProvider((IHttpContextAccessor)HttpContext, _jwtService);
-            var currentUserId = identityProvider.GetUserId();
             var identityProvider = new IdentityProvider((IHttpContextAccessor)HttpContext, _jwtService);
             var currentUserId = identityProvider.GetUserId();
 
@@ -88,15 +83,8 @@ namespace CustomEd.User.Service.Controllers
             {
                 return Unauthorized(SharedResponse<StudentDto>.Fail("Unauthorized", new List<string> { "Unauthorized" }));
             }
-            if(currentUserId != id)
-            {
-                return Unauthorized(SharedResponse<StudentDto>.Fail("Unauthorized", new List<string> { "Unauthorized" }));
-            }
 
 
-            await _userRepository.RemoveAsync(id);
-            var studentDeletedEvent = new StudentDeletedEvent{Id = id};
-            await _publishEndpoint.Publish(studentDeletedEvent);
             await _userRepository.RemoveAsync(id);
             var studentDeletedEvent = new StudentDeletedEvent{Id = id};
             await _publishEndpoint.Publish(studentDeletedEvent);
@@ -113,15 +101,7 @@ namespace CustomEd.User.Service.Controllers
             {
                 return BadRequest(SharedResponse<StudentDto>.Fail("Invalid input", validationResult.Errors.Select(e => e.ErrorMessage).ToList()));
             }
-            var updateStudentDtoValidator = new UpdateStudentDtoValidator(_userRepository);
-            var validationResult = await updateStudentDtoValidator.ValidateAsync(studentDto);
-            if (!validationResult.IsValid)
-            {
-                return BadRequest(SharedResponse<StudentDto>.Fail("Invalid input", validationResult.Errors.Select(e => e.ErrorMessage).ToList()));
-            }
 
-            var identityProvider = new IdentityProvider(_httpContextAccessor, _jwtService);
-            var currentUserId = identityProvider.GetUserId();
             var identityProvider = new IdentityProvider(_httpContextAccessor, _jwtService);
             var currentUserId = identityProvider.GetUserId();
 
@@ -129,25 +109,13 @@ namespace CustomEd.User.Service.Controllers
             {
                 return Unauthorized(SharedResponse<StudentDto>.Fail("Unauthorized", new List<string> { "Unauthorized" }));
             }
-            if(currentUserId != studentDto.Id)
-            {
-                return Unauthorized(SharedResponse<StudentDto>.Fail("Unauthorized", new List<string> { "Unauthorized" }));
-            }
 
-            var passwordHash = _passwordHasher.HashPassword(studentDto.Password);
-            studentDto.Password = passwordHash;
             var passwordHash = _passwordHasher.HashPassword(studentDto.Password);
             studentDto.Password = passwordHash;
 
             var student = _mapper.Map<Model.Student>(studentDto);
             student.Role = Model.Role.Student;
-            var student = _mapper.Map<Model.Student>(studentDto);
-            student.Role = Model.Role.Student;
 
-            await _userRepository.UpdateAsync(student);
-            var studentUpdatedEvent = _mapper.Map<StudentCreatedEvent>(student);
-            await _publishEndpoint.Publish(studentUpdatedEvent);
-            
             await _userRepository.UpdateAsync(student);
             var studentUpdatedEvent = _mapper.Map<StudentCreatedEvent>(student);
             await _publishEndpoint.Publish(studentUpdatedEvent);
