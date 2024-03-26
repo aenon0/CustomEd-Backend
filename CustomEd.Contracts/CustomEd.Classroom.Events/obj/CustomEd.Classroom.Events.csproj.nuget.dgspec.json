@@ -1,0 +1,67 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/dirichletian/Documents/Final year project/FlexEd/CustomEd.Contracts/CustomEd.Classroom.Events/CustomEd.Classroom.Events.csproj": {}
+  },
+  "projects": {
+    "/home/dirichletian/Documents/Final year project/FlexEd/CustomEd.Contracts/CustomEd.Classroom.Events/CustomEd.Classroom.Events.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/dirichletian/Documents/Final year project/FlexEd/CustomEd.Contracts/CustomEd.Classroom.Events/CustomEd.Classroom.Events.csproj",
+        "projectName": "CustomEd.Classroom.Events",
+        "projectPath": "/home/dirichletian/Documents/Final year project/FlexEd/CustomEd.Contracts/CustomEd.Classroom.Events/CustomEd.Classroom.Events.csproj",
+        "packagesPath": "/home/dirichletian/.nuget/packages/",
+        "outputPath": "/home/dirichletian/Documents/Final year project/FlexEd/CustomEd.Contracts/CustomEd.Classroom.Events/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/dirichletian/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "/home/dirichletian/.nuget/": {},
+          "/home/dirichletian/.nuget/NuGet": {},
+          "/home/dirichletian/Documents/Final year project/Implementaion/FlexEd/Packages/": {},
+          "/home/dirichletian/Documents/Microservices/campus-bulletin-board-api/Packages/": {},
+          "/home/dirichletian/Documents/Mobile/project/microservice/tutorial/7hrtut/packages/": {},
+          "https://api.nuget.org/v3/index.json": {},
+          "https://www.nuget.org/api/v2/": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/7.0.117/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
