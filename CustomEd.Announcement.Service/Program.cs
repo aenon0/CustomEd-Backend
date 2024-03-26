@@ -3,6 +3,7 @@ using CustomEd.Announcement.Service.Policies;
 using CustomEd.Shared.Data;
 using CustomEd.Shared.JWT;
 using CustomEd.Shared.JWT.Interfaces;
+using CustomEd.Shared.RabbitMQ;
 using CustomEd.Shared.Settings;
 using Microsoft.AspNetCore.Authorization;
 
@@ -32,6 +33,7 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.AddScoped<IAuthorizationHandler, MemberOnlyPolicy>();
 builder.Services.AddScoped<IAuthorizationHandler, CreatorOnlyPolicy>();
+builder.Services.AddMassTransitWithRabbitMq();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
