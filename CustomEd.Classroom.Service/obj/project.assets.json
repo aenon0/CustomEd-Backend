@@ -60,7 +60,7 @@
           }
         }
       },
-      "CustomEd.Contracts/1.1.0": {
+      "CustomEd.Contracts/2.0.0": {
         "type": "package",
         "dependencies": {
           "CustomEd.Shared": "1.0.3"
@@ -1097,13 +1097,13 @@
         "tools/uninstall.ps1"
       ]
     },
-    "CustomEd.Contracts/1.1.0": {
-      "sha512": "+wLeU6mcsmGTLFfHd0+CIBRZNreBszg4Ii3a9+1gXs4/iIIRfeekK6F2iXhPZaPvngA+H7WfznU3ZHHb3BSfdg==",
+    "CustomEd.Contracts/2.0.0": {
+      "sha512": "WDLDPvp0H5lbv/g6h3eRjI47Vf2MVqUbp+UB1R1Pqf1Td31V62OQyUIpG8nGHG8H6HkE3FS6N/9ytCtjs5AorA==",
       "type": "package",
-      "path": "customed.contracts/1.1.0",
+      "path": "customed.contracts/2.0.0",
       "files": [
         ".nupkg.metadata",
-        "customed.contracts.1.1.0.nupkg.sha512",
+        "customed.contracts.2.0.0.nupkg.sha512",
         "customed.contracts.nuspec",
         "lib/net7.0/CustomEd.Contracts.dll"
       ]
@@ -2902,7 +2902,7 @@
   "projectFileDependencyGroups": {
     "net7.0": [
       "AutoMapper.Extensions.Microsoft.DependencyInjection >= 12.0.1",
-      "CustomEd.Contracts >= 1.1.0",
+      "CustomEd.Contracts >= 2.0.0",
       "CustomEd.Shared >= 1.1.4",
       "FluentValidation.DependencyInjectionExtensions >= 11.9.0",
       "Microsoft.AspNetCore.OpenApi >= 7.0.16",
@@ -2958,7 +2958,7 @@
           },
           "CustomEd.Contracts": {
             "target": "Package",
-            "version": "[1.1.0, )"
+            "version": "[2.0.0, )"
           },
           "CustomEd.Shared": {
             "target": "Package",
