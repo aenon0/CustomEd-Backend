@@ -1,10 +1,9 @@
 using CustomEd.Shared.Model;
 
-namespace CustomEd.Classroom.Service.Model;
+namespace CustomEd.Notification.Service;
 
-public class Student: BaseEntity
+public class Student : BaseEntity
 {
-    public string? StudentId {get; set;} //This should be removed
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
     public DateTime? DateOfBirth { get; set; }
@@ -16,5 +15,4 @@ public class Student: BaseEntity
     public string Email { get; set; } = null!;
     public string Password { get; set; } = null!;
     public Role Role { get; set; }
-
 }

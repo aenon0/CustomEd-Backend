@@ -60,6 +60,18 @@
           }
         }
       },
+      "CustomEd.Contracts/2.0.0": {
+        "type": "package",
+        "dependencies": {
+          "CustomEd.Shared": "1.0.3"
+        },
+        "compile": {
+          "lib/net7.0/CustomEd.Contracts.dll": {}
+        },
+        "runtime": {
+          "lib/net7.0/CustomEd.Contracts.dll": {}
+        }
+      },
       "CustomEd.Shared/1.1.5": {
         "type": "package",
         "dependencies": {
@@ -1083,6 +1095,17 @@
         "lib/netstandard2.0/AWSSDK.SecurityToken.xml",
         "tools/install.ps1",
         "tools/uninstall.ps1"
+      ]
+    },
+    "CustomEd.Contracts/2.0.0": {
+      "sha512": "1c0I5CSXCTQlYskJxAqrLSAPGQyInFNTGuBJAUtxBbnI22Vv0AY5CJgXMWTqGxaoT43Eqitmz9M7NYxnRg4Mng==",
+      "type": "package",
+      "path": "customed.contracts/2.0.0",
+      "files": [
+        ".nupkg.metadata",
+        "customed.contracts.2.0.0.nupkg.sha512",
+        "customed.contracts.nuspec",
+        "lib/net7.0/CustomEd.Contracts.dll"
       ]
     },
     "CustomEd.Shared/1.1.5": {
@@ -2979,15 +3002,6 @@
       "warningLevel": 1,
       "message": "CustomEd.Classroom.Service depends on CustomEd.Shared (>= 1.1.4) but CustomEd.Shared 1.1.4 was not found. An approximate best match of CustomEd.Shared 1.1.5 was resolved.",
       "libraryId": "CustomEd.Shared",
-      "targetGraphs": [
-        "net7.0"
-      ]
-    },
-    {
-      "code": "NU1102",
-      "level": "Error",
-      "message": "Unable to find package CustomEd.Contracts with version (>= 2.0.0)\n  - Found 1 version(s) in nuget.org [ Nearest version: 1.1.3 ]\n  - Found 0 version(s) in PlayEconomy",
-      "libraryId": "CustomEd.Contracts",
       "targetGraphs": [
         "net7.0"
       ]
