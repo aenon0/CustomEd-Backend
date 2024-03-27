@@ -5,11 +5,14 @@ using System.Threading.Tasks;
 using AutoMapper;
 using CustomEd.Classroom.Service.DTOs;
 using CustomEd.Classroom.Service.DTOs.Validation;
+using CustomEd.Classroom.Service.Model;
 using CustomEd.Classroom.Service.Search.Service;
+using CustomEd.Contracts.Classroom.Events;
 using CustomEd.Shared.Data.Interfaces;
 using CustomEd.Shared.JWT;
 using CustomEd.Shared.JWT.Interfaces;
 using CustomEd.Shared.Response;
+using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,16 +28,18 @@ namespace CustomEd.Classroom.Service.Controllers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IJwtService _jwtService;
         private readonly IMapper _mapper;
-        public ClassroomController(IGenericRepository<Model.Classroom> classroomRepository, IMapper mapper, IGenericRepository<Model.Teacher> teacherRepository, IGenericRepository<Model.Student> studentRepository, IJwtService jwtService, IHttpContextAccessor httpContextAccessor)
+        private readonly IPublishEndpoint _publishEndpoint;
+
+        public ClassroomController(IGenericRepository<Model.Classroom> classroomRepository, IGenericRepository<Teacher> teacherRepository, IGenericRepository<Student> studentRepository, IHttpContextAccessor httpContextAccessor, IJwtService jwtService, IMapper mapper, IPublishEndpoint publishEndpoint)
         {
             _classroomRepository = classroomRepository;
-            _mapper = mapper;
             _teacherRepository = teacherRepository;
             _studentRepository = studentRepository;
-            _jwtService = jwtService;
             _httpContextAccessor = httpContextAccessor;
+            _jwtService = jwtService;
+            _mapper = mapper;
+            _publishEndpoint = publishEndpoint;
         }
-
 
         [Authorize]
         [HttpGet]
@@ -89,6 +94,10 @@ namespace CustomEd.Classroom.Service.Controllers
             classroom.Members = room.Members;
 
             await _classroomRepository.UpdateAsync(classroom);
+
+            var classroomUpdatedEvent = _mapper.Map<ClassroomUpdatedEvent>(classroom);
+            await _publishEndpoint.Publish(classroomUpdatedEvent);
+
             return Ok(SharedResponse<Model.Classroom>.Success(classroom, null));
         }
 
@@ -104,7 +113,11 @@ namespace CustomEd.Classroom.Service.Controllers
             }
             var classroom = _mapper.Map<Model.Classroom>(createClassroomDto); 
             classroom.Creator = await _teacherRepository.GetAsync(createClassroomDto.CreatorId);
+
             await _classroomRepository.CreateAsync(classroom);
+            var classroomCreatedEvent = _mapper.Map<ClassroomCreatedEvent>(classroom);
+            await _publishEndpoint.Publish(classroomCreatedEvent);
+
             return CreatedAtAction("GetRoomById", new { id = classroom.Id }, classroom);
         }
 
@@ -123,6 +136,8 @@ namespace CustomEd.Classroom.Service.Controllers
                 return Unauthorized(SharedResponse<Model.Classroom>.Fail("You are not authorized to delete this classroom", null));
             }
             await _classroomRepository.RemoveAsync(id);
+            var classroomDeletedEvent =  new ClassroomDeletedEvent { Id = id };
+            await _publishEndpoint.Publish(classroomDeletedEvent);
             return NoContent();
         }
 
@@ -165,6 +180,8 @@ namespace CustomEd.Classroom.Service.Controllers
 
             }
             await _classroomRepository.UpdateAsync(classroom);
+            var classroomUpdatedEvent = _mapper.Map<ClassroomUpdatedEvent>(classroom);
+            await _publishEndpoint.Publish(classroomUpdatedEvent);
             return Ok(SharedResponse<ClassroomDto>.Success(_mapper.Map<ClassroomDto>(classroom), null));
         }
 
@@ -202,6 +219,8 @@ namespace CustomEd.Classroom.Service.Controllers
 
             classroom.Members.Add(student);
             await _classroomRepository.UpdateAsync(classroom);
+            var memberJoinedEvent = new MemberJoinedEvent { ClassroomId = classroomId, StudentId = studentId };
+            await _publishEndpoint.Publish(memberJoinedEvent);
 
             return Ok(SharedResponse<ClassroomDto>.Success(_mapper.Map<ClassroomDto>(classroom), null));
         }

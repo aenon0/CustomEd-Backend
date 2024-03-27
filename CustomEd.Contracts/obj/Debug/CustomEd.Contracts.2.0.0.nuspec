@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>CustomEd.Contracts</id>
+    <version>2.0.0</version>
+    <authors>CustomEd.Contracts</authors>
+    <description>Package Description</description>
+    <dependencies>
+      <group targetFramework="net7.0">
+        <dependency id="CustomEd.Shared" version="1.0.3" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="/home/dirichletian/Documents/Final year project/Implementaion/FlexEd/CustomEd.Contracts/bin/Debug/net7.0/CustomEd.Contracts.dll" target="lib/net7.0/CustomEd.Contracts.dll" />
+  </files>
+</package>

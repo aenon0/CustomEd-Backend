@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "xXpshy0nIRMH1yuXDvTb7WVlPUAfLyxddz8UsV7EmRr/aQuA9TONeJaT92k/SJDxMlkEUngr/Exc0n6TKSFJnA==",
+  "dgSpecHash": "ZGjEJqRLCOUnUqguHB7pgzJOTzE49VDxysr+HoCz30x8Hh+8uNc5QRB8VzddWn50VeNVY3LKeKEtG4Sl7wQMjA==",
   "success": true,
   "projectFilePath": "/home/dirichletian/Documents/Final year project/Implementaion/FlexEd/CustomEd.Classroom.Service/CustomEd.Classroom.Service.csproj",
   "expectedPackageFiles": [
@@ -8,7 +8,7 @@
     "/home/dirichletian/.nuget/packages/automapper.extensions.microsoft.dependencyinjection/12.0.1/automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",
     "/home/dirichletian/.nuget/packages/awssdk.core/3.7.100.14/awssdk.core.3.7.100.14.nupkg.sha512",
     "/home/dirichletian/.nuget/packages/awssdk.securitytoken/3.7.100.14/awssdk.securitytoken.3.7.100.14.nupkg.sha512",
-    "/home/dirichletian/.nuget/packages/customed.contracts/1.1.0/customed.contracts.1.1.0.nupkg.sha512",
+    "/home/dirichletian/.nuget/packages/customed.contracts/2.0.0/customed.contracts.2.0.0.nupkg.sha512",
     "/home/dirichletian/.nuget/packages/customed.shared/1.1.4/customed.shared.1.1.4.nupkg.sha512",
     "/home/dirichletian/.nuget/packages/dnsclient/1.6.1/dnsclient.1.6.1.nupkg.sha512",
     "/home/dirichletian/.nuget/packages/fluentvalidation/11.9.0/fluentvalidation.11.9.0.nupkg.sha512",
