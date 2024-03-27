@@ -16,7 +16,6 @@ builder.Services.AddControllers();
 builder.Services.AddMongo();
 builder.Services.AddPersistence<Notification>("Notification");
 builder.Services.AddPersistence<StudentNotification>("StudentNotification");
-builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<IJwtService, JwtService>();
 builder.Services.AddAuth();
