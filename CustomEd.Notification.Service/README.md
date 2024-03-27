@@ -1,4 +1,4 @@
---This is what the client side code looks like: 
+--THIS IS WHAT THE CLIENT SIDE CODE LOOKS LIKE: 
 
 using Microsoft.AspNetCore.SignalR.Client;
 

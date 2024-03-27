@@ -17,6 +17,7 @@ builder.Services.AddMongo();
 builder.Services.AddPersistence<ClassRoom>("ClassRoom");
 builder.Services.AddPersistence<Announcement>("Announcement");
 builder.Services.AddPersistence<StudentAnnouncement>("StudentAnnouncement");
+builder.Services.AddPersistence<StudentAnnouncement>("Student");
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<IJwtService, JwtService>();
