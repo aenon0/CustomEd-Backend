@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/home/dirichletian/Documents/Final year project/FlexEd/CustomEd.Contracts/CustomEd.Contracts.csproj": {}
+    "/home/dirichletian/Documents/Final year project/Implementaion/FlexEd/CustomEd.Contracts/CustomEd.Contracts.csproj": {}
   },
   "projects": {
-    "/home/dirichletian/Documents/Final year project/FlexEd/CustomEd.Contracts/CustomEd.Contracts.csproj": {
-      "version": "1.0.0",
+    "/home/dirichletian/Documents/Final year project/Implementaion/FlexEd/CustomEd.Contracts/CustomEd.Contracts.csproj": {
+      "version": "2.0.0",
       "restore": {
-        "projectUniqueName": "/home/dirichletian/Documents/Final year project/FlexEd/CustomEd.Contracts/CustomEd.Contracts.csproj",
+        "projectUniqueName": "/home/dirichletian/Documents/Final year project/Implementaion/FlexEd/CustomEd.Contracts/CustomEd.Contracts.csproj",
         "projectName": "CustomEd.Contracts",
-        "projectPath": "/home/dirichletian/Documents/Final year project/FlexEd/CustomEd.Contracts/CustomEd.Contracts.csproj",
+        "projectPath": "/home/dirichletian/Documents/Final year project/Implementaion/FlexEd/CustomEd.Contracts/CustomEd.Contracts.csproj",
         "packagesPath": "/home/dirichletian/.nuget/packages/",
-        "outputPath": "/home/dirichletian/Documents/Final year project/FlexEd/CustomEd.Contracts/obj/",
+        "outputPath": "/home/dirichletian/Documents/Final year project/Implementaion/FlexEd/CustomEd.Contracts/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/dirichletian/.nuget/NuGet/NuGet.Config"

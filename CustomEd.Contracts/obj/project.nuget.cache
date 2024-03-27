@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "kvzOglhrsfDFdUODi/GDwWmBpfspXI6QvkJKnB3TIe1E7nJ7JaW3gemWM9BZvOLQoTrYQX198jUyTXugACBc7w==",
+  "dgSpecHash": "W1w3vWoycz2iCsB5jRfJ7c9ZHkyz9ouUBaqav09uSb+fq+3p/gz2gVIf5IKOCeOvnmuM2bJBMv8vxd3b8pPD2A==",
   "success": true,
-  "projectFilePath": "/home/dirichletian/Documents/Final year project/FlexEd/CustomEd.Contracts/CustomEd.Contracts.csproj",
+  "projectFilePath": "/home/dirichletian/Documents/Final year project/Implementaion/FlexEd/CustomEd.Contracts/CustomEd.Contracts.csproj",
   "expectedPackageFiles": [
     "/home/dirichletian/.nuget/packages/awssdk.core/3.7.100.14/awssdk.core.3.7.100.14.nupkg.sha512",
     "/home/dirichletian/.nuget/packages/awssdk.securitytoken/3.7.100.14/awssdk.securitytoken.3.7.100.14.nupkg.sha512",
