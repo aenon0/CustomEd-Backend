@@ -1,5 +1,4 @@
 using AutoMapper;
-using CustomEd.Contracts.Announcements.Events;
 using CustomEd.Contracts.Notification.Events;
 
 namespace CustomEd.Announcement.Service.Profiles
