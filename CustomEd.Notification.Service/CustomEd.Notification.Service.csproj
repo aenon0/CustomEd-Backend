@@ -7,10 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="automapper" Version="13.0.1" />
+    <PackageReference Include="CustomEd.Contracts" Version="2.0.2" />
+    <PackageReference Include="CustomEd.Shared" Version="1.1.5" />
     <PackageReference Include="MassTransit" Version="8.1.3" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
-    <PackageReference Include="CustomEd.Contracts" Version="1.1.3" />
-    <PackageReference Include="CustomEd.Shared" Version="1.1.5" />
   </ItemGroup>
 
 </Project>

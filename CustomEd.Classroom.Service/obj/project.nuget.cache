@@ -1,14 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "7tW9K5yC8fHHU+UjcdSxKwYxNpKcCLCFto50Z9y0Kyoxw6P24eRxNfPJso6ZliTh0uZ56ISE6ysvectAbQrz2w==",
-  "success": true,
+  "dgSpecHash": "TCyikw+qyXhbswYrCiqxfkSrsghyD0vX6FSnvKyYPORt010BNbzyt0WdwUewqfpnFABcfRP4LB6XxQdNjHmjuw==",
+  "success": false,
   "projectFilePath": "/Users/henon/Documents/Projects/CustomEd/CustomEd.Classroom.Service/CustomEd.Classroom.Service.csproj",
   "expectedPackageFiles": [
     "/Users/henon/.nuget/packages/automapper/12.0.1/automapper.12.0.1.nupkg.sha512",
     "/Users/henon/.nuget/packages/automapper.extensions.microsoft.dependencyinjection/12.0.1/automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",
     "/Users/henon/.nuget/packages/awssdk.core/3.7.100.14/awssdk.core.3.7.100.14.nupkg.sha512",
     "/Users/henon/.nuget/packages/awssdk.securitytoken/3.7.100.14/awssdk.securitytoken.3.7.100.14.nupkg.sha512",
-    "/Users/henon/.nuget/packages/customed.contracts/1.1.2/customed.contracts.1.1.2.nupkg.sha512",
     "/Users/henon/.nuget/packages/customed.shared/1.1.5/customed.shared.1.1.5.nupkg.sha512",
     "/Users/henon/.nuget/packages/dnsclient/1.6.1/dnsclient.1.6.1.nupkg.sha512",
     "/Users/henon/.nuget/packages/fluentvalidation/11.9.0/fluentvalidation.11.9.0.nupkg.sha512",
@@ -72,18 +71,17 @@
       "code": "NU1603",
       "level": "Warning",
       "warningLevel": 1,
-      "message": "CustomEd.Classroom.Service depends on CustomEd.Contracts (>= 1.1.0) but CustomEd.Contracts 1.1.0 was not found. An approximate best match of CustomEd.Contracts 1.1.2 was resolved.",
-      "libraryId": "CustomEd.Contracts",
+      "message": "CustomEd.Classroom.Service depends on CustomEd.Shared (>= 1.1.4) but CustomEd.Shared 1.1.4 was not found. An approximate best match of CustomEd.Shared 1.1.5 was resolved.",
+      "libraryId": "CustomEd.Shared",
       "targetGraphs": [
         "net7.0"
       ]
     },
     {
-      "code": "NU1603",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "CustomEd.Classroom.Service depends on CustomEd.Shared (>= 1.1.4) but CustomEd.Shared 1.1.4 was not found. An approximate best match of CustomEd.Shared 1.1.5 was resolved.",
-      "libraryId": "CustomEd.Shared",
+      "code": "NU1102",
+      "level": "Error",
+      "message": "Unable to find package CustomEd.Contracts with version (>= 2.0.0)\n  - Found 1 version(s) in nuget.org [ Nearest version: 1.1.3 ]\n  - Found 0 version(s) in PlayEconomy",
+      "libraryId": "CustomEd.Contracts",
       "targetGraphs": [
         "net7.0"
       ]

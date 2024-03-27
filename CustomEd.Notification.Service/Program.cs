@@ -1,38 +1,33 @@
 using System.Text;
 using CustomEd.Notification.Service.Hubs;
+using CustomEd.Notification.Service.Models;
+using CustomEd.Shared.Data;
 using CustomEd.Shared.JWT;
 using CustomEd.Shared.JWT.Interfaces;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.IdentityModel.Tokens;
+using CustomEd.Shared.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSignalR();
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-builder.Services.AddSingleton<IJwtService, JwtService>(); 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = "your_issuer",
-            ValidAudience = "your_audience",
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your_secret_key"))
-        };
-    });
+
+builder.Services.AddControllers();
+builder.Services.AddMongo();
+builder.Services.AddPersistence<ClassRoom>("ClassRoom");
+builder.Services.AddPersistence<Announcement>("Announcement");
+builder.Services.AddPersistence<StudentAnnouncement>("StudentAnnouncement");
+builder.Services.AddAutoMapper(typeof(Program).Assembly);
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddSingleton<IJwtService, JwtService>();
+builder.Services.AddAuth();
 
 
 var app = builder.Build();
 
 app.UseRouting();
-app.UseAuthentication(); // Add authentication middleware
-app.UseAuthorization(); // Add authorization middleware
+app.UseAuthentication(); 
+
 
 app.UseEndpoints(endpoints =>
 {
