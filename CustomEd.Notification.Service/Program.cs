@@ -4,6 +4,8 @@ using CustomEd.Notification.Service.Models;
 using CustomEd.Shared.Data;
 using CustomEd.Shared.JWT;
 using CustomEd.Shared.JWT.Interfaces;
+using CustomEd.Shared.RabbitMQ;
+
 using CustomEd.Shared.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +18,7 @@ builder.Services.AddControllers();
 builder.Services.AddMongo();
 builder.Services.AddPersistence<Notification>("Notification");
 builder.Services.AddPersistence<StudentNotification>("StudentNotification");
+builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<IJwtService, JwtService>();
 builder.Services.AddAuth();

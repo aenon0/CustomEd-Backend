@@ -65,3 +65,4 @@
 /Users/henon/Documents/Projects/CustomEd/CustomEd.Notification.Service/bin/Debug/net7.0/runtimes/linux/native/libmongocrypt.so
 /Users/henon/Documents/Projects/CustomEd/CustomEd.Notification.Service/bin/Debug/net7.0/runtimes/osx/native/libmongocrypt.dylib
 /Users/henon/Documents/Projects/CustomEd/CustomEd.Notification.Service/bin/Debug/net7.0/runtimes/win/native/mongocrypt.dll
+/Users/henon/Documents/Projects/CustomEd/CustomEd.Notification.Service/bin/Debug/net7.0/AutoMapper.dll
