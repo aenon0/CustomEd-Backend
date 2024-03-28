@@ -9,12 +9,17 @@
   <ItemGroup>
     <PackageReference Include="automapper" Version="13.0.1" />
 <<<<<<< HEAD
+<<<<<<< HEAD
     <PackageReference Include="CustomEd.Contracts" Version="2.0.3" />
     <PackageReference Include="CustomEd.Shared" Version="1.1.6" />
 =======
     <PackageReference Include="CustomEd.Contracts" Version="2.0.2" />
     <PackageReference Include="CustomEd.Shared" Version="1.1.5" />
 >>>>>>> 718db1f (complete implementing announcement-notification except the auth part)
+=======
+    <PackageReference Include="CustomEd.Contracts" Version="2.0.3" />
+    <PackageReference Include="CustomEd.Shared" Version="1.1.6" />
+>>>>>>> 47bcb50 (change the notification service structure)
     <PackageReference Include="MassTransit" Version="8.1.3" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
   </ItemGroup>
