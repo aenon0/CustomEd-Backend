@@ -47,10 +47,10 @@
           }
         }
       },
-      "CustomEd.Contracts/2.0.2": {
+      "CustomEd.Contracts/2.0.3": {
         "type": "package",
         "dependencies": {
-          "CustomEd.Shared": "1.0.3"
+          "CustomEd.Shared": "1.1.6"
         },
         "compile": {
           "lib/net7.0/CustomEd.Contracts.dll": {}
@@ -59,7 +59,7 @@
           "lib/net7.0/CustomEd.Contracts.dll": {}
         }
       },
-      "CustomEd.Shared/1.1.5": {
+      "CustomEd.Shared/1.1.6": {
         "type": "package",
         "dependencies": {
           "MassTransit.AspNetCore": "7.3.1",
@@ -1352,24 +1352,24 @@
         "tools/uninstall.ps1"
       ]
     },
-    "CustomEd.Contracts/2.0.2": {
-      "sha512": "7tHT+1jmyMbdjv6XrIqc/cY6H5uYQIF60YLOScR3CMHbl5avCeG/JhE9luPRh6rwv6T4G2b1xwZTa2IY5ABqig==",
+    "CustomEd.Contracts/2.0.3": {
+      "sha512": "ez4H7b6uly4Xeq2oH+LuO3BAHIMrkaUfPgMBzs6aR4Qp5UqOZ20t+k5IMT5EchUCV1DOogsZv/Y+h8y8TJgTIg==",
       "type": "package",
-      "path": "customed.contracts/2.0.2",
+      "path": "customed.contracts/2.0.3",
       "files": [
         ".nupkg.metadata",
-        "customed.contracts.2.0.2.nupkg.sha512",
+        "customed.contracts.2.0.3.nupkg.sha512",
         "customed.contracts.nuspec",
         "lib/net7.0/CustomEd.Contracts.dll"
       ]
     },
-    "CustomEd.Shared/1.1.5": {
-      "sha512": "H0Q1txXCb5XjdMacCBQY9Li1n5v2o91oczgl/v1YlrxxxbHsJfajrisvYwlqUHsc2DQs/HU/+ruxEeeO4f9WvA==",
+    "CustomEd.Shared/1.1.6": {
+      "sha512": "fKT4xPOs+sw7kEJI0HpBNpYEginWqgdljSke2KXebiZ8JSpRYUkR9i3e3Rz0Rp6tsi5QWi5mnMlJz2/s9tCAQA==",
       "type": "package",
-      "path": "customed.shared/1.1.5",
+      "path": "customed.shared/1.1.6",
       "files": [
         ".nupkg.metadata",
-        "customed.shared.1.1.5.nupkg.sha512",
+        "customed.shared.1.1.6.nupkg.sha512",
         "customed.shared.nuspec",
         "lib/net7.0/CustomEd.Shared.dll"
       ]
@@ -3061,8 +3061,8 @@
   },
   "projectFileDependencyGroups": {
     "net7.0": [
-      "CustomEd.Contracts >= 2.0.2",
-      "CustomEd.Shared >= 1.1.5",
+      "CustomEd.Contracts >= 2.0.3",
+      "CustomEd.Shared >= 1.1.6",
       "MassTransit >= 8.1.3",
       "Microsoft.AspNetCore.SignalR >= 1.1.0",
       "automapper >= 13.0.1"
@@ -3108,11 +3108,11 @@
         "dependencies": {
           "CustomEd.Contracts": {
             "target": "Package",
-            "version": "[2.0.2, )"
+            "version": "[2.0.3, )"
           },
           "CustomEd.Shared": {
             "target": "Package",
-            "version": "[1.1.5, )"
+            "version": "[1.1.6, )"
           },
           "MassTransit": {
             "target": "Package",
