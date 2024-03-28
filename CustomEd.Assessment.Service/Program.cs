@@ -14,7 +14,8 @@ builder.Services.AddMongo()
                 .AddPersistence<Assessment>("Assessment")
                 .AddPersistence<Classroom>("Classrooms")
                 .AddPersistence<Question>("Questions")
-                .AddPersistence<Submission>("Submissions");
+                .AddPersistence<Submission>("Submissions")
+                .AddPersistence<Analytics>("Analytics");
 
 var app = builder.Build();
 

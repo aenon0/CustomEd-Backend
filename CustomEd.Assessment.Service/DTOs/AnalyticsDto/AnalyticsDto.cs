@@ -1,11 +1,10 @@
-using CustomEd.Shared.Model;
+namespace CustomEd.Assessment.Service.DTOs;
 
-namespace CustomEd.Assessment.Service.Model;
-
-public class Analytics : BaseEntity
+public class AnalyticsDto
 {
+    public Guid Id { get; set; }
     public string? Description { get; set; }
-    public Assessment Assessment { get; set; } = null!;
+    public AssessmentDto Assessment { get; set; } = null!;
     public double MeanScore { get; set; }
     public List<double> TopFiveScores { get; set; } = null!;
     public List<double> BottomFiveScores { get; set; } = null!;
