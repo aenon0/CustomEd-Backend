@@ -27,7 +27,7 @@ public class MappingProfile : Profile
         CreateMap<Answer, AnswerDto>();
 
         CreateMap<Question, QuestionDto>()
-            .ForMember(dest => dest.Answers, opt => opt.MapFrom(src => src.Answers.Select(a => a.Text)));
+        .ForMember(dest => dest.Answers, opt => opt.MapFrom(src => src.Answers.Select(a => a.Text)));
 
         CreateMap<CreateAssessmentDto, Model.Assessment>()
             .ForMember(dest => dest.Classroom, opt => opt.MapFrom(async (src, dest, destMember, context) => await _classroomRepository.GetAsync(src.ClassroomId)));

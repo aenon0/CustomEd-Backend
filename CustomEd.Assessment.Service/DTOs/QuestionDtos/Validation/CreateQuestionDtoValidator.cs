@@ -25,20 +25,18 @@ public class CreateQuestionDtoValidator : AbstractValidator<CreateQuestionDto>
             .WithMessage("Question text is required.")
             .Length(0, 500)
             .WithMessage("Question text cannot be more than 500 characters.");
+        
+        RuleFor(x => x.Weight)
+            .GreaterThan(0.0)
+            .WithMessage("Weight must be greater than or equal to 0.");
 
         RuleFor(x => x.Answers).NotEmpty().WithMessage("At least one answer is required.");
-
-        RuleFor(x => x.CorrectAnswerId)
-            .NotEmpty()
-            .WithMessage("Correct answer ID is required.")
-            .MustAsync(
-                async (correctAnswerId, cancellation) =>
-                {
-                    var answer = await _answerRepository.GetAsync(correctAnswerId);
-                    return answer != null;
-                }
-            )
-            .WithMessage("Correct answer does not exist in the database.");
+        
+        RuleFor(x => x.CorrectAnswerIndex)
+            .GreaterThanOrEqualTo(0)
+            .WithMessage("Correct index must be greater than or equal to 0.")
+            .LessThan(x => x.Answers.Count)
+            .WithMessage("Correct index must be less than the number of answers.");
 
         RuleFor(x => x.AssessmentId)
             .NotEmpty()

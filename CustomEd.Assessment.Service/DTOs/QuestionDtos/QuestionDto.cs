@@ -6,7 +6,6 @@ public class QuestionDto
     public Guid Id;
     public string Text { get; set; } = null!;
     public List<Answer> Answers { get; set; } = new List<Answer>();
-    public Guid CorrectAnswerId { get; set; }
     public Guid AssessmentId { get; set; }
     public List<string> Tags { get; set; } = null!;
     public  DateTime CreatedAt { get; set; }
