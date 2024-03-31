@@ -8,11 +8,14 @@ using CustomEd.Assessment.Service.DTOs;
 using CustomEd.Assessment.Service.Model;
 using CustomEd.Shared.Data.Interfaces;
 using CustomEd.Shared.Response;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CustomEd.Assessment.Service.Controllers
 {
-    [Route("api/analytics")]
+    
+    [Route("api/classroom/{classRoomId}/analytics")]
+    [Authorize(Policy = "CreatorOnly")]
     [ApiController]
     public class AnalyticsController : ControllerBase
     {
@@ -46,10 +49,10 @@ namespace CustomEd.Assessment.Service.Controllers
         [HttpGet("cross-student/{studentId}")]
         public async Task<ActionResult<SharedResponse<List<CrossStudent?>>>> GetCrossStudent(
             Guid studentId,
-            [FromQuery] Guid classroomId
+            Guid classRoomId
         )
         {
-            var crossStudent = await _analyticsService.PerformCrossStudent(studentId, classroomId);
+            var crossStudent = await _analyticsService.PerformCrossStudent(studentId, classRoomId);
             if (crossStudent == null)
             {
                 return NotFound(
@@ -60,12 +63,12 @@ namespace CustomEd.Assessment.Service.Controllers
             return Ok(SharedResponse<List<CrossStudent?>>.Success(crossStudent, null));
         }
 
-        [HttpGet("cross-assessment/{classroomId}")]
+        [HttpGet("cross-assessment")]
         public async Task<ActionResult<SharedResponse<List<AnalyticsDto?>>>> GetCrossAssessment(
-            Guid classroomId
+            Guid classRoomId
         )
         {
-            var analytics = await _analyticsService.PerformCrossAssessment(classroomId);
+            var analytics = await _analyticsService.PerformCrossAssessment(classRoomId);
             if (analytics == null)
             {
                 return NotFound(
@@ -78,10 +81,11 @@ namespace CustomEd.Assessment.Service.Controllers
 
         [HttpGet("assessment/{assessmentId}")]
         public async Task<ActionResult<SharedResponse<AnalyticsDto>>> GetAssessment(
-            Guid assessmentId
+            Guid assessmentId,
+            Guid classRoomId
         )
         {
-            var assessment = await _assessmentRepository.GetAsync(assessmentId);
+            var assessment = await _assessmentRepository.GetAsync(x => x.Id == assessmentId && x.Classroom.Id == classRoomId);
             if (assessment == null)
             {
                 return NotFound(SharedResponse<AnalyticsDto>.Fail("Assessment not found", null));
@@ -95,7 +99,8 @@ namespace CustomEd.Assessment.Service.Controllers
 
         [HttpPost("assessment")]
         public async Task<ActionResult<SharedResponse<AnalyticsDto>>> GetAssessmentByTag(
-            [FromBody] List<string?> tags
+            [FromBody] List<string?> tags,
+            Guid classRoomId
         )
         {
             if(tags == null || tags.Count == 0)
@@ -103,7 +108,7 @@ namespace CustomEd.Assessment.Service.Controllers
                 return BadRequest(SharedResponse<AnalyticsDto>.Fail("Tags are required", null));
             }
             var assessmentAnalytics = _mapper.Map<AnalyticsDto>(
-                await _analyticsService.PerformClassAnalysisByTag(tags!)
+                await _analyticsService.PerformClassAnalysisByTag(tags!, classRoomId)
             );
             return Ok(SharedResponse<AnalyticsDto>.Success(assessmentAnalytics, null));
         }

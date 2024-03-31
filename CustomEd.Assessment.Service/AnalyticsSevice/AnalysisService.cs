@@ -244,10 +244,10 @@ namespace CustomEd.Assessment.Service.AnalyticsSevice
             return crossStudents;
         }
 
-        public async Task<List<Analytics?>> PerformClassAnalysisByTag(List<string> tags)
+        public async Task<List<Analytics?>> PerformClassAnalysisByTag(List<string> tags, Guid classRoomId)
         {
             var assessments = await _assessmentRepository.GetAllAsync(a =>
-                tags.Any(tag => a.Tag.Contains(tag))
+                tags.Any(tag => a.Tag.Contains(tag) && a.Classroom.Id == classRoomId)
             );
 
             var listOfanalytics = new List<Analytics?>();

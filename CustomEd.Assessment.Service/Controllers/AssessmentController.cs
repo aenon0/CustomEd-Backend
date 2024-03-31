@@ -1,15 +1,19 @@
+using Amazon.Auth.AccessControlPolicy;
 using AutoMapper;
 using CustomEd.Assessment.Service.DTOs;
 using CustomEd.Assessment.Service.DTOs.Validation;
 using CustomEd.Assessment.Service.Model;
 using CustomEd.Shared.Data.Interfaces;
+using CustomEd.Shared.JWT;
+using CustomEd.Shared.JWT.Interfaces;
 using CustomEd.Shared.Response;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CustomEd.Assessment.Service.Controllers;
 
 [ApiController]
-[Route("/api/assessment")]
+[Route("/api/classroom/{classRoomId}/assessment")]
 public class AssessmentController: ControllerBase
 {
 
@@ -18,10 +22,12 @@ public class AssessmentController: ControllerBase
     private readonly IGenericRepository<Answer> _answerRepository;
     private readonly IGenericRepository<Classroom> _classroomRepository;
     private readonly IGenericRepository<Submission> _submissionRepository;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IJwtService _jwtService;
     private readonly IMapper _mapper;
 
 
-    public AssessmentController(IGenericRepository<Model.Assessment> assessmentRepository, IGenericRepository<Question> questionRepository, IGenericRepository<Answer> answerRepository, IMapper mapper, IGenericRepository<Classroom> classroomRepository, IGenericRepository<Submission> submissionRepository)
+    public AssessmentController(IGenericRepository<Model.Assessment> assessmentRepository, IGenericRepository<Question> questionRepository, IGenericRepository<Answer> answerRepository, IMapper mapper, IGenericRepository<Classroom> classroomRepository, IGenericRepository<Submission> submissionRepository, IHttpContextAccessor httpContextAccessor, IJwtService jwtService)
     {
         _assessmentRepository = assessmentRepository;
         _questionRepository = questionRepository;
@@ -29,10 +35,13 @@ public class AssessmentController: ControllerBase
         _mapper = mapper;
         _classroomRepository = classroomRepository;
         _submissionRepository = submissionRepository;
+        _httpContextAccessor = httpContextAccessor;
+        _jwtService = jwtService;
     }
 
     [HttpPost]
-    public async Task<ActionResult<SharedResponse<AssessmentDto>>> CreateAssessment([FromBody] CreateAssessmentDto createAssessmentDto)
+    [Authorize(Policy = "CreatorOnly")]
+    public async Task<ActionResult<SharedResponse<AssessmentDto>>> CreateAssessment([FromBody] CreateAssessmentDto createAssessmentDto, Guid classRoomId)
     {
         var createAssessementDtoValidator = new CreateAssessmentDtoValidator(_classroomRepository);
         var validationResult = await createAssessementDtoValidator.ValidateAsync(createAssessmentDto);
@@ -41,6 +50,8 @@ public class AssessmentController: ControllerBase
             var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
             return BadRequest(SharedResponse<AssessmentDto>.Fail("Assessment could not be created", errors));
         }
+
+        createAssessmentDto.ClassroomId = classRoomId;
         
         var assessment = _mapper.Map<Model.Assessment>(createAssessmentDto);
         await _assessmentRepository.CreateAsync(assessment);
@@ -49,9 +60,10 @@ public class AssessmentController: ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<SharedResponse<AssessmentDto>>> GetAssessment(Guid id)
+    [Authorize(Policy = "MemberOnly")]
+    public async Task<ActionResult<SharedResponse<AssessmentDto>>> GetAssessment(Guid id, Guid classRoomId)
     {
-        var assessment = await _assessmentRepository.GetAsync(id);
+        var assessment = await _assessmentRepository.GetAsync(x => x.Id == id && x.Classroom.Id == classRoomId);
         if (assessment == null)
         {
             return NotFound(SharedResponse<AssessmentDto>.Fail("Assessment not found", null));
@@ -60,16 +72,18 @@ public class AssessmentController: ControllerBase
         return Ok(SharedResponse<AssessmentDto>.Success(assessmentDto, "Assessment retrived successfully."));
     }
 
-    [HttpGet("classroom/{classroomId}")]
-    public async Task<ActionResult<SharedResponse<List<AssessmentDto>>>> GetAssessmentsByClassroom(Guid classroomId)
+    [HttpGet]
+    [Authorize(Policy = "MemberOnly")]
+    public async Task<ActionResult<SharedResponse<List<AssessmentDto>>>> GetAssessmentsByClassroom(Guid classRoomId)
     {
-        var assessments = await _assessmentRepository.GetAllAsync(a => a.Classroom.Id == classroomId);
+        var assessments = await _assessmentRepository.GetAllAsync(a => a.Classroom.Id == classRoomId);
         var assessmentDtos = _mapper.Map<List<AssessmentDto>>(assessments);
         return Ok(SharedResponse<List<AssessmentDto>>.Success(assessmentDtos, "Assessments retrived successfully."));
     }
 
     [HttpPut]
-    public async Task<ActionResult<SharedResponse<AssessmentDto>>> UpdateAssessment([FromBody] UpdateAssessmentDto updateAssessmentDto)
+    [Authorize(Policy = "CreatorOnly")]
+    public async Task<ActionResult<SharedResponse<AssessmentDto>>> UpdateAssessment(Guid classRoomId, [FromBody] UpdateAssessmentDto updateAssessmentDto)
     {
         var updateAssessmentDtoValidator = new UpdateAssessmentDtoValidator(_assessmentRepository, _classroomRepository);
         var validationResult = await updateAssessmentDtoValidator.ValidateAsync(updateAssessmentDto);
@@ -78,6 +92,7 @@ public class AssessmentController: ControllerBase
             var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
             return BadRequest(SharedResponse<AssessmentDto>.Fail("Assessment could not be updated", errors));
         }
+        updateAssessmentDto.ClassroomId = classRoomId;
         var assessment = _mapper.Map<Model.Assessment>(updateAssessmentDto);
         await _assessmentRepository.UpdateAsync(assessment);
         var assessmentDto = _mapper.Map<AssessmentDto>(assessment);
@@ -86,9 +101,10 @@ public class AssessmentController: ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult<SharedResponse<AssessmentDto>>> DeleteAssessment(Guid id)
+    [Authorize(Policy = "CreatorOnly")]
+    public async Task<ActionResult<SharedResponse<AssessmentDto>>> DeleteAssessment(Guid classRoomId, Guid id)
     {
-        var assessment = await _assessmentRepository.GetAsync(id);
+        var assessment = await _assessmentRepository.GetAsync(x => (x.Id == id )&& (x.Classroom.Id == classRoomId));
         if (assessment == null)
         {
             return NotFound(SharedResponse<AssessmentDto>.Fail("Assessment not found", null));
@@ -100,7 +116,8 @@ public class AssessmentController: ControllerBase
     }
 
     [HttpPost("add-question")]
-    public async Task<ActionResult<SharedResponse<QuestionDto>>> CreateQuestion([FromBody] CreateQuestionDto createQuestionDto)
+    [Authorize(Policy = "CreatorOnly")]
+    public async Task<ActionResult<SharedResponse<QuestionDto>>> CreateQuestion(Guid classRoomId, [FromBody] CreateQuestionDto createQuestionDto)
     {
         var createQuestionDtoValidator = new CreateQuestionDtoValidator(_assessmentRepository, _answerRepository);
         var validationResult = await createQuestionDtoValidator.ValidateAsync(createQuestionDto);
@@ -124,9 +141,10 @@ public class AssessmentController: ControllerBase
             }
             await _answerRepository.CreateAsync(answer);
         }
+        
         await _questionRepository.CreateAsync(question);
 
-        var assessment = await _assessmentRepository.GetAsync(createQuestionDto.AssessmentId);
+        var assessment = await _assessmentRepository.GetAsync(x => x.Id == createQuestionDto.AssessmentId && x.Classroom.Id == classRoomId);
         assessment.Questions.Add(question);
         await _assessmentRepository.UpdateAsync(assessment);
 
@@ -135,7 +153,8 @@ public class AssessmentController: ControllerBase
     }
 
     [HttpGet("question/{id}")]
-    public async Task<ActionResult<SharedResponse<QuestionDto>>> GetQuestion(Guid id)
+    [Authorize(Policy = "MemberOnly")]
+    public async Task<ActionResult<SharedResponse<QuestionDto>>> GetQuestion(Guid classRoomId, Guid id)
     {
         var question = await _questionRepository.GetAsync(id);
         if (question == null)
@@ -147,7 +166,8 @@ public class AssessmentController: ControllerBase
     }
 
     [HttpPut("edit-question")]
-    public async Task<ActionResult<SharedResponse<QuestionDto>>> UpdateQuestion([FromBody] UpdateQuestionDto updateQuestionDto)
+    [Authorize(Policy = "CreatorOnly")]
+    public async Task<ActionResult<SharedResponse<QuestionDto>>> UpdateQuestion(Guid classRoomId,[FromBody] UpdateQuestionDto updateQuestionDto)
     {
         var updateQuestionDtoValidator = new UpdateQuestionDtoValidator(_assessmentRepository, _answerRepository, _questionRepository);
         var validationResult = await updateQuestionDtoValidator.ValidateAsync(updateQuestionDto);
@@ -182,6 +202,7 @@ public class AssessmentController: ControllerBase
     }
 
     [HttpDelete("question/{id}")]
+    [Authorize(Policy = "CreatorOnly")]
     public async Task<ActionResult<SharedResponse<QuestionDto>>> DeleteQuestion(Guid id)
     {
         var question = await _questionRepository.GetAsync(id);
@@ -200,7 +221,8 @@ public class AssessmentController: ControllerBase
     }
 
     [HttpPost("add-submission")]
-    public async Task<ActionResult<SharedResponse<SubmissionDto>>> CreateSubmission([FromBody] CreateSubmissionDto createSubmissionDto)
+    [Authorize(Policy = "StudentOnly")]
+    public async Task<ActionResult<SharedResponse<SubmissionDto>>> CreateSubmission(Guid classRoomId, [FromBody] CreateSubmissionDto createSubmissionDto)
     {
         var createSubmissionDtoValidator = new CreateSubmissionDtoValidator(_assessmentRepository, _answerRepository);
         var validationResult = await createSubmissionDtoValidator.ValidateAsync(createSubmissionDto);
@@ -209,6 +231,7 @@ public class AssessmentController: ControllerBase
             var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
             return BadRequest(SharedResponse<SubmissionDto>.Fail("Submission could not be created", errors));
         }
+        var currentUserId = new IdentityProvider(_httpContextAccessor, _jwtService).GetUserId();
         var assessment = await _assessmentRepository.GetAsync(createSubmissionDto.AssessmentId);
         if (DateTime.UtcNow > assessment.Deadline)
         {
@@ -221,18 +244,26 @@ public class AssessmentController: ControllerBase
     }
 
     [HttpGet("submission/{id}")]
-    public async Task<ActionResult<SharedResponse<SubmissionDto>>> GetSubmission(Guid id)
+    [Authorize(Policy = "MemberOnly")]
+    public async Task<ActionResult<SharedResponse<SubmissionDto>>> GetSubmission(Guid classRoomId, Guid id)
     {
         var submission = await _submissionRepository.GetAsync(id);
         if (submission == null)
         {
             return NotFound(SharedResponse<SubmissionDto>.Fail("Submission not found", null));
         }
+        var currentUserId = new IdentityProvider(_httpContextAccessor, _jwtService).GetUserId();
+        var creatorId = (await _classroomRepository.GetAsync(classRoomId)).CreatorId;
+        if (submission.StudentId != currentUserId || currentUserId != creatorId)
+        {
+            return BadRequest(SharedResponse<SubmissionDto>.Fail("Submission could not be retrived", new List<string> { "You are not authorized to view this submission." }));
+        }
         var submissionDto = _mapper.Map<SubmissionDto>(submission);
         return Ok(SharedResponse<SubmissionDto>.Success(submissionDto, "Submission retrived successfully."));
     }
 
     [HttpPut("edit-submission")]
+    [Authorize(Policy = "StudentOnly")]
     public async Task<ActionResult<SharedResponse<SubmissionDto>>> UpdateSubmission([FromBody] UpdateSubmissionDto updateSubmissionDto)
     {
         var updateSubmissionDtoValidator = new UpdateSubmissionDtoValidator(_assessmentRepository, _answerRepository, _submissionRepository);
@@ -242,11 +273,20 @@ public class AssessmentController: ControllerBase
             var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
             return BadRequest(SharedResponse<SubmissionDto>.Fail("Submission could not be updated", errors));
         }
+
         var assessment = await _assessmentRepository.GetAsync(updateSubmissionDto.AssessmentId);
         if (DateTime.UtcNow > assessment.Deadline)
         {
             return BadRequest(SharedResponse<SubmissionDto>.Fail("Submission could not be created", new List<string> { "Assessment is expired." }));
         }
+        var currentUserId = new IdentityProvider(_httpContextAccessor, _jwtService).GetUserId();
+        var creatorId = (await _classroomRepository.GetAsync(assessment.Classroom.Id)).CreatorId;
+
+        if(currentUserId != updateSubmissionDto.StudentId || currentUserId != creatorId)
+        {
+            return BadRequest(SharedResponse<SubmissionDto>.Fail("Submission could not be updated", new List<string> { "You are not authorized to update this submission." }));
+        }
+        
         var submission = _mapper.Map<Submission>(updateSubmissionDto);
         await _submissionRepository.UpdateAsync(submission);
         var submissionDto = _mapper.Map<SubmissionDto>(submission);
