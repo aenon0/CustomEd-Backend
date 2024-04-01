@@ -7,6 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+  <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+    <PackageReference Include="CustomEd.Contracts" Version="2.0.0" />
+    <PackageReference Include="CustomEd.Shared" Version="1.1.4" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.14" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
