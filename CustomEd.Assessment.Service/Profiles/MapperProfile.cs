@@ -3,6 +3,7 @@ using CustomEd.Assessment.Service.DTOs;
 using CustomEd.Assessment.Service.Model;
 using CustomEd.Shared.Data.Interfaces;
 using AutoMapper.QueryableExtensions;
+using CustomEd.Contracts.Classroom.Events;
 
 namespace CustomEd.Assessment.Service.Profiles;
 public class MappingProfile : Profile
@@ -46,6 +47,9 @@ public class MappingProfile : Profile
         
         CreateMap<Analytics, AnalyticsDto>()
             .ForMember(dest => dest.Assessment, opt => opt.MapFrom(src => src.Assessment));
+        
+        CreateMap<ClassroomCreatedEvent, Classroom>().ReverseMap();
+        CreateMap<ClassroomUpdatedEvent, Classroom>().ReverseMap();
 
         
         
