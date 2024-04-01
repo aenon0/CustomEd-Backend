@@ -21,13 +21,15 @@ namespace CustomEd.LearningEngine.Service.Controllers
     {
         private readonly IGenericRepository<Student> _studentRepository;
         private readonly IGenericRepository<LearningPath> _learningPathRepository;
+        private readonly IGenericRepository<ChatbotMessage> _chatbotMessageRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IJwtService _jwtService;
         private readonly IMapper _mapper;
 
-        public LearningPathController(IGenericRepository<Student> studentRepository, IGenericRepository<LearningPath> learningPathRepository, IHttpContextAccessor httpContextAccessor, IJwtService jwtService, IMapper mapper)
+        public LearningPathController(IGenericRepository<Student> studentRepository, IGenericRepository<LearningPath> learningPathRepository, IGenericRepository<ChatbotMessage> chatbotMessageRepository, IHttpContextAccessor httpContextAccessor, IJwtService jwtService, IMapper mapper)
         {
             _studentRepository = studentRepository;
+            _chatbotMessageRepository = chatbotMessageRepository;
             _learningPathRepository = learningPathRepository;
             _httpContextAccessor = httpContextAccessor;
             _jwtService = jwtService;
@@ -62,7 +64,7 @@ namespace CustomEd.LearningEngine.Service.Controllers
         }
 
         [Authorize(Policy = "StudentOnlyPolicy")]
-        [HttpPut]
+        [HttpPost]
         public async Task<ActionResult<SharedResponse<LearningPath>>> CreateLearningPath(LearningPath learningPath)
         {
             var studentId = new IdentityProvider(_httpContextAccessor, _jwtService).GetUserId();
@@ -104,7 +106,42 @@ namespace CustomEd.LearningEngine.Service.Controllers
             await _learningPathRepository.RemoveAsync(id);
             return NoContent();
         }
+        
+        [Authorize(Policy = "StudentOnlyPolicy")]
+        [HttpGet]
+        public async Task<ActionResult<SharedResponse<IEnumerable<ChatbotMessage>>>> GetChatbotMessages(List<ChatbotMessage> chatbotMessages)
+        {
+            var studentId = new IdentityProvider(_httpContextAccessor, _jwtService).GetUserId();
+            if(studentId == Guid.Empty)
+            {
+                return Unauthorized(SharedResponse<IEnumerable<LearningPath>>.Fail("You're not authorized", null));
+            }
+            
+            await _chatbotMessageRepository.GetAllAsync(x => x.StudentId == studentId);
+            var sortedChatbotMessages = chatbotMessages.OrderBy(x => x.CreatedAt).ToList();
 
+            return Ok(SharedResponse<IEnumerable<ChatbotMessage>>.Success(sortedChatbotMessages, null));
+        }
+
+
+        [Authorize(Policy = "StudentOnlyPolicy")]
+        [HttpPost]
+        public async Task<ActionResult<SharedResponse<IEnumerable<ChatbotMessage>>>> CreateChatbotMessage(List<ChatbotMessage> chatbotMessages)
+        {
+            var studentId = new IdentityProvider(_httpContextAccessor, _jwtService).GetUserId();
+            if(studentId == Guid.Empty)
+            {
+                return Unauthorized(SharedResponse<IEnumerable<LearningPath>>.Fail("You're not authorized", null));
+            }
+            
+            foreach(var chatbotMessage in chatbotMessages)
+            {
+                chatbotMessage.StudentId = studentId;
+                await _chatbotMessageRepository.CreateAsync(chatbotMessage);
+            }
+
+            return Ok(SharedResponse<IEnumerable<ChatbotMessage>>.Success(chatbotMessages, null));
+        }
         
         
     }
