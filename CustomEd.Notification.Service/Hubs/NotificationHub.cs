@@ -1,8 +1,11 @@
 using System.Security.Claims;
+using AutoMapper.Internal;
 using CustomEd.Shared.Data.Interfaces;
 using CustomEd.Shared.JWT;
 using CustomEd.Shared.JWT.Interfaces;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CustomEd.Notification.Service.Hubs;
 
@@ -29,12 +32,19 @@ public class NotificationHub : Hub
             Console.WriteLine($"Access Token: {token}");
             var identityProvider = new IdentityProvider(_httpContextAccessor, _jwtService);
             var studentId = identityProvider.GetUserId();
+            if (studentId == Guid.Empty)
+            {
+                Console.WriteLine("empty");
+                await Clients.Caller.SendAsync("Unauthorized", "You're not authorized");
+                return;
+            }
+            Console.WriteLine("not empty");
             var studentNotifications = await _studentNotificationRepository.GetAllAsync(x => x.StudentId == studentId && x.IsRead == false);
             var notifications = new List<Models.Notification>();
             foreach (var studentNotification in studentNotifications)
             {
                 var notificationId = studentNotification.NotificationId;
-                var notification = await _notificationRepository.GetAsync(notificationId);   
+                var notification = await _notificationRepository.GetAsync(notificationId);
                 notifications.Add(notification);
             }
             var sortedNotifications = notifications.OrderBy(n => n.CreatedAt).ToList();
@@ -43,7 +53,7 @@ public class NotificationHub : Hub
         Console.WriteLine("Notifications sent");
         await base.OnConnectedAsync();
     }
-        
+
     public async Task MarkAnnouncementAsSeen(Guid notificationId)
     {
         if (Context.GetHttpContext().Request.Headers.TryGetValue("Authorization", out var authorizationHeader))
@@ -53,7 +63,7 @@ public class NotificationHub : Hub
             var identityProvider = new IdentityProvider(_httpContextAccessor, _jwtService);
             var studentId = identityProvider.GetUserId();
             var studentNotification = await _studentNotificationRepository.GetAsync(x => x.StudentId == studentId && x.NotificationId == notificationId);
-            if(studentNotification != null)
+            if (studentNotification != null)
             {
                 studentNotification.IsRead = true;
                 await _studentNotificationRepository.UpdateAsync(studentNotification);
