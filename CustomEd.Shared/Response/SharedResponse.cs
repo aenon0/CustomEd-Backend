@@ -1,4 +1,4 @@
-cdnamespace CustomEd.Shared.Response;
+namespace CustomEd.Shared.Response;
 
 public class SharedResponse<T>
 {
