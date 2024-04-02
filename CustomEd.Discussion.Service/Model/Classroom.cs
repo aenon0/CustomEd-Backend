@@ -1,6 +1,6 @@
 using CustomEd.Shared.Model;
 
-namespace CustomEd.Assessment.Service.Model;
+namespace CustomEd.Discussion.Service.Model;
 
 public class Classroom : BaseEntity
 {
