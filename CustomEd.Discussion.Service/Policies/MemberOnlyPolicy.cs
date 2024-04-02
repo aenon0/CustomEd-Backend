@@ -1,5 +1,5 @@
 
-using CustomEd.Assessment.Service.Model;
+using CustomEd.Discussion.Service.Model;
 using CustomEd.Shared.Data.Interfaces;
 using CustomEd.Shared.JWT;
 using CustomEd.Shared.JWT.Interfaces;
