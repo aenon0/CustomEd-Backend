@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.Tokens;
 
+
 namespace CustomEd.Notification.Service.Hubs;
 
 public class NotificationHub : Hub
@@ -32,6 +33,7 @@ public class NotificationHub : Hub
             Console.WriteLine($"Access Token: {token}");
             var identityProvider = new IdentityProvider(_httpContextAccessor, _jwtService);
             var studentId = identityProvider.GetUserId();
+
             if (studentId == Guid.Empty)
             {
                 Console.WriteLine("empty");
@@ -39,12 +41,15 @@ public class NotificationHub : Hub
                 return;
             }
             Console.WriteLine("not empty");
+
             var studentNotifications = await _studentNotificationRepository.GetAllAsync(x => x.StudentId == studentId && x.IsRead == false);
             var notifications = new List<Models.Notification>();
             foreach (var studentNotification in studentNotifications)
             {
                 var notificationId = studentNotification.NotificationId;
+
                 var notification = await _notificationRepository.GetAsync(notificationId);
+
                 notifications.Add(notification);
             }
             var sortedNotifications = notifications.OrderBy(n => n.CreatedAt).ToList();
@@ -63,7 +68,9 @@ public class NotificationHub : Hub
             var identityProvider = new IdentityProvider(_httpContextAccessor, _jwtService);
             var studentId = identityProvider.GetUserId();
             var studentNotification = await _studentNotificationRepository.GetAsync(x => x.StudentId == studentId && x.NotificationId == notificationId);
+
             if (studentNotification != null)
+
             {
                 studentNotification.IsRead = true;
                 await _studentNotificationRepository.UpdateAsync(studentNotification);
