@@ -37,7 +37,7 @@ namespace CustomEd.LearningEngine.Service.Controllers
         }
 
         [Authorize(Policy = "StudentOnlyPolicy")]
-        [HttpGet]
+        [HttpGet("learningPaths")]
         public async Task<ActionResult<SharedResponse<IEnumerable<LearningPath>>>> GetAllMyLearningPaths()
         {
             var studentId = new IdentityProvider(_httpContextAccessor, _jwtService).GetUserId();
@@ -51,7 +51,7 @@ namespace CustomEd.LearningEngine.Service.Controllers
 
          
         [Authorize(Policy = "StudentOnlyPolicy")]
-        [HttpGet("{id}")]
+        [HttpGet("learningPaths/{id}")]
         public async Task<ActionResult<SharedResponse<LearningPath>>> GetLearningPath(Guid id)
         {
             var learningPath = await _learningPathRepository.GetAsync(id);
@@ -64,7 +64,7 @@ namespace CustomEd.LearningEngine.Service.Controllers
         }
 
         [Authorize(Policy = "StudentOnlyPolicy")]
-        [HttpPost]
+        [HttpPost("learningPaths")]
         public async Task<ActionResult<SharedResponse<LearningPath>>> CreateLearningPath(LearningPath learningPath)
         {
             var studentId = new IdentityProvider(_httpContextAccessor, _jwtService).GetUserId();
@@ -79,7 +79,7 @@ namespace CustomEd.LearningEngine.Service.Controllers
         }
 
         [Authorize(Policy = "StudentOnlyPolicy")]
-        [HttpPut]
+        [HttpPut("learningPaths")]
         public async Task<ActionResult<SharedResponse<LearningPath>>> UpdateLearningPathStatus(Guid learningPathId, LearningPathStatus status)
         {
             var learningPath = await _learningPathRepository.GetAsync(learningPathId);
@@ -90,7 +90,7 @@ namespace CustomEd.LearningEngine.Service.Controllers
 
 
         [Authorize(Policy = "StudentOnlyPolicy")]
-        [HttpDelete("{id}")]
+        [HttpDelete("learningPaths/{id}")]
         public async Task<IActionResult> RemoveRoom(Guid id)
         {
             var learningPath = await _learningPathRepository.GetAsync(id);
@@ -108,8 +108,8 @@ namespace CustomEd.LearningEngine.Service.Controllers
         }
         
         [Authorize(Policy = "StudentOnlyPolicy")]
-        [HttpGet]
-        public async Task<ActionResult<SharedResponse<IEnumerable<ChatbotMessage>>>> GetChatbotMessages(List<ChatbotMessage> chatbotMessages)
+        [HttpGet("chatbotMessages")]
+        public async Task<ActionResult<SharedResponse<IEnumerable<ChatbotMessage>>>> GetChatbotMessages()
         {
             var studentId = new IdentityProvider(_httpContextAccessor, _jwtService).GetUserId();
             if(studentId == Guid.Empty)
@@ -117,7 +117,7 @@ namespace CustomEd.LearningEngine.Service.Controllers
                 return Unauthorized(SharedResponse<IEnumerable<LearningPath>>.Fail("You're not authorized", null));
             }
             
-            await _chatbotMessageRepository.GetAllAsync(x => x.StudentId == studentId);
+            var chatbotMessages = await _chatbotMessageRepository.GetAllAsync(x => x.StudentId == studentId);
             var sortedChatbotMessages = chatbotMessages.OrderBy(x => x.CreatedAt).ToList();
 
             return Ok(SharedResponse<IEnumerable<ChatbotMessage>>.Success(sortedChatbotMessages, null));
@@ -125,7 +125,7 @@ namespace CustomEd.LearningEngine.Service.Controllers
 
 
         [Authorize(Policy = "StudentOnlyPolicy")]
-        [HttpPost]
+        [HttpPost("chatbotMessages")]
         public async Task<ActionResult<SharedResponse<IEnumerable<ChatbotMessage>>>> CreateChatbotMessage(List<ChatbotMessage> chatbotMessages)
         {
             var studentId = new IdentityProvider(_httpContextAccessor, _jwtService).GetUserId();
