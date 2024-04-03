@@ -3,6 +3,7 @@ using CustomEd.Discussion.Service.Model;
 using CustomEd.Shared.Data.Interfaces;
 using AutoMapper.QueryableExtensions;
 using CustomEd.Contracts.Classroom.Events;
+using CustomEd.User.Student.Events;
 
 namespace CustomEd.Discussion.Service.Profiles;
 public class MappingProfile : Profile
@@ -13,5 +14,8 @@ public class MappingProfile : Profile
     {
         CreateMap<ClassroomCreatedEvent, Classroom>().ReverseMap();
         CreateMap<ClassroomUpdatedEvent, Classroom>().ReverseMap();
+
+        CreateMap<StudentCreatedEvent, Student>().ReverseMap();
+        CreateMap<StudentUpdatedEvent, Student>().ReverseMap();
     }
 }
