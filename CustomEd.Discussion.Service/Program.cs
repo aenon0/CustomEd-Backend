@@ -1,3 +1,4 @@
+using CustomEd.Discussion.Service;
 using CustomEd.Discussion.Service.Model;
 using CustomEd.Discussion.Service.Policies;
 using CustomEd.Shared.Data;
@@ -16,8 +17,9 @@ builder.Services.AddSwaggerGen();
 
 
 builder.Services.AddMongo()
-                .AddPersistence<Discussion>("Classroom")
-                .AddPersistence<Discussion>("Discussion");
+                .AddPersistence<Classroom>("Classroom")
+                .AddPersistence<Discussion>("Discussion")
+                .AddPersistence<Student>("Student");
 
                 
 builder.Services.AddHttpContextAccessor();
