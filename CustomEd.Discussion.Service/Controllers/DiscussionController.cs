@@ -1,5 +1,6 @@
 using Amazon.Auth.AccessControlPolicy;
 using AutoMapper;
+using CustomEd.Discussion.Service.DTOs;
 using CustomEd.Shared.Data.Interfaces;
 using CustomEd.Shared.JWT;
 using CustomEd.Shared.JWT.Interfaces;
@@ -19,53 +20,60 @@ public class DiscussionController: ControllerBase
 
     private readonly IGenericRepository<Model.Student> _studentRepository;
     private readonly IGenericRepository<Model.Classroom> _classroomRepository;
-    private readonly IGenericRepository<Model.Discussion> _discussionRepository;
+    private readonly IGenericRepository<Model.Message> _messageRepository;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IJwtService _jwtService;
     private readonly IMapper _mapper;
 
 
-    public DiscussionController(IGenericRepository<Model.Student> studentRepository, IGenericRepository<Model.Classroom> classroomRepository, IGenericRepository<Model.Discussion> discussionRepository, IMapper mapper, IHttpContextAccessor httpContextAccessor, IJwtService jwtService)
+    public DiscussionController(IGenericRepository<Model.Student> studentRepository, IGenericRepository<Model.Classroom> classroomRepository, IGenericRepository<Model.Message> messageRepository, IMapper mapper, IHttpContextAccessor httpContextAccessor, IJwtService jwtService)
     {
         _studentRepository = studentRepository;
         _classroomRepository = classroomRepository;
-        _discussionRepository = discussionRepository;
+        _messageRepository = messageRepository;
         _mapper = mapper;
         _httpContextAccessor = httpContextAccessor;
         _jwtService = jwtService;
     }
 
 
-
     [HttpPost]
     [Authorize(Policy = "MemberOnly")]
-    public async Task<ActionResult<SharedResponse<Model.Discussion>>> CreateDiscussion([FromBody] Model.Discussion discussion, Guid classRoomId)
+    public async Task<ActionResult<SharedResponse<Model.Message>>> CreateMessage([FromBody] CreateMessageDto messageDto)
     {
-        var studentId = new IdentityProvider(_httpContextAccessor, _jwtService).GetUserId();
-        if(studentId == Guid.Empty)
+        var senderId = new IdentityProvider(_httpContextAccessor, _jwtService).GetUserId();
+        if(senderId == Guid.Empty)
         {
-            return Unauthorized(SharedResponse<Model.Discussion>.Fail("You're not authorized", null));
+            return Unauthorized(SharedResponse<Model.Message>.Fail("You're not authorized", null));
         }
-        discussion.Id = Guid.NewGuid();
-        var classroom = await _classroomRepository.GetAsync(classRoomId);
-        var student = await _studentRepository.GetAsync(studentId);
-        discussion.Classroom = classroom;
-        discussion.Student = student;
-        await _discussionRepository.CreateAsync(discussion);
-        return Ok(SharedResponse<Model.Discussion>.Success(discussion, "Discussion created successfully."));
+        var classroom = await _classroomRepository.GetAsync(messageDto.ClassroomId);
+        var student = await _studentRepository.GetAsync(messageDto.SenderId);
+        var message = new Model.Message{
+            Id = Guid.NewGuid(),
+            Content = messageDto.Content,
+            ClassroomId = messageDto.ClassroomId,
+            SenderId = messageDto.SenderId
+        };
+        await _messageRepository.CreateAsync(message);
+        return Ok(SharedResponse<Model.Message>.Success(message, "Message created successfully."));
     }
 
     
     [HttpGet]
     [Authorize(Policy = "MemberOnly")]
-    public async Task<ActionResult<SharedResponse<List<Model.Discussion>>>> GetPaginatedDiscussion(Guid classRoomId, int pageNumber, int pageSize)
+    public async Task<ActionResult<SharedResponse<List<Model.Message>>>> GetPaginatedMessages(Guid classRoomId, int pageNumber, int pageSize)
     {
+        var senderId = new IdentityProvider(_httpContextAccessor, _jwtService).GetUserId();
+        if(senderId == Guid.Empty)
+        {
+            return Unauthorized(SharedResponse<Model.Message>.Fail("You're not authorized", null));
+        }
         var classroom = await _classroomRepository.GetAsync(classRoomId);
-        var discussions = await _discussionRepository.GetAllAsync(d => d.Classroom.Id == classroom.Id);
-        var paginatedDiscussions = discussions.Skip((pageNumber - 1) * pageSize).Take(pageSize);
-        //here fetch the student name and include that in the list
-        var sortedDiscussions = paginatedDiscussions.OrderBy(d => d.CreatedAt);
-        return Ok(SharedResponse<List<Model.Discussion>>.Success(sortedDiscussions.ToList(), "Discussion retrieved successfully."));
+        var messages = await _messageRepository.GetAllAsync(d => d.ClassroomId == classroom.Id);
+        var paginatedMessages = messages.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+        
+        var sortedMessages = paginatedMessages.OrderBy(d => d.CreatedAt);
+        return Ok(SharedResponse<List<Model.Message>>.Success(sortedMessages.ToList(), "Messages retrieved successfully."));
     }
 
 }
