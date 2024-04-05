@@ -14,4 +14,5 @@ public class Student: BaseEntity
     public int Year { get; set; }
     public string Section { get; set; } = null!;
     public string Email { get; set; } = null!;
+    public bool isDeleted {get; set;} = false;
 }
