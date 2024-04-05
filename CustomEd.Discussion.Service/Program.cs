@@ -18,9 +18,9 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddMongo()
                 .AddPersistence<Classroom>("Classroom")
-                .AddPersistence<Discussion>("Discussion")
-                .AddPersistence<Student>("Student");
-
+                .AddPersistence<Message>("Discussion")
+                .AddPersistence<Student>("Student")
+                .AddPersistence<Message>("Teacher");
                 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<IJwtService, JwtService>();
