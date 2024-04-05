@@ -22,10 +22,8 @@ namespace CustomEd.Discussion.Service.Consumers
         {
             var StudentDeletedEvent = context.Message; 
             var deletedStudent = await _studentRepository.GetAsync(StudentDeletedEvent.Id);
-            deletedStudent.FirstName = "Deleted";
-            deletedStudent.LastName = "";
+            deletedStudent.isDeleted = true;
             await _studentRepository.UpdateAsync(deletedStudent);
-            return;
         }
     }
 }
