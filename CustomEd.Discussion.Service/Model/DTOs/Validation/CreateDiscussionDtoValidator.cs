@@ -10,10 +10,12 @@ public class CreateMessageDtoValidator : AbstractValidator<CreateMessageDto>
 {
     private readonly IGenericRepository<Classroom> _classRoomRepositry;
     private readonly IGenericRepository<Student> _studentRepositry;
-    public CreateMessageDtoValidator(IGenericRepository<Classroom> classRoomRepositry, IGenericRepository<Student> studentRepositry)
+    private readonly IGenericRepository<Teacher> _teacherRepositry;
+    public CreateMessageDtoValidator(IGenericRepository<Classroom> classRoomRepositry, IGenericRepository<Student> studentRepositry, IGenericRepository<Teacher> teacherRepositry)
     {
         _classRoomRepositry = classRoomRepositry;
         _studentRepositry = studentRepositry;
+        _teacherRepositry = teacherRepositry;
 
         RuleFor(x => x.Content)
             .NotEmpty().WithMessage("Content is required")
@@ -29,8 +31,9 @@ public class CreateMessageDtoValidator : AbstractValidator<CreateMessageDto>
         RuleFor(x => x.SenderId)
             .NotEmpty().WithMessage("SenderId is required")
             .MustAsync(async (id, token) => {
-                var classroom = await _classRoomRepositry.GetAsync(id);
-                return classroom != null;
+                var student = await _studentRepositry.GetAsync(id);
+                var teacher = await _teacherRepositry.GetAsync(id);
+                return student != null || teacher != null;
             }).WithMessage("SenderId does not exist");
     }
 }
