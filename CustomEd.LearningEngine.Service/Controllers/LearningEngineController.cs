@@ -38,7 +38,7 @@ namespace CustomEd.LearningEngine.Service.Controllers
 
         [Authorize(Policy = "StudentOnlyPolicy")]
         [HttpGet("learningPaths")]
-        public async Task<ActionResult<SharedResponse<IEnumerable<LearningPath>>>> GetAllMyLearningPaths()
+        public async Task<ActionResult<SharedResponse<IEnumerable<LearningPath>>>> GetLearningPaths()
         {
             var studentId = new IdentityProvider(_httpContextAccessor, _jwtService).GetUserId();
             if(studentId == Guid.Empty)
