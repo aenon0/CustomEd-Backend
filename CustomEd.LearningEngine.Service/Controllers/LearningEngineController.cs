@@ -91,7 +91,7 @@ namespace CustomEd.LearningEngine.Service.Controllers
 
         [Authorize(Policy = "StudentOnlyPolicy")]
         [HttpDelete("learningPaths/{id}")]
-        public async Task<IActionResult> RemoveRoom(Guid id)
+        public async Task<IActionResult> RemoveLearningPath(Guid id)
         {
             var learningPath = await _learningPathRepository.GetAsync(id);
             if (learningPath == null)
@@ -139,7 +139,6 @@ namespace CustomEd.LearningEngine.Service.Controllers
                 chatbotMessage.StudentId = studentId;
                 await _chatbotMessageRepository.CreateAsync(chatbotMessage);
             }
-
             return Ok(SharedResponse<IEnumerable<ChatbotMessage>>.Success(chatbotMessages, null));
         }
         
