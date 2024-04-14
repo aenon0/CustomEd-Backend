@@ -10,9 +10,9 @@ namespace CustomEd.Discussion.Service.Consumers
     {
         private readonly IMapper _mapper;
         private readonly IGenericRepository<Classroom> _classRoomRepository;
-        private readonly IGenericRepository<Model.Discussion> _discussionRepository;
+        private readonly IGenericRepository<Model.Message> _discussionRepository;
 
-        public ClassroomUpdatedEventConsumer(IMapper mapper, IGenericRepository<Classroom> classRoomRepository, IGenericRepository<Model.Discussion> discussionRepository)
+        public ClassroomUpdatedEventConsumer(IMapper mapper, IGenericRepository<Classroom> classRoomRepository, IGenericRepository<Model.Message> discussionRepository)
         {
             _mapper = mapper;
             _classRoomRepository = classRoomRepository;
@@ -23,10 +23,10 @@ namespace CustomEd.Discussion.Service.Consumers
         {
             var classroom = _mapper.Map<Classroom>(context.Message);
             await _classRoomRepository.UpdateAsync(classroom);
-            var discussions = await _discussionRepository.GetAllAsync(a => a.Classroom.Id == classroom.Id);
+            var discussions = await _discussionRepository.GetAllAsync(a => a.ClassroomId == classroom.Id);
             foreach (var discussion in discussions)
             {
-                discussion.Classroom = classroom;
+                discussion.ClassroomId = classroom.Id;
                 await _discussionRepository.UpdateAsync(discussion);
             }
         }

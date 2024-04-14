@@ -9,6 +9,5 @@ namespace CustomEd.LearningEngine.Service.Model
         public Guid StudentId { set; get; }
         public string Content {set; get;}
         public LearningPathStatus Status {set; get;}
-        
     }
 }
