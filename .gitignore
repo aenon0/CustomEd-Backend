@@ -550,4 +550,3 @@ logs/
 *.suo
 obj/*
 appsettings.Development.json
-appsettings.json
