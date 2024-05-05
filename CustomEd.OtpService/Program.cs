@@ -7,7 +7,7 @@ using CustomEd.Shared.RabbitMQ;
 var builder = WebApplication.CreateBuilder(args);
 
 
-// builder.WebHost.UseUrls("http://*:8080");
+builder.WebHost.UseUrls("http://*:9090");
 
 builder.Services.AddMassTransitWithRabbitMq();
 builder.Services.AddControllers();

@@ -87,7 +87,7 @@ namespace CustomEd.User.Service.Controllers
             }
             if(user.IsVerified)
             {
-                return BadRequest(SharedResponse<bool>.Fail("User already verified", null));
+                return Ok(SharedResponse<bool>.Success(true, "User has already been verified."));
             }
             var otp = await _otpRepository.GetAsync(x => x.Email == request.Email);
             if(otp == null)

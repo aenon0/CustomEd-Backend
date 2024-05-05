@@ -1,11 +1,11 @@
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
 
-EXPOSE 9090
-EXPOSE 9091
+EXPOSE 8080
+EXPOSE 8081
 
 # Copy the project file and restore dependencies
-COPY CustomEd.OtpService.csproj .
+COPY CustomEd.LearningEngine.csproj .
 RUN dotnet restore
 
 # Copy the remaining source code and build the application
@@ -24,4 +24,4 @@ WORKDIR /app
 COPY --from=publish /app/publish .
 
 # Set the entry point for the container
-ENTRYPOINT ["dotnet", "CustomEd.OtpService.dll"]
+ENTRYPOINT ["dotnet", "CustomEd.LearningEngine.dll"]
