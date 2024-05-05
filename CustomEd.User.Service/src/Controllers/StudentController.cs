@@ -75,10 +75,8 @@ namespace CustomEd.User.Service.Controllers
             {
                 return BadRequest(SharedResponse<StudentDto>.Fail("Invalid Id", new List<string> { "Invalid id" }));
             }
-
-            var identityProvider = new IdentityProvider((IHttpContextAccessor)HttpContext, _jwtService);
+            var identityProvider = new IdentityProvider(_httpContextAccessor, _jwtService);
             var currentUserId = identityProvider.GetUserId();
-
             if(currentUserId != id)
             {
                 return Unauthorized(SharedResponse<StudentDto>.Fail("Unauthorized", new List<string> { "Unauthorized" }));

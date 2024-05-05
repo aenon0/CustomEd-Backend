@@ -24,7 +24,7 @@ namespace CustomEd.User.Service.Controllers
     {
         public TeacherController(IGenericRepository<Otp> otpRepository, IGenericRepository<Model.Teacher> userRepository, IMapper mapper, IPasswordHasher passwordHasher, IJwtService jwtService, IPublishEndpoint publishEndpoint, IHttpContextAccessor httpContextAccessor) : base(otpRepository, userRepository, mapper, passwordHasher, jwtService, publishEndpoint, httpContextAccessor)
         {
-
+            
         }
 
         [HttpGet("teacher-name")]

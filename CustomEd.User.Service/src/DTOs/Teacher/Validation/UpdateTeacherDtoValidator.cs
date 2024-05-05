@@ -74,7 +74,7 @@ namespace CustomEd.User.Service.Validators
                         return existingStudent == null;
                     }
                 )
-                .WithMessage("Email must be unique.");
+                .WithMessage("Email doesn't exist.");
 
             RuleFor(dto => dto.Password)
                 .NotEmpty()
