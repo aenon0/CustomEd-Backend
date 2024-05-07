@@ -52,12 +52,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 app.UseSwagger();
-// app.UseSwaggerUI(c =>
-// {
-//    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Rideshare API V1");
-//    c.RoutePrefix = "swagger"; // This will set the swagger UI route to 'http://localhost:8080/swagger'
-//    c.DocExpansion(DocExpansion.None);
-// });
+app.UseSwaggerUI(c =>
+{
+   c.SwaggerEndpoint("/swagger/v1/swagger.json", "Rideshare API V1");
+   c.RoutePrefix = "swagger"; // This will set the swagger UI route to 'http://localhost:8080/swagger'
+   c.DocExpansion(DocExpansion.None);
+});
 
 app.UseHttpsRedirection();
 
