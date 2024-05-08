@@ -15,6 +15,8 @@ using CustomEd.Shared.Response;
 using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson.IO;
+using Newtonsoft.Json;
 
 namespace CustomEd.Classroom.Service.Controllers
 {
@@ -71,6 +73,9 @@ namespace CustomEd.Classroom.Service.Controllers
         public async Task<ActionResult<SharedResponse<ClassroomDto>>> UpdateClassroom(UpdateClassroomDto updateClassroomDto)
         {
             var updateClassroomDtoValidator = new UpdateClassroomDtoValidator(_teacherRepository, _classroomRepository);
+            var identityProvider = new IdentityProvider(_httpContextAccessor, _jwtService);
+            var currentUserId = identityProvider.GetUserId();
+            updateClassroomDto.CreatorId = currentUserId;
             var validationResult = await updateClassroomDtoValidator.ValidateAsync(updateClassroomDto);
             if (!validationResult.IsValid)
             {
@@ -83,7 +88,8 @@ namespace CustomEd.Classroom.Service.Controllers
                 return NotFound(SharedResponse<Model.Classroom>.Fail("No classroom with such id", null));
             }
     
-            var currentUserId = new IdentityProvider(_httpContextAccessor, _jwtService).GetUserId();
+            var userId = new IdentityProvider(_httpContextAccessor, _jwtService).GetUserId();
+            updateClassroomDto.CreatorId = userId;
             if(room.Creator.Id != currentUserId)
             {
                 return Unauthorized(SharedResponse<Model.Classroom>.Fail("You are not authorized to update this classroom", null));
@@ -106,6 +112,10 @@ namespace CustomEd.Classroom.Service.Controllers
         public async Task<ActionResult<ClassroomDto>> CreateClassroom(CreateClassroomDto createClassroomDto)
         {
             var createClassroomDtoValidator = new CreateClassroomDtoValidator(_teacherRepository);
+            var identityProvider = new IdentityProvider(_httpContextAccessor, _jwtService);
+            var currentUserId = identityProvider.GetUserId();
+            // Console.WriteLine($"User Id{currentUserId}");
+            createClassroomDto.CreatorId = currentUserId;
             var validationResult = await createClassroomDtoValidator.ValidateAsync(createClassroomDto);
             if (!validationResult.IsValid)
             {
@@ -142,19 +152,23 @@ namespace CustomEd.Classroom.Service.Controllers
         }
 
         [Authorize]
-        [HttpGet("teacher/{teacherId}")]
-        public async Task<ActionResult<SharedResponse<IEnumerable<ClassroomDto>>>> GetRoomsByTeacherId(Guid teacherId)
+        [HttpGet("classrooms/teacher")]
+        public async Task<ActionResult<SharedResponse<IEnumerable<ClassroomDto>>>> GetRoomsByTeacherId()
         {
-            var classrooms = await _classroomRepository.GetAllAsync(x => x.Creator.Id == teacherId);
+            var identityProvider = new IdentityProvider(_httpContextAccessor, _jwtService);
+            var currentUserId = identityProvider.GetUserId();
+            var classrooms = await _classroomRepository.GetAllAsync(x => x.Creator.Id == currentUserId);
             var classroomDtos = _mapper.Map<IEnumerable<ClassroomDto>>(classrooms);
             return Ok(SharedResponse<IEnumerable<ClassroomDto>>.Success(classroomDtos, null));
         }
 
         [Authorize]
-        [HttpGet("student/{studentId}")]
-        public async Task<ActionResult<SharedResponse<IEnumerable<ClassroomDto>>>> GetRoomsByStudentId(Guid studentId)
+        [HttpGet("classrooms/student")]
+        public async Task<ActionResult<SharedResponse<IEnumerable<ClassroomDto>>>> GetRoomsByStudentId()
         {
-            var classrooms = await _classroomRepository.GetAllAsync(x => x.Members.Any(s => s.Id == studentId));
+            var identityProvider = new IdentityProvider(_httpContextAccessor, _jwtService);
+            var currentUserId = identityProvider.GetUserId();
+            var classrooms = await _classroomRepository.GetAllAsync(x => x.Members.Any(s => s.Id == currentUserId));
             var classroomDtos = _mapper.Map<IEnumerable<ClassroomDto>>(classrooms);
             return Ok(SharedResponse<IEnumerable<ClassroomDto>>.Success(classroomDtos, null));
         }
@@ -171,12 +185,18 @@ namespace CustomEd.Classroom.Service.Controllers
                 return BadRequest(SharedResponse<ClassroomDto>.Fail("Invalid input", validationResult.Errors.Select(x => x.ErrorMessage).ToList()));
             }
             var students = await _studentRepository.GetAllAsync(x => x.Section == batchDto.Section && x.Year == batchDto.Year && x.Department == batchDto.Department);
-
-            var classroom = await _classroomRepository.GetAsync(batchDto.ClassRoomId);
-            
+            var classroom = await _classroomRepository.GetAsync(batchDto.ClassRoomId);  
+            if(classroom.Members == null){
+                classroom.Members = new List<Student>();
+            }
             foreach (var student in students)
             {
-                classroom.Members.Add(student);
+                if(!classroom.Members.Contains(student))
+                {
+                    Console.WriteLine($"CCCCHECKKKK {!classroom.Members.Contains(student)}");
+                    classroom.Members.Add(student);
+                }
+                
 
             }
             await _classroomRepository.UpdateAsync(classroom);
@@ -216,7 +236,11 @@ namespace CustomEd.Classroom.Service.Controllers
             }
             var classroom = await _classroomRepository.GetAsync(classroomId);
             var student = await _studentRepository.GetAsync(studentId);
-
+            Console.WriteLine($"AAAAAAAAClassroom {classroom} {classroom == null}");
+            Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(classroom));
+            if(classroom.Members == null){
+                classroom.Members = new List<Student>();
+            }
             classroom.Members.Add(student);
             await _classroomRepository.UpdateAsync(classroom);
             var memberJoinedEvent = new MemberJoinedEvent { ClassroomId = classroomId, StudentId = studentId };

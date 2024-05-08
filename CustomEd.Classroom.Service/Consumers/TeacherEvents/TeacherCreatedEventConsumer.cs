@@ -26,6 +26,7 @@ namespace CustomEd.Classroom.Service.Consumers
             var teacher = _mapper.Map<Teacher>(teacherCreatedEvent);
             teacher.Id = teacherCreatedEvent.Id; 
             await _teacherRepository.CreateAsync(teacher);
+            Console.WriteLine("BEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEN HERRE!!!!!");
             return;
         }
     }

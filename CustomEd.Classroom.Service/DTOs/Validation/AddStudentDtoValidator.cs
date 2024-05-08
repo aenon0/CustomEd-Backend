@@ -20,12 +20,12 @@ namespace CustomEd.Classroom.Service.DTOs.Validation
                     return await _studentRepository.GetAsync(id) != null;
                 }).WithMessage("Student with such id does not exist.");
 
-            RuleFor(x => new {sid = x.StudentId,cid =  x.ClassroomId})
-                .MustAsync(async (dto, cancellation) =>
-                {
-                    var classroom = await _classroomRepository.GetAsync(x => x.Id == dto.cid);
-                    return classroom.Members.Where(x => x.Id == dto.sid).FirstOrDefault() == null;
-                }).WithMessage("Student is already in the classroom.");
+            // RuleFor(x => new {sid = x.StudentId,cid =  x.ClassroomId})
+            //     .MustAsync(async (dto, cancellation) =>
+            //     {
+            //         var classroom = await _classroomRepository.GetAsync(x => x.Id == dto.cid);
+            //         return classroom.Members.Where(x => x.Id == dto.sid).FirstOrDefault() == null;
+            //     }).WithMessage("Student is already in the classroom.");
         }
     }
 }
