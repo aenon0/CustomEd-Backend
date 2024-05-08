@@ -38,25 +38,25 @@ namespace CustomEd.User.Service.Controllers
         public async Task<ActionResult<SharedResponse<TeacherDto>>> CreateUser([FromBody] CreateTeacherDto createTeacherDto)
         {
 
-        var createTeacherDtoValidator = new CreateTeacherDtoValidator(_userRepository);
-        var validationResult = await createTeacherDtoValidator.ValidateAsync(createTeacherDto);
-        if (!validationResult.IsValid)
-        {
+            var createTeacherDtoValidator = new CreateTeacherDtoValidator(_userRepository);
+            var validationResult = await createTeacherDtoValidator.ValidateAsync(createTeacherDto);
+            if (!validationResult.IsValid)
+            {
+                
+                return BadRequest(SharedResponse<Model.Teacher>.Fail("Invalid input", validationResult.Errors.Select(e => e.ErrorMessage).ToList()));
+            }
+
+            var passwordHash = _passwordHasher.HashPassword(createTeacherDto.Password);
+            createTeacherDto.Password = passwordHash;
+
+            var teacher = _mapper.Map<Model.Teacher>(createTeacherDto);
+            teacher.Role = Model.Role.Teacher;
             
-            return BadRequest(SharedResponse<Model.Teacher>.Fail("Invalid input", validationResult.Errors.Select(e => e.ErrorMessage).ToList()));
-        }
-
-        var passwordHash = _passwordHasher.HashPassword(createTeacherDto.Password);
-        createTeacherDto.Password = passwordHash;
-
-        var teacher = _mapper.Map<Model.Teacher>(createTeacherDto);
-        teacher.Role = Model.Role.Teacher;
-        
-        await _userRepository.CreateAsync(teacher);
-        var teacherCreatedEvent = _mapper.Map<TeacherCreatedEvent>(teacher);
-        var dto = _mapper.Map<TeacherDto>(teacher);
-        await _publishEndpoint.Publish(teacherCreatedEvent);
-        return CreatedAtAction(nameof(GetUserById), new { id = teacher.Id }, SharedResponse<TeacherDto>.Success(dto, "User created successfully"));
+            await _userRepository.CreateAsync(teacher);
+            var teacherCreatedEvent = _mapper.Map<TeacherCreatedEvent>(teacher);
+            var dto = _mapper.Map<TeacherDto>(teacher);
+            await _publishEndpoint.Publish(teacherCreatedEvent);
+            return CreatedAtAction(nameof(GetUserById), new { id = teacher.Id }, SharedResponse<TeacherDto>.Success(dto, "User created successfully"));
             
         }
 

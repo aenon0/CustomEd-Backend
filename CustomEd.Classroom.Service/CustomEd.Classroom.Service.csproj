@@ -12,6 +12,7 @@
     <PackageReference Include="CustomEd.Shared" Version="1.1.4" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.9.0" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.16" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
