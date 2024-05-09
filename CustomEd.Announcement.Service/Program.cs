@@ -6,20 +6,23 @@ using CustomEd.Shared.JWT.Interfaces;
 using CustomEd.Shared.RabbitMQ;
 using CustomEd.Shared.Settings;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
-builder.Services.AddMongo();
-builder.Services.AddPersistence<ClassRoom>("ClassRooms");
-builder.Services.AddPersistence<Teacher>("Teachers");
-builder.Services.AddPersistence<Announcement>("Announcements");
+
+builder.Services.AddMongo()
+                .AddPersistence<ClassRoom>("Classroom")
+                .AddPersistence<Teacher>("Teacher")
+                .AddPersistence<Announcement>("Announcement");
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddSingleton<IJwtService, JwtService>();
+builder.Services.AddMassTransitWithRabbitMq();
 builder.Services.AddAuth();
+builder.Services.AddSingleton<IJwtService, JwtService>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddSingleton<IdentityProvider>();
 
 
 // Add authorization policies
@@ -30,15 +33,33 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("MemberOnlyPolicy", policy =>
         policy.Requirements.Add(new MemberOnlyRequirement()));
 });
-
 builder.Services.AddScoped<IAuthorizationHandler, MemberOnlyPolicy>();
 builder.Services.AddScoped<IAuthorizationHandler, CreatorOnlyPolicy>();
-builder.Services.AddMassTransitWithRabbitMq();
+builder.Services.AddControllers();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Your API", Version = "v1" });
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme.",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer"
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -27,7 +27,9 @@ namespace CustomEd.Announcement.Service.Policies
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, MemberOnlyRequirement requirement)
         {
-            var classroomId = (Guid)_httpContextAccessor.HttpContext!.Request.RouteValues["classRoomId"]!;
+            var classroomIdString = _httpContextAccessor.HttpContext!.Request.RouteValues["classRoomId"]!.ToString();
+            Guid classroomId;
+            Guid.TryParse(classroomIdString, out classroomId);
             var identityProvider = new IdentityProvider(_httpContextAccessor, _jwtService);
             var userId = identityProvider.GetUserId();
 

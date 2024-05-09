@@ -22,6 +22,7 @@ namespace CustomEd.Discussion.Service.Consumers
         }
         public async Task Consume(ConsumeContext<TeacherCreatedEvent> context)
         {
+            Console.WriteLine("BEEEEEEEEEEEN HERE.");
             var teacherCreatedEvent = context.Message;
             var teacher = _mapper.Map<Teacher>(teacherCreatedEvent);
             teacher.Id = teacherCreatedEvent.Id;

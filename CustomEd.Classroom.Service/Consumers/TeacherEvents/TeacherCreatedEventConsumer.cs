@@ -16,7 +16,6 @@ namespace CustomEd.Classroom.Service.Consumers
 
         public TeacherCreatedEventConsumer(IGenericRepository<Teacher> teacherRepository, IMapper mapper)
         {
-    
             _teacherRepository = teacherRepository;
             _mapper = mapper;   
         }
