@@ -11,7 +11,7 @@ public class MappingProfile : Profile
 {
     private readonly IGenericRepository<Classroom> _classroomRepository;
 
-    public MappingProfile(IGenericRepository<Classroom> classroomRepository)
+    public MappingProfile()
     {
         CreateMap<ClassroomCreatedEvent, Classroom>().ReverseMap();
         CreateMap<ClassroomUpdatedEvent, Classroom>().ReverseMap();

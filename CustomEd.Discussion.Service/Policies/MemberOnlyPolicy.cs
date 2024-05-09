@@ -28,12 +28,16 @@ namespace CustomEd.Discussion.Service.Policies
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, MemberOnlyRequirement requirement)
         {
-            var classroomId = (Guid)_httpContextAccessor.HttpContext!.Request.RouteValues["classRoomId"]!;
+            var classroomIdString = _httpContextAccessor.HttpContext!.Request.RouteValues["classroomId"]!.ToString();
+            Guid classroomId;
+            Guid.TryParse(classroomIdString, out classroomId);
+            Console.WriteLine($"Classrroom Id: {classroomId}");
             var identityProvider = new IdentityProvider(_httpContextAccessor, _jwtService);
             var userId = identityProvider.GetUserId();
 
             var classroom = await _classRoomRepository.GetAsync(classroomId);
-            if (classroom.Members.Contains(userId) || classroom.CreatorId == userId)
+            Console.WriteLine($"HHHHHHHH {userId} {classroom}");
+            if (classroom != null && ((classroom.Members != null && classroom.Members.Contains(userId)) || classroom.CreatorId == userId))
             {
                 context.Succeed(requirement);
             }

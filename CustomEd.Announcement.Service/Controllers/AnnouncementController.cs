@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CustomEd.Announcement.Service.Controllers
 {
     [ApiController]
-    [Route("/api/classroom/{classRoomId}/announcements")]
+    [Route("/api/classroom/{classRoomId:Guid}/announcements")]
     public class AnnouncementController : ControllerBase
     {
         private readonly IGenericRepository<Model.Announcement> _announcementRepository;

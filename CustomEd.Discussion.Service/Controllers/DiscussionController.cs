@@ -7,6 +7,7 @@ using CustomEd.Shared.Data.Interfaces;
 using CustomEd.Shared.JWT;
 using CustomEd.Shared.JWT.Interfaces;
 using CustomEd.Shared.Response;
+using MassTransit.Initializers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
@@ -16,7 +17,7 @@ namespace CustomEd.Discussion.Service.Controllers;
 
 
 [ApiController]
-[Route("/api/classroom/{classRoomId}/discussion")]
+[Route("/api/discussion")]
 public class DiscussionController: ControllerBase
 {
 
@@ -41,11 +42,15 @@ public class DiscussionController: ControllerBase
     }
 
 
-    [HttpPost]
-    [Authorize(Policy = "MemberOnly")]
+    [HttpPost("/classroom/{classroomId:Guid}")]
+    [Authorize(Policy = "MemberOnlyPolicy")]
     public async Task<ActionResult<SharedResponse<Model.Message>>> CreateMessage([FromBody] CreateMessageDto messageDto)
     {
         var senderId = new IdentityProvider(_httpContextAccessor, _jwtService).GetUserId();
+        string classroomIdString = _httpContextAccessor.HttpContext!.Request.RouteValues["classroomId"]!.ToString();
+        Guid classroomId; 
+        Guid.TryParse(classroomIdString, out classroomId);
+        messageDto.ClassroomId = classroomId;
         messageDto.SenderId = senderId;
         var createMessageDtoValidator = new CreateMessageDtoValidator(_classroomRepository, _studentRepository, _teacherRepository);
         var validationResult = await createMessageDtoValidator.ValidateAsync(messageDto);
@@ -63,10 +68,15 @@ public class DiscussionController: ControllerBase
         return Ok(SharedResponse<Model.Message>.Success(message, "Message created successfully."));
     }
 
-    [HttpPut]
-    [Authorize(Policy = "MemberOnly")]
+    [HttpPut("/messages/{messageId:Guid}")]
+    [Authorize(Policy = "CreatorOnlyPolicy")]
     public async Task<ActionResult<SharedResponse<Model.Message>>> UpdateMessage([FromBody] UpdateMessageDto messageDto)
     {
+        Console.WriteLine("hhhhhhhhhhh");
+        string messageIdString = _httpContextAccessor.HttpContext!.Request.RouteValues["messageId"]!.ToString();
+        Guid messageId; 
+        Guid.TryParse(messageIdString, out messageId);
+        messageDto.Id = messageId;
         var createMessageDtoValidator = new UpdateMessageDtoValidator(_messageRepository);
         var validationResult = await createMessageDtoValidator.ValidateAsync(messageDto);
         if (!validationResult.IsValid)
@@ -80,20 +90,39 @@ public class DiscussionController: ControllerBase
         return Ok(SharedResponse<Model.Message>.Success(existingMessage, "Message updated successfully."));
     }
 
-    [HttpGet]
-    [Authorize(Policy = "MemberOnly")]
-    public async Task<ActionResult<SharedResponse<List<Model.Message>>>> GetPaginatedMessages(Guid classRoomId, int pageNumber, int pageSize)
+    [HttpGet("/classroom/{classroomId:Guid}")]
+    [Authorize(Policy = "MemberOnlyPolicy")]
+    public async Task<ActionResult<SharedResponse<List<GetMessageResponseDto>>>> GetPaginatedMessages(int pageNumber, int pageSize)
     {
         var senderId = new IdentityProvider(_httpContextAccessor, _jwtService).GetUserId();
+        
+        string classroomIdString = _httpContextAccessor.HttpContext!.Request.RouteValues["classroomId"]!.ToString();
+        Guid classroomId; 
+        Guid.TryParse(classroomIdString, out classroomId);
+        Console.WriteLine($"CHECK:  {classroomId}");
         if(senderId == Guid.Empty)
         {
             return Unauthorized(SharedResponse<Model.Message>.Fail("You're not authorized", null));
         }
-        var classroom = await _classroomRepository.GetAsync(classRoomId);
+        var classroom = await _classroomRepository.GetAsync(classroomId);
         var messages = await _messageRepository.GetAllAsync(d => d.ClassroomId == classroom.Id);
         var paginatedMessages = messages.Skip((pageNumber - 1) * pageSize).Take(pageSize);
         var sortedMessages = paginatedMessages.OrderBy(d => d.CreatedAt);
-        return Ok(SharedResponse<List<Model.Message>>.Success(sortedMessages.ToList(), "Messages retrieved successfully."));
+        var modifiedMessages = new List<GetMessageResponseDto>();
+        foreach(var message in sortedMessages)
+        {
+            var firstName = await _studentRepository.GetAsync(message.SenderId).Select(x => x.FirstName) ?? await _teacherRepository.GetAsync(message.SenderId).Select(x => x.FirstName);
+            var lastName = await _studentRepository.GetAsync(message.SenderId).Select(x => x.LastName) ?? await _teacherRepository.GetAsync(message.SenderId).Select(x => x.LastName);
+            modifiedMessages.Add(new GetMessageResponseDto{
+                    Id = message.Id,
+                    FirstName  = firstName,
+                    LastName = lastName,
+                    Content = message.Content,
+                    SentAt = message.CreatedAt
+
+            });
+        }
+        return Ok(SharedResponse<List<GetMessageResponseDto>>.Success(modifiedMessages, "Messages retrieved successfully."));
     }
 
 }
