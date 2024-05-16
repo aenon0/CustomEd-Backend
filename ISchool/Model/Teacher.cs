@@ -12,4 +12,6 @@ public class Teacher
     public string Country { get; set; }
     public string Zip { get; set; }
     public Department Department { get; set; }
+    public DateOnly? DateOfBirth { get; set; }
+    public DateOnly? JoinDate { get; set; }
 }

@@ -2,7 +2,7 @@ using MongoDB.Driver;
 
 namespace CustomEd.OtpService.Repository;
 
-public class OtpRepository : IOtpRepository
+public class OtpRepository 
 {
     private readonly IMongoCollection<Otp> _collection;
 
@@ -16,12 +16,12 @@ public class OtpRepository : IOtpRepository
         await _collection.InsertOneAsync(otp);
     }
 
-    public async Task<bool> ExistsByEmailAddress(string emailAddress)
-    {
-        var filter = Builders<Otp>.Filter.Eq(x => x.EmailAddress, emailAddress);
-        var count = await _collection.CountDocumentsAsync(filter);
-        return count > 0;
-    }
+    // public async Task<bool> ExistsByEmailAddress(string emailAddress)
+    // {
+    //     var filter = Builders<Otp>.Filter.Eq(x => x.EmailAddress, emailAddress);
+    //     var count = await _collection.CountDocumentsAsync(filter);
+    //     return count > 0;
+    // }
 
     public async Task<Otp> GetByEmailAddress(string emailAddress)
     {

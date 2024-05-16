@@ -13,7 +13,7 @@ builder.Services.AddMassTransitWithRabbitMq();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<IOtpRepository, OtpRepository>();
+builder.Services.AddScoped<OtpRepository>();
 builder.Services.AddTransient<IEmailService, EmailService>();
 
  
@@ -42,7 +42,6 @@ builder.Services.AddScoped(sp =>
 
 
 
-builder.Services.AddScoped<IOtpRepository, OtpRepository>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
