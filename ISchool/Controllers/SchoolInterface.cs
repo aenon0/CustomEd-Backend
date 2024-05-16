@@ -20,17 +20,17 @@ namespace ISchool.Controllers
         }
       
 
-        [HttpGet("isStudent")]
-        public async Task<ActionResult<SchoolResponse<bool>>> IsStudent([FromQuery] string email)
-        {
-            var student = await _studentRepository.Exists(email);
-            if (!student)
-            {
-                return Ok(new SchoolResponse<bool> { Data = false });
-            }
+        // [HttpGet("isStudent")]
+        // public async Task<ActionResult<SchoolResponse<bool>>> IsStudent([FromQuery] string email)
+        // {
+        //     var student = await _studentRepository.Exists(email);
+        //     if (!student)
+        //     {
+        //         return Ok(new SchoolResponse<bool> { Data = false });
+        //     }
 
-            return Ok(new SchoolResponse<bool> { Data = true });
-        }
+        //     return Ok(new SchoolResponse<bool> { Data = true });
+        // }
         
         [HttpGet("getStudentInfo")]
         public async Task<ActionResult<SchoolResponse<Student>>> GetStudentInfo([FromQuery] string email)
@@ -39,17 +39,17 @@ namespace ISchool.Controllers
             return Ok(new SchoolResponse<Student> { Data = student });
         }
 
-        [HttpGet("isTeacher")]
-        public async Task<ActionResult<SchoolResponse<bool>>> IsTeacher([FromQuery] string email)
-        {
-            var teacher = await _teacherRepository.Exists(email);
-            if (!teacher)
-            {
-                return Ok(new SchoolResponse<bool> { Data = false });
-            }
+        // [HttpGet("isTeacher")]
+        // public async Task<ActionResult<SchoolResponse<bool>>> IsTeacher([FromQuery] string email)
+        // {
+        //     var teacher = await _teacherRepository.Exists(email);
+        //     if (!teacher)
+        //     {
+        //         return Ok(new SchoolResponse<bool> { Data = false });
+        //     }
 
-            return Ok(new SchoolResponse<bool> { Data = true });
-        }
+        //     return Ok(new SchoolResponse<bool> { Data = true });
+        // }
 
         [HttpGet("getTeacherInfo")]
         public async Task<ActionResult<SchoolResponse<Teacher>>> GetTeacherInfo([FromQuery] string email)
