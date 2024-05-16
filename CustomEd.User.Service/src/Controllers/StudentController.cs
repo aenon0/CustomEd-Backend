@@ -55,13 +55,13 @@ namespace CustomEd.User.Service.Controllers
             var jsonResponse = JsonConvert.DeserializeObject(responseContent);
             var jsonData = (JObject)jsonResponse!;
             Console.WriteLine(jsonData == null);
-            var fetchedStudentInfo = jsonData["data"];
-            if(fetchedStudentInfo.Type == JTokenType.Null)
+            var fetchedStudentInfo = jsonData!["data"];
+            if(fetchedStudentInfo!.Type == JTokenType.Null)
             {
                 return BadRequest(SharedResponse<Model.Teacher>.Fail("Unallowed user", new List<string>()));
             }
-            var name = fetchedStudentInfo["name"].ToString().Split();
-
+            var name = fetchedStudentInfo["name"]!.ToString().Split();
+            Console.WriteLine(fetchedStudentInfo);
             var createStudentDtoValidator = new CreateStudentDtoValidator(_userRepository);
             var validationResult = await createStudentDtoValidator.ValidateAsync(studentDto);
             if (!validationResult.IsValid)
@@ -71,20 +71,19 @@ namespace CustomEd.User.Service.Controllers
             var passwordHash = _passwordHasher.HashPassword(studentDto.Password);
             studentDto.Password = passwordHash;
 
-
             var student = new Model.Student{
                 Id = Guid.NewGuid(),
                 Email = studentDto.Email,
                 Password = studentDto.Password,
-                StudentId = null,
-                FirstName = null, 
-                LastName = null, 
-                DateOfBirth = null, 
-                Department = null, 
-                PhoneNumber = null, 
-                JoinDate = null, 
-                Year = null, 
-                Section = null
+                StudentId = fetchedStudentInfo["studentId"]!.ToString(),
+                FirstName =  name[0], 
+                LastName =  name[1], 
+                DateOfBirth = DateOnly.Parse(fetchedStudentInfo["dateOfBirth"]!.ToString()), 
+                Department = Enum.Parse<Department>(fetchedStudentInfo["department"]!.ToString()), 
+                PhoneNumber = fetchedStudentInfo["phone"]!.ToString(),
+                JoinDate = DateOnly.Parse(fetchedStudentInfo["joinDate"]!.ToString()), 
+                Year = int.Parse(fetchedStudentInfo["year"]!.ToString()), 
+                Section = fetchedStudentInfo["section"]!.ToString()
             };
             student.Role = Model.Role.Student;
 
@@ -151,11 +150,12 @@ namespace CustomEd.User.Service.Controllers
         }
 
 
-        [HttpPost("SendOtpForForgotPassword")]
+        [HttpPost("sendOtpForForgotPassword")]
         public async Task<ActionResult<SharedResponse<bool>>> SendOtpForForgotPassword([FromBody] string Email)
         {
             var student = await _userRepository.GetAsync(t => t.Email == Email);
-            if (student == null || student.IsVerified == false)
+            if (student == null
+            || student.IsVerified == false)
             {
                 return BadRequest(SharedResponse<bool>.Fail("Unauthorized user", new List<string>()));
             }
@@ -166,7 +166,7 @@ namespace CustomEd.User.Service.Controllers
             return Ok(SharedResponse<bool>.Success(true, $"Otp code is sent to {Email}. Verify before 30 mins." ));
         }
 
-        [HttpPost("VerifyOtpForForgotPassword")]
+        [HttpPost("verifyOtpForForgotPassword")]
         public async Task<ActionResult<SharedResponse<ForgotPasswordOtp>>> VerifyOtpForForgotPassword([FromBody] VerifyPasswordForForgotPasswordDto verifyPasswordForForgotPasswordDto)
         {
             ///FETCH THE DEPARTMENT OF THE STUDENT HERE
@@ -186,7 +186,7 @@ namespace CustomEd.User.Service.Controllers
             }
             return BadRequest(SharedResponse<ForgotPasswordOtp>.Fail("Invalid OTP code or expired", new List<string> { "Invalid OTP code or expired" }));
         }
-        [HttpPut("ChangePassword")]
+        [HttpPut("changePassword")]
         public async Task<ActionResult<SharedResponse<bool>>> ChangePassword([FromBody] ChangePasswordRequestDto changePasswordRequestDto)
         {
             ///FETCH THE DEPARTMENT OF THE STUDENT HERE

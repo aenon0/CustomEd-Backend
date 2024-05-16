@@ -155,7 +155,7 @@ namespace CustomEd.User.Service.Controllers
 
         // }
 
-        [HttpPost("SendOtpForForgotPassword")]
+        [HttpPost("sendOtpForForgotPassword")]
         public async Task<ActionResult<SharedResponse<bool>>> SendOtpForForgotPassword([FromBody] string Email)
         {
             var teacher = await _userRepository.GetAsync(t => t.Email == Email);
@@ -170,7 +170,7 @@ namespace CustomEd.User.Service.Controllers
             return Ok(SharedResponse<bool>.Success(true, $"Otp code is sent to {Email}. Verify before 30 mins." ));
         }
 
-        [HttpPost("VerifyOtpForForgotPassword")]
+        [HttpPost("verifyOtpForForgotPassword")]
         public async Task<ActionResult<SharedResponse<ForgotPasswordOtp>>> VerifyOtpForForgotPassword([FromBody] VerifyPasswordForForgotPasswordDto verifyPasswordForForgotPasswordDto)
         {
             ///FETCH THE DEPARTMENT OF THE STUDENT HERE
@@ -190,7 +190,7 @@ namespace CustomEd.User.Service.Controllers
             }
             return BadRequest(SharedResponse<ForgotPasswordOtp>.Fail("Invalid OTP code or expired", new List<string> { "Invalid OTP code or expired" }));
         }
-        [HttpPut("ChangePassword")]
+        [HttpPut("changePassword")]
         public async Task<ActionResult<SharedResponse<bool>>> ChangePassword([FromBody] ChangePasswordRequestDto changePasswordRequestDto)
         {
             ///FETCH THE DEPARTMENT OF THE STUDENT HERE
@@ -213,6 +213,7 @@ namespace CustomEd.User.Service.Controllers
         }
 
 
+ 
 
     }
 }

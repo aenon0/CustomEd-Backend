@@ -30,7 +30,7 @@ public class OtpGenertedConsumer : IConsumer<OtpSentEvent>
         var student = await _studentRepository.GetAsync(x => x.Email == message.Email);
         var teacher = await _teacherRepository.GetAsync(x => x.Email == message.Email);
         //for the forgot password
-        if((student != null && student.IsVerified == true) || teacher != null && teacher.IsVerified == true)
+        if((student != null && student.IsVerified == true) || (teacher != null && teacher.IsVerified == true))
         {
             var forgotPassworditem = await _forgotPasswordOtpRepository.GetAsync(x => x.Email == message.Email);
             if(forgotPassworditem == null)
