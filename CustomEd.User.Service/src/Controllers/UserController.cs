@@ -81,7 +81,7 @@ namespace CustomEd.User.Service.Controllers
             return Ok(SharedResponse<UserDto>.Success(userDto, null));
         }
 
-        [HttpPost("user/verify")]
+        [HttpPost("verify")]
         public virtual async Task<ActionResult<SharedResponse<UserDto>>> VerifyUser([FromBody] VerifyUserDto request)
         {
             var user = await _userRepository.GetAsync(x => x.Email == request.Email);
@@ -106,14 +106,14 @@ namespace CustomEd.User.Service.Controllers
             if(user.Role == Role.Student)
             {
                 var studentEvent = _mapper.Map<StudentCreatedEvent>(user);
-                await _publishEndpoint.Publish(studentEvent);
+                // await _publishEndpoint.Publish(studentEvent);
                 var studentCreatedEvent = _mapper.Map<StudentCreatedEvent>(user);
                 await _publishEndpoint.Publish(studentCreatedEvent);
             }
             else if(user.Role == Role.Teacher)
             {
                 var teacherEvent = _mapper.Map<TeacherCreatedEvent>(user);
-                await _publishEndpoint.Publish(teacherEvent);
+                // await _publishEndpoint.Publish(teacherEvent);
                 var teacherCreatedEvent = _mapper.Map<TeacherCreatedEvent>(user);
                 await _publishEndpoint.Publish(teacherCreatedEvent);
             }
