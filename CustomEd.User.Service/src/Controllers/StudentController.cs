@@ -13,6 +13,9 @@ using CusotmEd.User.Servce.DTOs;
 using CustomEd.User.Student.Events;
 using CustomEd.Shared.JWT;
 using CustomEd.User.Service.Model;
+using CustomEd.Contracts.OtpService.Events;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace CustomEd.User.Service.Controllers
 {
@@ -21,7 +24,7 @@ namespace CustomEd.User.Service.Controllers
     public class StudentController : UserController<Model.Student>
     {
 
-        public StudentController(IGenericRepository<Otp> otpRepository, IGenericRepository<Model.Student> userRepository, IMapper mapper, IPasswordHasher passwordHasher, IJwtService jwtService, IPublishEndpoint publishEndpoint, IHttpContextAccessor httpContextAccessor) : base(otpRepository, userRepository, mapper, passwordHasher, jwtService, publishEndpoint, httpContextAccessor)
+        public StudentController(IGenericRepository<ForgotPasswordOtp> forgotPasswordOtpRepository, IGenericRepository<Otp> otpRepository, IGenericRepository<Model.Student> userRepository, IMapper mapper, IPasswordHasher passwordHasher, IJwtService jwtService, IPublishEndpoint publishEndpoint, IHttpContextAccessor httpContextAccessor) : base(forgotPasswordOtpRepository, otpRepository, userRepository, mapper, passwordHasher, jwtService, publishEndpoint, httpContextAccessor)
         {
         }
 
@@ -45,6 +48,20 @@ namespace CustomEd.User.Service.Controllers
         [HttpPost]
         public async Task<ActionResult<SharedResponse<Model.Student>>> CreateUser([FromBody] CreateStudentDto studentDto)
         {
+            var httpClient = new HttpClient();
+            var url = $"http://localhost:8080/schooldb/getStudentInfo?email={studentDto.Email}";
+            var response = await httpClient.GetAsync(url);
+            var responseContent = await response.Content.ReadAsStringAsync();
+            var jsonResponse = JsonConvert.DeserializeObject(responseContent);
+            var jsonData = (JObject)jsonResponse!;
+            Console.WriteLine(jsonData == null);
+            var fetchedStudentInfo = jsonData["data"];
+            if(fetchedStudentInfo.Type == JTokenType.Null)
+            {
+                return BadRequest(SharedResponse<Model.Teacher>.Fail("Unallowed user", new List<string>()));
+            }
+            var name = fetchedStudentInfo["name"].ToString().Split();
+
             var createStudentDtoValidator = new CreateStudentDtoValidator(_userRepository);
             var validationResult = await createStudentDtoValidator.ValidateAsync(studentDto);
             if (!validationResult.IsValid)
@@ -55,78 +72,139 @@ namespace CustomEd.User.Service.Controllers
             studentDto.Password = passwordHash;
 
 
-            var student = _mapper.Map<Model.Student>(studentDto);
+            var student = new Model.Student{
+                Id = Guid.NewGuid(),
+                Email = studentDto.Email,
+                Password = studentDto.Password,
+                StudentId = null,
+                FirstName = null, 
+                LastName = null, 
+                DateOfBirth = null, 
+                Department = null, 
+                PhoneNumber = null, 
+                JoinDate = null, 
+                Year = null, 
+                Section = null
+            };
             student.Role = Model.Role.Student;
 
             await _userRepository.CreateAsync(student);
 
-            var studentCreatedEvent = _mapper.Map<StudentCreatedEvent>(student);
-            await _publishEndpoint.Publish(studentCreatedEvent);
+            var sendOtpEvent = new SendOtpEvent();
+            sendOtpEvent.Email = student.Email;
+            await _publishEndpoint.Publish(sendOtpEvent);
             return CreatedAtAction(nameof(GetUserById), new { id = student.Id }, SharedResponse<Model.Student>.Success(student, "User created successfully"));
-
         }
 
 
+        // [Authorize]
+        // [HttpDelete("{id}")]
+        // public async Task<ActionResult<SharedResponse<StudentDto>>> RemoveUser(Guid id)
+        // {
+        //     if (id == Guid.Empty || await _userRepository.GetAsync(id) == null)
+        //     {
+        //         return BadRequest(SharedResponse<StudentDto>.Fail("Invalid Id", new List<string> { "Invalid id" }));
+        //     }
+        //     var identityProvider = new IdentityProvider(_httpContextAccessor, _jwtService);
+        //     var currentUserId = identityProvider.GetUserId();
+        //     if(currentUserId != id)
+        //     {
+        //         return Unauthorized(SharedResponse<StudentDto>.Fail("Unauthorized", new List<string> { "Unauthorized" }));
+        //     }
+
+
+        //     await _userRepository.RemoveAsync(id);
+        //     var studentDeletedEvent = new StudentDeletedEvent{Id = id};
+        //     await _publishEndpoint.Publish(studentDeletedEvent);
+        //     return Ok(SharedResponse<StudentDto>.Success(null, "User deleted successfully"));
+        // }
+
         [Authorize]
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<SharedResponse<StudentDto>>> RemoveUser(Guid id)
+        [HttpPut("updatePhoneAndDepartment")]
+        public async Task<ActionResult<SharedResponse<StudentDto>>> UpdatePhoneAndDepartment([FromBody] UpdateStudentDto studentDto)
         {
-            if (id == Guid.Empty || await _userRepository.GetAsync(id) == null)
-            {
-                return BadRequest(SharedResponse<StudentDto>.Fail("Invalid Id", new List<string> { "Invalid id" }));
-            }
-            var identityProvider = new IdentityProvider(_httpContextAccessor, _jwtService);
-            var currentUserId = identityProvider.GetUserId();
-            if(currentUserId != id)
-            {
-                return Unauthorized(SharedResponse<StudentDto>.Fail("Unauthorized", new List<string> { "Unauthorized" }));
-            }
-
-
-            await _userRepository.RemoveAsync(id);
-            var studentDeletedEvent = new StudentDeletedEvent{Id = id};
-            await _publishEndpoint.Publish(studentDeletedEvent);
-            return Ok(SharedResponse<StudentDto>.Success(null, "User deleted successfully"));
-        }
-
-        [Authorize]
-        [HttpPut]
-        public async Task<ActionResult<SharedResponse<StudentDto>>> UpdateUser([FromBody] UpdateStudentDto studentDto)
-        {
+            ///FETCH THE DEPARTMENT OF THE STUDENT HERE
             var updateStudentDtoValidator = new UpdateStudentDtoValidator(_userRepository);
             var validationResult = await updateStudentDtoValidator.ValidateAsync(studentDto);
             if (!validationResult.IsValid)
             {
                 return BadRequest(SharedResponse<StudentDto>.Fail("Invalid input", validationResult.Errors.Select(e => e.ErrorMessage).ToList()));
             }
-
             var identityProvider = new IdentityProvider(_httpContextAccessor, _jwtService);
             var currentUserId = identityProvider.GetUserId();
-
-            if(currentUserId != studentDto.Id)
+            if(currentUserId == Guid.Empty)
             {
                 return Unauthorized(SharedResponse<StudentDto>.Fail("Unauthorized", new List<string> { "Unauthorized" }));
             }
-
-            var passwordHash = _passwordHasher.HashPassword(studentDto.Password);
-            studentDto.Password = passwordHash;
-
-            var student = _mapper.Map<Model.Student>(studentDto);
-            student.Role = Model.Role.Student;
-
+            var student = await _userRepository.GetAsync(currentUserId);
+            student.PhoneNumber = studentDto.PhoneNumber;
             await _userRepository.UpdateAsync(student);
             var studentUpdatedEvent = _mapper.Map<StudentCreatedEvent>(student);
             await _publishEndpoint.Publish(studentUpdatedEvent);
-            
             return Ok(SharedResponse<StudentDto>.Success(null, "User updated successfully"));
-
         }
 
         [HttpPost("login")]
         public override async Task<ActionResult<SharedResponse<UserDto>>> SignIn([FromBody] LoginRequestDto request)
         {
-
             return await base.SignIn(request);
+        }
+
+
+        [HttpPost("SendOtpForForgotPassword")]
+        public async Task<ActionResult<SharedResponse<bool>>> SendOtpForForgotPassword([FromBody] string Email)
+        {
+            var student = await _userRepository.GetAsync(t => t.Email == Email);
+            if (student == null || student.IsVerified == false)
+            {
+                return BadRequest(SharedResponse<bool>.Fail("Unauthorized user", new List<string>()));
+            }
+            
+            await _publishEndpoint.Publish(new SendOtpEvent{
+                Email = Email
+            });
+            return Ok(SharedResponse<bool>.Success(true, $"Otp code is sent to {Email}. Verify before 30 mins." ));
+        }
+
+        [HttpPost("VerifyOtpForForgotPassword")]
+        public async Task<ActionResult<SharedResponse<ForgotPasswordOtp>>> VerifyOtpForForgotPassword([FromBody] VerifyPasswordForForgotPasswordDto verifyPasswordForForgotPasswordDto)
+        {
+            ///FETCH THE DEPARTMENT OF THE STUDENT HERE
+            var verifyPasswordForForgotPasswordDtoValidator = new VerifyPasswordForForgotPasswordDtoValidator(_forgotPasswordOtpRepository);
+            var validationResult = await verifyPasswordForForgotPasswordDtoValidator.ValidateAsync(verifyPasswordForForgotPasswordDto);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(SharedResponse<ForgotPasswordOtp>.Fail("Invalid input", validationResult.Errors.Select(e => e.ErrorMessage).ToList()));
+            }
+            
+            var forgotPasswordItem = await _forgotPasswordOtpRepository.GetAsync(x => x.Email == verifyPasswordForForgotPasswordDto.Email);
+            if (forgotPasswordItem.OtpCode == verifyPasswordForForgotPasswordDto.OtpCode && DateTime.UtcNow.Subtract(forgotPasswordItem.UpdatedAt).TotalMinutes <= 30)
+            {
+                forgotPasswordItem.Allowed = true;
+                await _forgotPasswordOtpRepository.UpdateAsync(forgotPasswordItem);
+                return Ok(SharedResponse<ForgotPasswordOtp>.Success(forgotPasswordItem, "Otp code verified successfully. You can now change your password." ));
+            }
+            return BadRequest(SharedResponse<ForgotPasswordOtp>.Fail("Invalid OTP code or expired", new List<string> { "Invalid OTP code or expired" }));
+        }
+        [HttpPut("ChangePassword")]
+        public async Task<ActionResult<SharedResponse<bool>>> ChangePassword([FromBody] ChangePasswordRequestDto changePasswordRequestDto)
+        {
+            ///FETCH THE DEPARTMENT OF THE STUDENT HERE
+            var verifyPasswordForForgotPasswordDtoValidator = new ChangePasswordRequestDtoValidator(_forgotPasswordOtpRepository);
+            var validationResult = await verifyPasswordForForgotPasswordDtoValidator.ValidateAsync(changePasswordRequestDto);
+            var forgotPasswordItem = await _forgotPasswordOtpRepository.GetAsync(x => x.Email == changePasswordRequestDto.Email);
+            if (!validationResult.IsValid || DateTime.UtcNow.Subtract(forgotPasswordItem.UpdatedAt).TotalMinutes > 30 || forgotPasswordItem.Allowed == false)
+            {
+                return BadRequest(SharedResponse<bool>.Fail("Invalid input", validationResult.Errors.Select(e => e.ErrorMessage).ToList()));
+            }
+            forgotPasswordItem.Allowed = false;
+            await _forgotPasswordOtpRepository.UpdateAsync(forgotPasswordItem);
+            var passwordHash = _passwordHasher.HashPassword(changePasswordRequestDto.NewPassword);
+            changePasswordRequestDto.NewPassword = passwordHash;
+            var student = await _userRepository.GetAsync(t => t.Email == changePasswordRequestDto.Email);
+            student.Password = changePasswordRequestDto.NewPassword;
+            await _userRepository.UpdateAsync(student);
+            return Ok(SharedResponse<bool>.Success(true, "Your password has been changed."));
 
         }
 

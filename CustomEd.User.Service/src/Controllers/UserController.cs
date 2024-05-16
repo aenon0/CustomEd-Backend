@@ -9,12 +9,15 @@ using CustomEd.Shared.Data.Interfaces;
 using CustomEd.Shared.Response;
 using MassTransit;
 using CustomEd.User.Service.Model;
+using CustomEd.User.Student.Events;
+using CustomEd.User.Teacher.Events;
 
 namespace CustomEd.User.Service.Controllers
 {
     [ApiController]
     public abstract class UserController<T> : ControllerBase where T : Model.User 
     {
+        protected IGenericRepository<ForgotPasswordOtp> _forgotPasswordOtpRepository;
         protected readonly IGenericRepository<T> _userRepository; 
         protected readonly IGenericRepository<Otp> _otpRepository;
         protected readonly IMapper _mapper;
@@ -22,8 +25,9 @@ namespace CustomEd.User.Service.Controllers
         protected readonly IJwtService _jwtService;
         protected readonly IPublishEndpoint _publishEndpoint;
         protected readonly IHttpContextAccessor _httpContextAccessor;
-        public UserController(IGenericRepository<Otp> otpRepository, IGenericRepository<T> userRepository, IMapper mapper, IPasswordHasher passwordHasher, IJwtService jwtService, IPublishEndpoint publishEndpoint, IHttpContextAccessor httpContextAccessor)
+        public UserController(IGenericRepository<ForgotPasswordOtp> forgotPasswordOtpRepository, IGenericRepository<Otp> otpRepository, IGenericRepository<T> userRepository, IMapper mapper, IPasswordHasher passwordHasher, IJwtService jwtService, IPublishEndpoint publishEndpoint, IHttpContextAccessor httpContextAccessor)
         {
+            _forgotPasswordOtpRepository = forgotPasswordOtpRepository;
             _userRepository = userRepository;
             _mapper = mapper;
             _passwordHasher = passwordHasher;
@@ -99,6 +103,21 @@ namespace CustomEd.User.Service.Controllers
                 return BadRequest(SharedResponse<bool>.Fail("Invalid Otp", null));
             }
             user.IsVerified = true;
+            if(user.Role == Role.Student)
+            {
+                var studentEvent = _mapper.Map<StudentCreatedEvent>(user);
+                await _publishEndpoint.Publish(studentEvent);
+                var studentCreatedEvent = _mapper.Map<StudentCreatedEvent>(user);
+                await _publishEndpoint.Publish(studentCreatedEvent);
+            }
+            else if(user.Role == Role.Teacher)
+            {
+                var teacherEvent = _mapper.Map<TeacherCreatedEvent>(user);
+                await _publishEndpoint.Publish(teacherEvent);
+                var teacherCreatedEvent = _mapper.Map<TeacherCreatedEvent>(user);
+                await _publishEndpoint.Publish(teacherCreatedEvent);
+            }
+            
             await _userRepository.UpdateAsync(user);
             return Ok(SharedResponse<bool>.Success(true, "User verified successfully"));
         }

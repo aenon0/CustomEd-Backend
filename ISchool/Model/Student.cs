@@ -14,5 +14,6 @@ public class Student
     public string Section { get; set; }
     public int Year { get; set; }
     public Department Department { get; set; }
-
+    public DateOnly? DateOfBirth { get; set; }
+    public DateOnly? JoinDate { get; set; }
 }

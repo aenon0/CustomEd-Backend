@@ -25,6 +25,7 @@ builder.Services.AddPersistence<Student>("Student");
 builder.Services.AddPersistence<Teacher>("Teacher");
 builder.Services.AddPersistence<Admin>("Admin");
 builder.Services.AddPersistence<Otp>("Otp");
+builder.Services.AddPersistence<ForgotPasswordOtp>("ForgotPasswordOtp");
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddMassTransitWithRabbitMq();

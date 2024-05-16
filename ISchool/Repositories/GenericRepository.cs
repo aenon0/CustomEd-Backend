@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -19,5 +20,10 @@ public class GenericRepository<T>
         var count = await _collection.CountDocumentsAsync(filter);
         return count > 0;
     }
+     public async Task<T> Get(Expression<Func<T, bool>> filter)
+        {
+            var result = await _collection.Find(filter).FirstOrDefaultAsync();
+            return result;
+        }
 }
 
