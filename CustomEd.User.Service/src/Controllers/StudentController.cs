@@ -16,6 +16,7 @@ using CustomEd.User.Service.Model;
 using CustomEd.Contracts.OtpService.Events;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using CustomEd.User.Service.Services;
 
 namespace CustomEd.User.Service.Controllers
 {
@@ -24,7 +25,7 @@ namespace CustomEd.User.Service.Controllers
     public class StudentController : UserController<Model.Student>
     {
 
-        public StudentController(IGenericRepository<ForgotPasswordOtp> forgotPasswordOtpRepository, IGenericRepository<Otp> otpRepository, IGenericRepository<Model.Student> userRepository, IMapper mapper, IPasswordHasher passwordHasher, IJwtService jwtService, IPublishEndpoint publishEndpoint, IHttpContextAccessor httpContextAccessor) : base(forgotPasswordOtpRepository, otpRepository, userRepository, mapper, passwordHasher, jwtService, publishEndpoint, httpContextAccessor)
+        public StudentController(CloudinaryService cloudinaryService, IGenericRepository<ForgotPasswordOtp> forgotPasswordOtpRepository, IGenericRepository<Otp> otpRepository, IGenericRepository<Model.Student> userRepository, IMapper mapper, IPasswordHasher passwordHasher, IJwtService jwtService, IPublishEndpoint publishEndpoint, IHttpContextAccessor httpContextAccessor) : base(cloudinaryService, forgotPasswordOtpRepository, otpRepository, userRepository, mapper, passwordHasher, jwtService, publishEndpoint, httpContextAccessor)
         {
         }
 
@@ -186,6 +187,7 @@ namespace CustomEd.User.Service.Controllers
             }
             return BadRequest(SharedResponse<ForgotPasswordOtp>.Fail("Invalid OTP code or expired", new List<string> { "Invalid OTP code or expired" }));
         }
+
         [HttpPut("changePassword")]
         public async Task<ActionResult<SharedResponse<bool>>> ChangePassword([FromBody] ChangePasswordRequestDto changePasswordRequestDto)
         {
@@ -205,8 +207,34 @@ namespace CustomEd.User.Service.Controllers
             student.Password = changePasswordRequestDto.NewPassword;
             await _userRepository.UpdateAsync(student);
             return Ok(SharedResponse<bool>.Success(true, "Your password has been changed."));
-
         }
 
+        [Authorize]
+        [HttpPost("upload")]
+        public async Task<ActionResult<SharedResponse<String?>>> UploadImage(IFormFile image)
+        {
+            var userId = new IdentityProvider(_httpContextAccessor, _jwtService).GetUserId();
+            var user = await _userRepository.GetAsync(userId);
+            if (user == null)
+            {
+            return NotFound(SharedResponse<String?>.Fail("User not found", null));
+            }
+
+            if (image == null || image.Length == 0)
+            {
+            return BadRequest(SharedResponse<String?>.Fail("Invalid file", null));
+            }
+
+            var imageUrl=await _cloudinaryService.UploadImage(image);
+            if(imageUrl == null)
+            {
+                BadRequest(SharedResponse<String?>.Fail("Failed to upload to the cloud", null));
+            }
+
+            user.ImageUrl = imageUrl;
+            await _userRepository.UpdateAsync(user);
+            return Ok(SharedResponse<String>.Success(imageUrl, "Your picture is uploaded successfully.")); 
+        }
+        
     }
 }

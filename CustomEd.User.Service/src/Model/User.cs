@@ -5,4 +5,5 @@ public class User : Shared.Model.BaseEntity
     public string Password { get; set; } = null!;
     public Role Role { get; set; }
     public bool IsVerified { get; set; } = false;
+    public string? ImageUrl {get; set;}
 }
