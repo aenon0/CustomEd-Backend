@@ -11,6 +11,7 @@ using MassTransit;
 using CustomEd.User.Service.Model;
 using CustomEd.User.Student.Events;
 using CustomEd.User.Teacher.Events;
+using CustomEd.User.Service.Services;
 
 namespace CustomEd.User.Service.Controllers
 {
@@ -25,8 +26,11 @@ namespace CustomEd.User.Service.Controllers
         protected readonly IJwtService _jwtService;
         protected readonly IPublishEndpoint _publishEndpoint;
         protected readonly IHttpContextAccessor _httpContextAccessor;
-        public UserController(IGenericRepository<ForgotPasswordOtp> forgotPasswordOtpRepository, IGenericRepository<Otp> otpRepository, IGenericRepository<T> userRepository, IMapper mapper, IPasswordHasher passwordHasher, IJwtService jwtService, IPublishEndpoint publishEndpoint, IHttpContextAccessor httpContextAccessor)
+        protected readonly CloudinaryService _cloudinaryService;
+
+        public UserController(CloudinaryService cloudinaryService, IGenericRepository<ForgotPasswordOtp> forgotPasswordOtpRepository, IGenericRepository<Otp> otpRepository, IGenericRepository<T> userRepository, IMapper mapper, IPasswordHasher passwordHasher, IJwtService jwtService, IPublishEndpoint publishEndpoint, IHttpContextAccessor httpContextAccessor)
         {
+            _cloudinaryService = cloudinaryService;
             _forgotPasswordOtpRepository = forgotPasswordOtpRepository;
             _userRepository = userRepository;
             _mapper = mapper;
