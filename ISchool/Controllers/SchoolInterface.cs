@@ -12,11 +12,13 @@ namespace ISchool.Controllers
     {
         private readonly StudentRepository _studentRepository; 
         private readonly TeacherRepository _teacherRepository;
+        private readonly DepartmentCoursesRepository _departmentCoursesRepository;
 
-        public SchoolInterface(StudentRepository studentRepository, TeacherRepository teacherRepository)
+        public SchoolInterface(StudentRepository studentRepository, TeacherRepository teacherRepository, DepartmentCoursesRepository departmentCoursesRepository)
         {
             _studentRepository = studentRepository;
             _teacherRepository = teacherRepository;
+            _departmentCoursesRepository = departmentCoursesRepository;
         }
       
 
@@ -59,11 +61,19 @@ namespace ISchool.Controllers
         }
 
         [HttpGet("getStudents")]
-        public async Task<ActionResult<SchoolResponse<List<Student>>>> GetStudents(Department dep, int year, string section)
+        public async Task<ActionResult<SchoolResponse<List<Student>>>> GetStudents(Department department, int year, string section)
         {
-            var students = await _studentRepository.GetPreferredStudents(dep, year, section);
+            var students = await _studentRepository.GetPreferredStudents(department, year, section);
 
             return Ok(new SchoolResponse<List<Student>> { Data = students });
         }
+        [HttpGet("geDepartmentCourses")]
+        public async Task<ActionResult<SchoolResponse<List<String>>>> GetDepartmentCourses(Department department)
+        {
+            var departmentCourses = await _departmentCoursesRepository.Get(i => i.Department == department);
+
+            return Ok(new SchoolResponse<List<String>> { Data = departmentCourses.Courses });
+        }
+    
     }
 }
