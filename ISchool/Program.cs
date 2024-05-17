@@ -1,3 +1,4 @@
+using ISchool.Model;
 using ISchool.Repositories;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
@@ -41,10 +42,15 @@ builder.Services.AddScoped(sp =>
     {
         database.CreateCollection("Teacher");
     };
+    if (!collectionNames.Contains("DepartmentCourses"))
+    {
+        database.CreateCollection("DepartmentCourses");
+    };
     return database;
 });
 
 builder.Services.AddScoped<StudentRepository>();
+builder.Services.AddScoped<DepartmentCourses>();
 builder.Services.AddScoped<TeacherRepository>();
 
 
