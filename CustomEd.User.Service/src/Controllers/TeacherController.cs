@@ -19,6 +19,7 @@ using CustomEd.Contracts.OtpService.Events;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Text.Json.Serialization;
+using CustomEd.User.Service.Services;
 
 namespace CustomEd.User.Service.Controllers
 {
@@ -26,7 +27,7 @@ namespace CustomEd.User.Service.Controllers
     [Route("api/user/teacher")]
     public class TeacherController : UserController<Model.Teacher>
     {
-        public TeacherController(IGenericRepository<ForgotPasswordOtp> forgotPasswordOtpRepository, IGenericRepository<Otp> otpRepository, IGenericRepository<Model.Teacher> userRepository, IMapper mapper, IPasswordHasher passwordHasher, IJwtService jwtService, IPublishEndpoint publishEndpoint, IHttpContextAccessor httpContextAccessor) : base(forgotPasswordOtpRepository ,otpRepository, userRepository, mapper, passwordHasher, jwtService, publishEndpoint, httpContextAccessor)
+        public TeacherController(CloudinaryService cloudinaryService,IGenericRepository<ForgotPasswordOtp> forgotPasswordOtpRepository, IGenericRepository<Otp> otpRepository, IGenericRepository<Model.Teacher> userRepository, IMapper mapper, IPasswordHasher passwordHasher, IJwtService jwtService, IPublishEndpoint publishEndpoint, IHttpContextAccessor httpContextAccessor) : base(cloudinaryService,forgotPasswordOtpRepository ,otpRepository, userRepository, mapper, passwordHasher, jwtService, publishEndpoint, httpContextAccessor)
         {
             
         }
@@ -212,8 +213,46 @@ namespace CustomEd.User.Service.Controllers
 
         }
 
+        [Authorize]
+        [HttpPost("upload")]
+        public async Task<ActionResult<SharedResponse<String?>>> UploadImage(IFormFile image)
+        {
+            var userId = new IdentityProvider(_httpContextAccessor, _jwtService).GetUserId();
+            var user = await _userRepository.GetAsync(userId);
+            if (user == null)
+            {
+                return NotFound(SharedResponse<String?>.Fail("User not found", null));
+            }
 
- 
+            if (image == null || image.Length == 0)
+            {
+                return BadRequest(SharedResponse<String?>.Fail("Invalid file", null));
+            }
+            if(user.ImageUrl != null)
+            {
+                await _cloudinaryService.DeleteImage(user.ImageUrl);
+            }
+            var imageUrl=await _cloudinaryService.UploadImage(image);
+            if(imageUrl == null)
+            {
+                BadRequest(SharedResponse<String?>.Fail("Failed to upload to the cloud", null));
+            }
+
+            user.ImageUrl = imageUrl;
+            await _userRepository.UpdateAsync(user);
+            return Ok(SharedResponse<String>.Success(imageUrl, "Your picture is uploaded successfully.")); 
+        }
+
+        [HttpGet("picture/{userId}")]
+        public async Task<ActionResult<SharedResponse<String?>>> GetUploadedFile(Guid userId)
+        {
+            var user = await _userRepository.GetAsync(userId);
+            if (user == null)
+            {
+                BadRequest(SharedResponse<String?>.Fail("User doesn't exist", null));
+            }
+            return Ok(SharedResponse<String>.Success(user.ImageUrl, "Image url fetched successfully.")); 
+        }
 
     }
 }

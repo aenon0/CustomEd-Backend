@@ -7,6 +7,7 @@ using CustomEd.User.Service.PasswordService.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.OpenApi.Models;
+using CustomEd.User.Service.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +19,9 @@ builder.Services.Configure<ServiceSettings>(builder.Configuration.GetSection(nam
 
 // Register IConfiguration with the service collection
 builder.Services.AddSingleton(builder.Configuration);
+
+builder.Services.AddSingleton<CloudinaryService>();
+builder.Services.AddLogging(); 
 builder.Services.AddControllers();
 builder.Services.AddMongo();
 builder.Services.AddAutoMapper(typeof(Program));
@@ -28,6 +32,7 @@ builder.Services.AddPersistence<Otp>("Otp");
 builder.Services.AddPersistence<ForgotPasswordOtp>("ForgotPasswordOtp");
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+
 builder.Services.AddMassTransitWithRabbitMq();
 builder.Services.AddAuth();
 builder.Services.AddAuthorization();

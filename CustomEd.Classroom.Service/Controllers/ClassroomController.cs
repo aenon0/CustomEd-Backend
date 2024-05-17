@@ -68,7 +68,7 @@ namespace CustomEd.Classroom.Service.Controllers
             return Ok(SharedResponse<ClassroomDto>.Success(dto, null));
         }
 
-        [Authorize]
+        [Authorize(Policy = "TeacherOnlyPolicy")]
         [HttpPut]
         public async Task<ActionResult<SharedResponse<ClassroomDto>>> UpdateClassroom(UpdateClassroomDto updateClassroomDto)
         {
@@ -174,7 +174,6 @@ namespace CustomEd.Classroom.Service.Controllers
         }
 
         [Authorize(Policy = "TeacherOnlyPolicy")]
-        [Authorize]
         [HttpPost("add-batch")]
         public async Task<ActionResult<SharedResponse<ClassroomDto>>> AddBatch([FromBody] AddBatchDto batchDto)
         {
