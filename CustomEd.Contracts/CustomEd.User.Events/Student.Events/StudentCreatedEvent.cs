@@ -1,6 +1,7 @@
 using System;
 using CustomEd.Shared.Model;
 
+
 namespace CustomEd.User.Student.Events
 {
     public class StudentCreatedEvent

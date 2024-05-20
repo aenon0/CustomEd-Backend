@@ -1,8 +1,8 @@
-namespace CustomEd;
+namespace CustomEd.Contracts.OtpService.Events;
 
 public class OtpSentEvent
 {
-    Guid Id {set; get;}
-    string Email {set; get;}
-    string OtpCode {set; get;}
+    public Guid Id {set; get;}
+    public string Email {set; get;}
+    public string OtpCode {set; get;}
 }

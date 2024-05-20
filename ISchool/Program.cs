@@ -50,7 +50,7 @@ builder.Services.AddScoped(sp =>
 });
 
 builder.Services.AddScoped<StudentRepository>();
-builder.Services.AddScoped<DepartmentCourses>();
+builder.Services.AddScoped<DepartmentCoursesRepository>();
 builder.Services.AddScoped<TeacherRepository>();
 
 
