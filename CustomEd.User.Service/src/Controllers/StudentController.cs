@@ -50,7 +50,7 @@ namespace CustomEd.User.Service.Controllers
         public async Task<ActionResult<SharedResponse<Model.Student>>> CreateUser([FromBody] CreateStudentDto studentDto)
         {
             var httpClient = new HttpClient();
-            var url = $"http://localhost:8080/schooldb/getStudentInfo?email={studentDto.Email}";
+            var url = $"https://customed-schoolmock.onrender.com/schooldb/getStudentInfo?email={studentDto.Email}";
             var response = await httpClient.GetAsync(url);
             var responseContent = await response.Content.ReadAsStringAsync();
             var jsonResponse = JsonConvert.DeserializeObject(responseContent);
