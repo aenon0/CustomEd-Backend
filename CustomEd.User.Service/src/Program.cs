@@ -8,10 +8,21 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.OpenApi.Models;
 using CustomEd.User.Service.Services;
+using Swashbuckle.AspNetCore.SwaggerUI;
 
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("AllowAll",
+            builder =>
+            {
+                builder.AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            });
+    });
+builder.WebHost.UseUrls("http://*:8585");
 // Add services to the container.
 builder.Services.AddSingleton(builder.Configuration);
 builder.Services.Configure<MongoSettings>(builder.Configuration.GetSection(nameof(MongoSettings)));
@@ -36,7 +47,7 @@ builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddMassTransitWithRabbitMq();
 builder.Services.AddAuth();
 builder.Services.AddAuthorization();
-
+app.UseCors("AllowAll");
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -65,15 +76,24 @@ builder.Services.AddSwaggerGen(c =>
 
 
 var app = builder.Build();
-
+app.UseCors("AllowAll");
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseSwagger();
 
-app.UseHttpsRedirection();
+// Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
+// specifying the Swagger JSON endpoint.
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Rideshare API V1");
+    c.RoutePrefix = "swagger"; // This will set the swagger UI route to 'http://localhost:8080/swagger'
+    c.DocExpansion(DocExpansion.None);
+});
+
 
 app.UseAuthorization();
 
