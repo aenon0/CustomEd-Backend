@@ -214,7 +214,7 @@ namespace CustomEd.User.Service.Controllers
         }
 
         [Authorize]
-        [HttpPost("upload")]
+        [HttpPost("uploadImage")]
         public async Task<ActionResult<SharedResponse<String?>>> UploadImage(IFormFile image)
         {
             var userId = new IdentityProvider(_httpContextAccessor, _jwtService).GetUserId();
@@ -242,9 +242,29 @@ namespace CustomEd.User.Service.Controllers
             await _userRepository.UpdateAsync(user);
             return Ok(SharedResponse<String>.Success(imageUrl, "Your picture is uploaded successfully.")); 
         }
+        
+        [Authorize]
+        [HttpDelete("deleteImage")]
+        public async Task<ActionResult<SharedResponse<bool>>> DeleteImage()
+        {
+            var userId = new IdentityProvider(_httpContextAccessor, _jwtService).GetUserId();
+            var user = await _userRepository.GetAsync(userId);
+            if (user == null)
+            {
+                return NotFound(SharedResponse<bool>.Fail("User not found", null));
+            } 
+            if (user.ImageUrl == null)
+            {
+                return Ok(SharedResponse<bool>.Success(false, "No picture to delete.")); 
+            }
+            await _cloudinaryService.DeleteImage(user.ImageUrl);
+            user.ImageUrl = null;
+            await _userRepository.UpdateAsync(user);
+            return Ok(SharedResponse<bool>.Success(true, "Your picture is deleted successfully.")); 
+        }
 
-        [HttpGet("picture/{userId}")]
-        public async Task<ActionResult<SharedResponse<String?>>> GetUploadedFile(Guid userId)
+        [HttpGet("getPicture/{userId}")]
+        public async Task<ActionResult<SharedResponse<String?>>> GetPicture(Guid userId)
         {
             var user = await _userRepository.GetAsync(userId);
             if (user == null)

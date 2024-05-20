@@ -7,11 +7,12 @@ public class TeacherDto
     public string FirstName { get; set; } = null!;
     public string LastName { get; set; } = null!;
     public string Email { get; set; } = null!;
-    public DateOnly DateOfBirth { get; set; }
+    // public DateOnly DateOfBirth { get; set; }
     public string? PhoneNumber {get; set;}
     public DateOnly JoinDate { get; set; }
-    public Role Role { get; set; }
+    // public Role Role { get; set; }
     public Department Department { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
+    // public DateTime CreatedAt { get; set; }
+    // public DateTime UpdatedAt { get; set; }
+    public string? ImageUrl {get; set;}
 }
