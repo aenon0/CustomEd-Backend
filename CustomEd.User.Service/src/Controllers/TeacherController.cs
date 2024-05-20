@@ -43,18 +43,18 @@ namespace CustomEd.User.Service.Controllers
         public async Task<ActionResult<SharedResponse<TeacherDto>>> CreateUser([FromBody] CreateTeacherDto createTeacherDto)
         {
             var httpClient = new HttpClient();
-            var url = $"http://localhost:8080/schooldb/getTeacherInfo?email={createTeacherDto.Email}";
+            var url = $"https://customed-schoolmock.onrender.com/schooldb/getTeacherInfo?email={createTeacherDto.Email}";
             var response = await httpClient.GetAsync(url);
             var responseContent = await response.Content.ReadAsStringAsync();
             var jsonResponse = JsonConvert.DeserializeObject(responseContent);
             var jsonData = (JObject)jsonResponse!;
             Console.WriteLine(jsonData == null);
-            var fetchedTeacherInfo = jsonData["data"];
-            if(fetchedTeacherInfo.Type == JTokenType.Null)
+            var fetchedTeacherInfo = jsonData!["data"];
+            if(fetchedTeacherInfo!.Type == JTokenType.Null)
             {
                 return BadRequest(SharedResponse<Model.Teacher>.Fail("Unallowed user", new List<string>()));
             }
-            var name = fetchedTeacherInfo["name"].ToString().Split();
+            var name = fetchedTeacherInfo["name"]!.ToString().Split();
             var createTeacherDtoValidator = new CreateTeacherDtoValidator(_userRepository);
             var validationResult = await createTeacherDtoValidator.ValidateAsync(createTeacherDto);
             if (!validationResult.IsValid)
@@ -70,10 +70,10 @@ namespace CustomEd.User.Service.Controllers
                 Password = createTeacherDto.Password,
                 FirstName = name[0], 
                 LastName = name[1], 
-                DateOfBirth = DateOnly.Parse(fetchedTeacherInfo["dateOfBirth"].ToString()), 
-                Department = Enum.Parse<Department>(fetchedTeacherInfo["department"].ToString()), 
-                PhoneNumber = fetchedTeacherInfo["phone"].ToString(), 
-                JoinDate = DateOnly.Parse(fetchedTeacherInfo["joinDate"].ToString()),
+                DateOfBirth = DateOnly.Parse(fetchedTeacherInfo["dateOfBirth"]!.ToString()), 
+                Department = Enum.Parse<Department>(fetchedTeacherInfo["department"]!.ToString()), 
+                PhoneNumber = fetchedTeacherInfo["phone"]!.ToString(), 
+                JoinDate = DateOnly.Parse(fetchedTeacherInfo["joinDate"]!.ToString()),
             };
             teacher.Role = Model.Role.Teacher;
             
