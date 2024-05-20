@@ -5,7 +5,16 @@ using MongoDB.Driver;
 using CustomEd.Shared.RabbitMQ;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("AllowAll",
+            builder =>
+            {
+                builder.AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            });
+    });
 
 builder.WebHost.UseUrls("http://*:9090");
 
@@ -43,7 +52,7 @@ builder.Services.AddScoped(sp =>
 
 
 var app = builder.Build();
-
+app.UseCors("AllowAll");
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
