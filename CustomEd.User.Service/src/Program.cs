@@ -22,7 +22,7 @@ builder.Services.AddCors(options =>
                        .AllowAnyHeader();
             });
     });
-builder.WebHost.UseUrls("http://*:5000");
+builder.WebHost.UseUrls("http://*:8080");
 builder.Services.Configure<MongoSettings>(builder.Configuration.GetSection(nameof(MongoSettings)));
 builder.Services.Configure<ServiceSettings>(builder.Configuration.GetSection(nameof(ServiceSettings)));
 
