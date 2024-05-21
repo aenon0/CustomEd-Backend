@@ -70,7 +70,6 @@ builder.Services.AddSwaggerGen(c =>
 
 
 var app = builder.Build();
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -78,12 +77,11 @@ if (app.Environment.IsDevelopment())
 }
 app.UseSwagger();
 
-// Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
-// specifying the Swagger JSON endpoint.
+
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Rideshare API V1");
-    c.RoutePrefix = "swagger"; // This will set the swagger UI route to 'http://localhost:8080/swagger'
+    c.RoutePrefix = "swagger";
     c.DocExpansion(DocExpansion.None);
 });
 
