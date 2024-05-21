@@ -1,8 +1,8 @@
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
 
-EXPOSE 5000
-EXPOSE 5001
+EXPOSE 8080
+EXPOSE 8081
 
 # Copy the project file and restore dependencies
 COPY src.csproj .
