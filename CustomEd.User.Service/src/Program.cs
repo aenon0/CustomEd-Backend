@@ -23,8 +23,6 @@ builder.Services.AddCors(options =>
             });
     });
 builder.WebHost.UseUrls("http://*:5000");
-// Add services to the container.
-builder.Services.AddSingleton(builder.Configuration);
 builder.Services.Configure<MongoSettings>(builder.Configuration.GetSection(nameof(MongoSettings)));
 builder.Services.Configure<ServiceSettings>(builder.Configuration.GetSection(nameof(ServiceSettings)));
 
@@ -32,7 +30,7 @@ builder.Services.Configure<ServiceSettings>(builder.Configuration.GetSection(nam
 builder.Services.AddSingleton<CloudinaryService>();
 builder.Services.AddControllers();
 builder.Services.AddMongo();
-builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddPersistence<Student>("Student");
 builder.Services.AddPersistence<Teacher>("Teacher");
 builder.Services.AddPersistence<Admin>("Admin");
@@ -44,7 +42,7 @@ builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddMassTransitWithRabbitMq();
 builder.Services.AddAuth();
 builder.Services.AddAuthorization();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSwaggerGen(c =>
