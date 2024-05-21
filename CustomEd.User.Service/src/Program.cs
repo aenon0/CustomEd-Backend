@@ -28,8 +28,6 @@ builder.Services.AddSingleton(builder.Configuration);
 builder.Services.Configure<MongoSettings>(builder.Configuration.GetSection(nameof(MongoSettings)));
 builder.Services.Configure<ServiceSettings>(builder.Configuration.GetSection(nameof(ServiceSettings)));
 
-// Register IConfiguration with the service collection
-builder.Services.AddSingleton(builder.Configuration);
 
 builder.Services.AddSingleton<CloudinaryService>();
 builder.Services.AddLogging(); 
