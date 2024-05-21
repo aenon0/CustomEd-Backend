@@ -22,7 +22,7 @@ builder.Services.AddCors(options =>
                        .AllowAnyHeader();
             });
     });
-builder.WebHost.UseUrls("http://*:8585");
+builder.WebHost.UseUrls("http://*:5000");
 // Add services to the container.
 builder.Services.AddSingleton(builder.Configuration);
 builder.Services.Configure<MongoSettings>(builder.Configuration.GetSection(nameof(MongoSettings)));
@@ -30,7 +30,6 @@ builder.Services.Configure<ServiceSettings>(builder.Configuration.GetSection(nam
 
 
 builder.Services.AddSingleton<CloudinaryService>();
-builder.Services.AddLogging(); 
 builder.Services.AddControllers();
 builder.Services.AddMongo();
 builder.Services.AddAutoMapper(typeof(Program));
