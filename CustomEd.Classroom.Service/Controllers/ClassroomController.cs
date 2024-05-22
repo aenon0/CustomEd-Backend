@@ -17,6 +17,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson.IO;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using JsonConvert = Newtonsoft.Json.JsonConvert;
 
 namespace CustomEd.Classroom.Service.Controllers
 {
@@ -245,7 +247,38 @@ namespace CustomEd.Classroom.Service.Controllers
             var memberJoinedEvent = new MemberJoinedEvent { ClassroomId = classroomId, StudentId = studentId };
             await _publishEndpoint.Publish(memberJoinedEvent);
 
-            return Ok(SharedResponse<ClassroomDto>.Success(_mapper.Map<ClassroomDto>(classroom), null));
+            return Ok(SharedResponse<ClassroomDto>.Success(_mapper.Map<ClassroomDto>(classroom), "Students are added successfully."));
+        }
+
+        [Authorize(Policy = "TeacherOnlyPolicy")]
+        [HttpPost("getTeachableCourses")]
+        public async Task<ActionResult<SharedResponse<List<string>>>> GetTeachableCourses()
+        {
+            
+            var identityProvider = new IdentityProvider(_httpContextAccessor, _jwtService);
+            var currentUserId = identityProvider.GetUserId();
+            var teacher = await _teacherRepository.GetAsync(t => t.Id == currentUserId);
+            if(teacher == null)
+            {
+                return Unauthorized(SharedResponse<List<string>>.Fail("Unauthorized user", null));
+            }
+
+            var httpClient = new HttpClient();
+            var url = $"https://customed-schoolmock.onrender.com/schooldb/getDepartmentCourses?department={teacher.Department}";
+            var response = await httpClient.GetAsync(url);
+            var responseContent = await response.Content.ReadAsStringAsync();
+            var jsonResponse = JsonConvert.DeserializeObject(responseContent);
+            var jsonData = (JObject)jsonResponse!;
+            Console.WriteLine(jsonData == null);
+            var fetchedTeacherInfo = jsonData!["data"];
+
+            if(fetchedTeacherInfo!.Type == JTokenType.Null)
+            {
+                return BadRequest(SharedResponse<List<string>>.Fail("Failed to fetch courses", new List<string>()));
+            }
+            Console.WriteLine(fetchedTeacherInfo);
+            var courses = fetchedTeacherInfo.ToObject<List<string>>();
+            return Ok(SharedResponse<List<string>>.Success(courses, "courses fetched successfully."));
         }
         
     
