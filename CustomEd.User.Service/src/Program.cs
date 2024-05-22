@@ -1,5 +1,4 @@
 using CustomEd.Shared.Data;
-using CustomEd.Shared.RabbitMQ;
 using CustomEd.Shared.Settings;
 using CustomEd.User.Service.Model;
 using CustomEd.User.Service.Password;
@@ -9,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.OpenApi.Models;
 using CustomEd.User.Service.Services;
 using Swashbuckle.AspNetCore.SwaggerUI;
+using CustomEd.Shared.RabbitMQ;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,7 +22,7 @@ builder.Services.AddCors(options =>
                        .AllowAnyHeader();
             });
     });
-builder.WebHost.UseUrls("http://*:8080");
+builder.WebHost.UseUrls("http://*:5000");
 builder.Services.Configure<MongoSettings>(builder.Configuration.GetSection(nameof(MongoSettings)));
 builder.Services.Configure<ServiceSettings>(builder.Configuration.GetSection(nameof(ServiceSettings)));
 
