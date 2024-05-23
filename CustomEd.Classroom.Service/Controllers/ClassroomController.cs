@@ -179,7 +179,16 @@ namespace CustomEd.Classroom.Service.Controllers
         [HttpPost("add-batch")]
         public async Task<ActionResult<SharedResponse<ClassroomDto>>> AddBatch([FromBody] AddBatchDto batchDto)
         {
+            var identityProvider = new IdentityProvider(_httpContextAccessor, _jwtService);
+            var currentUserId = identityProvider.GetUserId();
+            var teacher = await _teacherRepository.GetAsync(t => t.Id == currentUserId);
+            if(teacher == null)
+            {
+                return Unauthorized(SharedResponse<ClassroomDto>.Fail("Unauthorized user", null));
+            }
+            batchDto.Department = teacher!.Department;
             var addBatchDtoValidator = new AddBatchDtoValidator(_classroomRepository);
+            
             var validationResult = await addBatchDtoValidator.ValidateAsync(batchDto);
             if (!validationResult.IsValid)
             {
@@ -194,7 +203,6 @@ namespace CustomEd.Classroom.Service.Controllers
             {
                 if(!classroom.Members.Contains(student))
                 {
-                    Console.WriteLine($"CCCCHECKKKK {!classroom.Members.Contains(student)}");
                     classroom.Members.Add(student);
                 }
                 
@@ -237,8 +245,6 @@ namespace CustomEd.Classroom.Service.Controllers
             }
             var classroom = await _classroomRepository.GetAsync(classroomId);
             var student = await _studentRepository.GetAsync(studentId);
-            Console.WriteLine($"AAAAAAAAClassroom {classroom} {classroom == null}");
-            Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(classroom));
             if(classroom.Members == null){
                 classroom.Members = new List<Student>();
             }
@@ -269,7 +275,6 @@ namespace CustomEd.Classroom.Service.Controllers
             var responseContent = await response.Content.ReadAsStringAsync();
             var jsonResponse = JsonConvert.DeserializeObject(responseContent);
             var jsonData = (JObject)jsonResponse!;
-            Console.WriteLine(jsonData == null);
             var fetchedTeacherInfo = jsonData!["data"];
 
             if(fetchedTeacherInfo!.Type == JTokenType.Null)
