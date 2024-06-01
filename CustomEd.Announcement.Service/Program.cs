@@ -7,16 +7,28 @@ using CustomEd.Shared.RabbitMQ;
 using CustomEd.Shared.Settings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerUI;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("AllowAll",
+            builder =>
+            {
+                builder.AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            });
+    });
 
-// Add services to the container.
 
+builder.WebHost.UseUrls("http://*:9000");
 
 builder.Services.AddMongo()
                 .AddPersistence<ClassRoom>("Classroom")
                 .AddPersistence<Teacher>("Teacher")
                 .AddPersistence<Announcement>("Announcement");
+
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddMassTransitWithRabbitMq();
 builder.Services.AddAuth();
@@ -68,7 +80,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseCors("AllowAll");
+app.UseSwagger();
 
+
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Rideshare API V1");
+    c.RoutePrefix = "swagger";
+    c.DocExpansion(DocExpansion.None);
+});
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
