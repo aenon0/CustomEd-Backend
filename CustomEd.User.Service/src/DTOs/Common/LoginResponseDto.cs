@@ -1,8 +1,8 @@
 using CustomEd.Shared.JWT.Contracts;
 
-namespace CustomEd.User.Service.Common;
+namespace CustomEd.User.Service.DTOs.Common;
 
-public class UserDto
+public class LoginResponseDto
 {
     public Guid Id { get; set; }
     public string? FirstName { get; set; }
