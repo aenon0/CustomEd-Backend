@@ -136,7 +136,7 @@ namespace CustomEd.User.Service.Controllers
         } 
 
         [HttpPost("login")]
-        public override async Task<ActionResult<SharedResponse<UserDto>>> SignIn([FromBody] LoginRequestDto request)
+        public override async Task<ActionResult<SharedResponse<CustomEd.User.Service.DTOs.Common.LoginResponseDto>>> SignIn([FromBody] LoginRequestDto request)
         {
             return await base.SignIn(request);
         }

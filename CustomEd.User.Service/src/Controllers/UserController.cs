@@ -60,7 +60,7 @@ namespace CustomEd.User.Service.Controllers
         }
 
         [HttpPost("user/login")]
-        public virtual async Task<ActionResult<SharedResponse<UserDto>>> SignIn([FromBody] LoginRequestDto request)
+        public virtual async Task<ActionResult<SharedResponse<CustomEd.User.Service.DTOs.Common.LoginResponseDto>>> SignIn([FromBody] LoginRequestDto request)
         {
 
             var user = await _userRepository.GetAsync(x => (x.Email == request.Email && x.IsVerified == true) );
@@ -81,8 +81,17 @@ namespace CustomEd.User.Service.Controllers
 
             var token = _jwtService.GenerateToken(userDto);
             userDto.Token = token;
-
-            return Ok(SharedResponse<UserDto>.Success(userDto, null));
+            var loginResponse = new CustomEd.User.Service.DTOs.Common.LoginResponseDto
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email!,
+                Role = userDto.Role,
+                Token = userDto.Token,
+                ImageUrl = user.ImageUrl
+            };
+            return Ok(SharedResponse<CustomEd.User.Service.DTOs.Common.LoginResponseDto>.Success(loginResponse, null));
         }
 
         [HttpPost("verify")]
