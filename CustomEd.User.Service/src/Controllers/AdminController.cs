@@ -13,7 +13,7 @@ using CusotmEd.User.Servce.DTOs;
 using CustomEd.User.Student.Events;
 using CustomEd.Shared.JWT;
 using CustomEd.User.Service.Model;
-using src;
+
 
 namespace CustomEd.User.Service.Controllers;
 

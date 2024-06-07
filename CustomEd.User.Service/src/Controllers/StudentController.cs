@@ -25,7 +25,7 @@ namespace CustomEd.User.Service.Controllers
     public class StudentController : UserController<Model.Student>
     {
 
-        public StudentController(CloudinaryService cloudinaryService, IGenericRepository<ForgotPasswordOtp> forgotPasswordOtpRepository, IGenericRepository<Otp> otpRepository, IGenericRepository<Model.Student> userRepository, IMapper mapper, IPasswordHasher passwordHasher, IJwtService jwtService, IPublishEndpoint publishEndpoint, IHttpContextAccessor httpContextAccessor) : base(cloudinaryService, forgotPasswordOtpRepository, otpRepository, userRepository, mapper, passwordHasher, jwtService, publishEndpoint, httpContextAccessor)
+        public StudentController(EmailService emailService, CloudinaryService cloudinaryService, IGenericRepository<ForgotPasswordOtp> forgotPasswordOtpRepository, IGenericRepository<Otp> otpRepository, IGenericRepository<Model.Student> userRepository, IMapper mapper, IPasswordHasher passwordHasher, IJwtService jwtService, IPublishEndpoint publishEndpoint, IHttpContextAccessor httpContextAccessor) : base(emailService, cloudinaryService, forgotPasswordOtpRepository, otpRepository, userRepository, mapper, passwordHasher, jwtService, publishEndpoint, httpContextAccessor)
         {
         }
 
@@ -90,9 +90,18 @@ namespace CustomEd.User.Service.Controllers
 
             await _userRepository.CreateAsync(student);
 
-            var sendOtpEvent = new SendOtpEvent();
-            sendOtpEvent.Email = student.Email;
-            await _publishEndpoint.Publish(sendOtpEvent);
+            // var sendOtpEvent = new SendOtpEvent();
+            // sendOtpEvent.Email = student.Email;
+            // await _publishEndpoint.Publish(sendOtpEvent);
+            var otpCode = OtpGenerationService.GenerateOTP();
+            await _emailServices.SendEmail(studentDto.Email, otpCode);
+            await _otpRepository.CreateAsync(new Otp{
+                Email = studentDto.Email,
+                OtpCode = otpCode,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now,
+                SentAt = DateTime.Now
+            });
             return CreatedAtAction(nameof(GetUserById), new { id = student.Id }, SharedResponse<Model.Student>.Success(student, "User created successfully"));
         }
 
@@ -161,9 +170,25 @@ namespace CustomEd.User.Service.Controllers
                 return BadRequest(SharedResponse<bool>.Fail("Unauthorized user", new List<string>()));
             }
             
-            await _publishEndpoint.Publish(new SendOtpEvent{
-                Email = Email
-            });
+            var otpCode = OtpGenerationService.GenerateOTP();
+            await _emailServices.SendEmail(Email, otpCode);
+            var forgotPasswordItem = await _forgotPasswordOtpRepository.GetAsync(x => x.Email == Email);
+            if(forgotPasswordItem == null)
+            {
+                await _forgotPasswordOtpRepository.CreateAsync(new ForgotPasswordOtp{
+                    Email = Email,
+                    OtpCode = otpCode,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                });
+            }
+            else
+            {
+                forgotPasswordItem.Allowed = false;
+                forgotPasswordItem.OtpCode = otpCode;
+                forgotPasswordItem.UpdatedAt = DateTime.Now;
+                await _forgotPasswordOtpRepository.UpdateAsync(forgotPasswordItem);
+            }
             return Ok(SharedResponse<bool>.Success(true, $"Otp code is sent to {Email}. Verify before 30 mins." ));
         }
 

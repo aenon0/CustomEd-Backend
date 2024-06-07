@@ -2,7 +2,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
 
-namespace CustomEd.OtpService.Service
+namespace CustomEd.User.Service.Services
 {
     public class EmailService
     {
