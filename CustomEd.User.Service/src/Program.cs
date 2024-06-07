@@ -38,7 +38,7 @@ builder.Services.AddPersistence<Otp>("Otp");
 builder.Services.AddPersistence<ForgotPasswordOtp>("ForgotPasswordOtp");
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
-
+builder.Services.AddScoped<EmailService>();
 builder.Services.AddMassTransitWithRabbitMq();
 builder.Services.AddAuth();
 builder.Services.AddAuthorization();

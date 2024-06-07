@@ -27,9 +27,11 @@ namespace CustomEd.User.Service.Controllers
         protected readonly IPublishEndpoint _publishEndpoint;
         protected readonly IHttpContextAccessor _httpContextAccessor;
         protected readonly CloudinaryService _cloudinaryService;
+        protected readonly EmailService _emailServices;
 
-        public UserController(CloudinaryService cloudinaryService, IGenericRepository<ForgotPasswordOtp> forgotPasswordOtpRepository, IGenericRepository<Otp> otpRepository, IGenericRepository<T> userRepository, IMapper mapper, IPasswordHasher passwordHasher, IJwtService jwtService, IPublishEndpoint publishEndpoint, IHttpContextAccessor httpContextAccessor)
+        public UserController(EmailService emailServices, CloudinaryService cloudinaryService, IGenericRepository<ForgotPasswordOtp> forgotPasswordOtpRepository, IGenericRepository<Otp> otpRepository, IGenericRepository<T> userRepository, IMapper mapper, IPasswordHasher passwordHasher, IJwtService jwtService, IPublishEndpoint publishEndpoint, IHttpContextAccessor httpContextAccessor)
         {
+            _emailServices = emailServices;
             _cloudinaryService = cloudinaryService;
             _forgotPasswordOtpRepository = forgotPasswordOtpRepository;
             _userRepository = userRepository;
