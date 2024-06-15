@@ -13,7 +13,6 @@ using CusotmEd.User.Servce.DTOs;
 using CustomEd.User.Student.Events;
 using CustomEd.Shared.JWT;
 using CustomEd.User.Service.Model;
-using CustomEd.Contracts.OtpService.Events;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using CustomEd.User.Service.Services;

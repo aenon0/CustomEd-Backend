@@ -15,7 +15,6 @@ using CustomEd.Shared.JWT.Contracts;
 using CusotmEd.User.Servce.DTOs;
 using CustomEd.User.Teacher.Events;
 using CustomEd.User.Contracts.Teacher.Events;
-using CustomEd.Contracts.OtpService.Events;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Text.Json.Serialization;
