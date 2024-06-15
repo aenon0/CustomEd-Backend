@@ -8,16 +8,9 @@ using CustomEd.Contracts.Classroom.Events;
 namespace CustomEd.Assessment.Service.Profiles;
 public class MappingProfile : Profile
 {
-    private readonly IGenericRepository<Model.Assessment> _assessmentRepository;
-    private readonly IGenericRepository<Classroom> _classroomRepository;
-
-    public MappingProfile(IGenericRepository<Model.Assessment> assessmentRepository, IGenericRepository<Classroom> classroomRepository)
+    public MappingProfile()
     {
         
-
-        _assessmentRepository = assessmentRepository;
-        _classroomRepository = classroomRepository;
-
         CreateMap<CreateQuestionDto, Question>()
             .ForMember(dest => dest.Answers, opt => opt.MapFrom(src => src.Answers.Select(a => new Answer { Text = a, })));
             
@@ -28,13 +21,11 @@ public class MappingProfile : Profile
         CreateMap<Answer, AnswerDto>();
 
         CreateMap<Question, QuestionDto>()
-        .ForMember(dest => dest.Answers, opt => opt.MapFrom(src => src.Answers.Select(a => a.Text)));
+        .ForMember(dest => dest.Answers, opt => opt.MapFrom(src => src.Answers));
 
-        CreateMap<CreateAssessmentDto, Model.Assessment>()
-            .ForMember(dest => dest.Classroom, opt => opt.MapFrom(async (src, dest, destMember, context) => await _classroomRepository.GetAsync(src.ClassroomId)));
+        CreateMap<CreateAssessmentDto, Model.Assessment>();
         
-        CreateMap<UpdateAssessmentDto, Model.Assessment>()
-            .ForMember(dest => dest.Classroom, opt => opt.MapFrom(async (src, dest, destMember, context) => await _classroomRepository.GetAsync(src.ClassroomId)));
+        CreateMap<UpdateAssessmentDto, Model.Assessment>();
         
         CreateMap<Classroom, ClassroomDto>().ReverseMap();
         
@@ -48,11 +39,9 @@ public class MappingProfile : Profile
         CreateMap<Analytics, AnalyticsDto>()
             .ForMember(dest => dest.Assessment, opt => opt.MapFrom(src => src.Assessment));
         
-        CreateMap<ClassroomCreatedEvent, Classroom>().ReverseMap();
-        CreateMap<ClassroomUpdatedEvent, Classroom>().ReverseMap();
+        CreateMap<ClassroomCreatedEvent, Classroom>().ForMember(dest => dest.Members, opt => opt.MapFrom(src => src.MemberIds));
+        CreateMap<ClassroomUpdatedEvent, Classroom>().ForMember(dest => dest.Members, opt => opt.MapFrom(src => src.MemberIds));
 
-        
-        
             
 
       

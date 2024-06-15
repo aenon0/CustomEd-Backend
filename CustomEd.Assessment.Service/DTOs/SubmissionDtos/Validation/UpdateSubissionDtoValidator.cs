@@ -54,5 +54,12 @@ public class UpdateSubmissionDtoValidator : AbstractValidator<UpdateSubmissionDt
                 return answer != null;
             })
             .WithMessage("AnswerId does not exist in the repository.");
+        
+        RuleFor(x =>  x.Answers.Count)
+            .MustAsync(async (dto, answers, cancellationToken) =>
+            {
+                var assessment = await _assessmentRepository.GetAsync(dto.AssessmentId);
+                return answers == assessment.Questions.Count;
+            }).WithMessage("Number of answers must be equal to the number of questions in the assessment.");
     }
 }

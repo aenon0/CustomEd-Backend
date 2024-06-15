@@ -8,6 +8,6 @@ namespace CustomEd.Assessment.Service.DTOs
         public List<string> Answers { get; set; } = null!;
         public int CorrectAnswerIndex { get; set; }
         public Guid AssessmentId { get; set; }
-        public List<string> Tags { get; set; } = null!;
+        public List<string>? Tags { get; set; }
     }
 }

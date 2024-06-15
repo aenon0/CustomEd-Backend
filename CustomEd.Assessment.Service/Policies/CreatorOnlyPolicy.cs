@@ -24,12 +24,12 @@ public class CreatorOnlyPolicy : AuthorizationHandler<CreatorOnlyRequirement>
 
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, CreatorOnlyRequirement requirement)
     {
-        var classroomId = (Guid)_httpContextAccessor.HttpContext!.Request.RouteValues["classRoomId"]!;
+        var classroomId = Guid.Parse((string)_httpContextAccessor.HttpContext!.Request.RouteValues["classRoomId"]!);
         var identityProvider = new IdentityProvider(_httpContextAccessor, _jwtService);
         var userId = identityProvider.GetUserId();
 
         var classroom = await _classRoomRepository.GetAsync(classroomId);
-        if (classroom.CreatorId == userId)
+        if (classroom != null && classroom.CreatorId != Guid.Empty && classroom.CreatorId == userId)
         {
             context.Succeed(requirement);
         }

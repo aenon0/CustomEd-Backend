@@ -8,5 +8,5 @@ public class Question : BaseEntity
     public double Weight { get; set; } = 1.0;
     public List<Answer> Answers { get; set; } = new List<Answer>();
     public Guid AssessmentId { get; set; }
-    public List<string> Tags { get; set; } = null!;
+    public List<string>? Tags { get; set; }
 }

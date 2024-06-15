@@ -20,7 +20,12 @@ public class UpdateAssessmentDtoValidator : AbstractValidator<UpdateAssessmentDt
                                    {
                                        var assessment = await _assessmentRepository.GetAsync(assessmentId);
                                        return assessment != null;
-                                   }).WithMessage("Assessment with given id does not exist.");
+                                   }).WithMessage("Assessment with given id does not exist.")
+                          .MustAsync(async (assessmentId, cancellation) => 
+                                   {
+                                       var assessment = await _assessmentRepository.GetAsync(assessmentId);
+                                       return !assessment.IsPublished;
+                                   }).WithMessage("Published assessments is already published.");
 
         RuleFor(x => x.Name).NotEmpty().WithMessage("Name is required.")
                             .Length(1, 100).WithMessage("Name must be between 1 and 100 characters.");

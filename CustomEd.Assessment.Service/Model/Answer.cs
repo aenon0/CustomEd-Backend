@@ -1,4 +1,4 @@
-using CustomEd.Shared.Model;
+    using CustomEd.Shared.Model;
 
 namespace CustomEd.Assessment.Service.Model
 {

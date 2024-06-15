@@ -2,6 +2,7 @@ using CustomEd.Assessment.Service.Model;
 using CustomEd.Shared.Data.Interfaces;
 using CustomEd.Shared.JWT;
 using CustomEd.Shared.JWT.Interfaces;
+using CustomEd.Shared.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using System;
@@ -27,12 +28,12 @@ namespace CustomEd.Assessment.Service.Policies
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, MemberOnlyRequirement requirement)
         {
-            var classroomId = (Guid)_httpContextAccessor.HttpContext!.Request.RouteValues["classRoomId"]!;
+            var classroomId = Guid.Parse((string)_httpContextAccessor.HttpContext!.Request.RouteValues["classRoomId"]!);
             var identityProvider = new IdentityProvider(_httpContextAccessor, _jwtService);
             var userId = identityProvider.GetUserId();
-
-            var classroom = await _classRoomRepository.GetAsync(classroomId);
-            if (classroom.Members.Contains(userId) || classroom.CreatorId == userId)
+            var userRole = identityProvider.GetUserRole();
+            var classroom = await _classRoomRepository.GetAsync(x => x.Id == classroomId);
+            if (classroom != null && ((classroom.Members != null && classroom.Members.Contains(userId)) || (classroom.CreatorId != Guid.Empty &&  classroom.CreatorId == userId) || userRole == Role.Admin))
             {
                 context.Succeed(requirement);
             }

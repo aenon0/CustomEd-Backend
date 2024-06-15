@@ -250,7 +250,7 @@ namespace CustomEd.Assessment.Service.AnalyticsSevice
                 tags.Any(tag => a.Tag.Contains(tag) && a.Classroom.Id == classRoomId)
             );
 
-            var listOfanalytics = new List<Analytics?>();
+            var listOfanalytics = new List<Analytics>();
 
             foreach (var assessment in assessments)
             {

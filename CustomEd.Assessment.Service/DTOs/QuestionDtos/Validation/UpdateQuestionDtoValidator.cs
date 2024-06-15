@@ -62,8 +62,22 @@ public class UpdateQuestionDtoValidator : AbstractValidator<UpdateQuestionDto>
                     return assessment != null;
                 }
             )
-            .WithMessage("No such assessment id exists in the database.");
+            .WithMessage("No such assessment id exists in the database.")
+            .MustAsync(
+                async (assessmentId, cancellation) =>
+                {
+                    var assessment = await _assessmentRepository.GetAsync(assessmentId);
+                    return assessment != null && assessment.IsPublished == false;
+                }
+            ).WithMessage("Published assessments cannot be modified.")
+            .MustAsync(
+                async (assessmentId, cancellation) =>
+                {
+                    var assessment = await _assessmentRepository.GetAsync(assessmentId);
+                    return assessment != null && assessment.Deadline > DateTime.Now;
+                }
+            ).WithMessage("Assessment deadline has passed.");
 
-        RuleFor(x => x.Tags).NotEmpty().WithMessage("At least one tag is required.");
+        // RuleFor(x => x.Tags).NotEmpty().WithMessage("At least one tag is required.");
     }
 }

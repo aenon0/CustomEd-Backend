@@ -1,8 +1,8 @@
 using MassTransit;
 using AutoMapper;
-using CustomEd.Contracts.Classroom.Events;
 using CustomEd.Shared.Data.Interfaces;
 using CustomEd.Assessment.Service.Model;
+using CustomEd.Contracts.Classroom.Events;
 
 namespace CustomEd.Assessment.Service.Consumers
 {
@@ -20,7 +20,8 @@ namespace CustomEd.Assessment.Service.Consumers
 
         public async Task Consume(ConsumeContext<MemberJoinedEvent> context)
         {
-            var classroom = _mapper.Map<Classroom>(context.Message.ClassroomId);
+            var classroom = await _classRoomRepository.GetAsync(context.Message.ClassroomId);
+            if(classroom.Members == null) classroom.Members = new List<Guid>();
             classroom.Members.Add(context.Message.StudentId);
             await _classRoomRepository.UpdateAsync(classroom);
             var assessments = await _assessmentRepository.GetAllAsync(a => a.Classroom.Id == classroom.Id);

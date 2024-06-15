@@ -26,5 +26,5 @@ public class Analytics : BaseEntity
     public double ModeAbsoluteDeviation { get; set; }
     public List<double> TopFiveScores { get; set; } = null!;
     public List<double> BottomFiveScores { get; set; } = null!;
-    public Dictionary<string, double> MeanScorePerTopic { get; set; } = null!;
+    public Dictionary<string, double>? MeanScorePerTopic { get; set; }
 }
