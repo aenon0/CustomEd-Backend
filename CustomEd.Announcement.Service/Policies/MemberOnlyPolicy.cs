@@ -32,9 +32,11 @@ namespace CustomEd.Announcement.Service.Policies
             Guid.TryParse(classroomIdString, out classroomId);
             var identityProvider = new IdentityProvider(_httpContextAccessor, _jwtService);
             var userId = identityProvider.GetUserId();
-
-            var classroom = await _classRoomRepository.GetAsync(classroomId);
-            if (classroom.MemberIds.Contains(userId) || classroom.CreatorId == userId)
+            Console.WriteLine($"SOMETHIGN BOU YOU {classroomIdString}");
+            
+            var classroom = await _classRoomRepository.GetAsync(x =>x.Id == classroomId);
+            Console.WriteLine($"SOMETHIGN BOU YOU {classroom == null}");
+            if (classroom != null && ((classroom.MemberIds != null && classroom.MemberIds.Contains(userId)) || classroom.CreatorId == userId))
             {
                 context.Succeed(requirement);
             }

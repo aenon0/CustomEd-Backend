@@ -2,7 +2,7 @@ using CustomEd.Shared.Model;
 
 namespace CustomEd.Announcement.Service.Model
 {
-    public class Announcement:BaseEntity
+    public class Announcement : BaseEntity
     {
         
         public string? Title { get; set; }

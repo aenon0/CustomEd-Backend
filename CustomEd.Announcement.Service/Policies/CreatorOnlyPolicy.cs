@@ -31,7 +31,7 @@ public class CreatorOnlyPolicy : AuthorizationHandler<CreatorOnlyRequirement>
         var userId = identityProvider.GetUserId();
 
         var classroom = await _classRoomRepository.GetAsync(classroomId);
-        if (classroom.CreatorId == userId)
+        if (classroom != null && classroom.CreatorId != Guid.Empty && classroom.CreatorId == userId)
         {
             context.Succeed(requirement);
         }

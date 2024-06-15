@@ -5,6 +5,8 @@ using CustomEd.Shared.Data.Interfaces;
 using CustomEd.Shared.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 
 namespace CustomEd.Announcement.Service.Controllers
 {
@@ -28,11 +30,13 @@ namespace CustomEd.Announcement.Service.Controllers
         
         [HttpGet]
         [Authorize(policy:"MemberOnlyPolicy")]
-        public async Task<ActionResult<SharedResponse<List<AnnouncementDto>>>> GetAll(Guid classRoomId)
+        public async Task<ActionResult<SharedResponse<List<AnnouncementDto>>>> GetAll(Guid classRoomId, int pageNumber, int pageSize)
         {
-            var posts =  await  _announcementRepository.GetAllAsync(x => x.ClassRoom.Id == classRoomId);
+            var skip = (pageNumber - 1) * pageSize;
+            var allPosts = await _announcementRepository.GetAllAsync(x => x.ClassRoom.Id == classRoomId);
+            var posts = allPosts.Skip(skip).Take(pageSize).ToList();
             var dtos = _mapper.Map<List<AnnouncementDto>>(posts);
-            return SharedResponse<List<AnnouncementDto>>.Success(dtos, "Announcements Retrived");
+            return SharedResponse<List<AnnouncementDto>>.Success(dtos, "Announcements Retrieved");
         }
 
         [HttpGet("{id}")]
@@ -97,8 +101,6 @@ namespace CustomEd.Announcement.Service.Controllers
             }
             await _announcementRepository.RemoveAsync(announcement);
             return NoContent();
-
-            
         }
     }
 }
