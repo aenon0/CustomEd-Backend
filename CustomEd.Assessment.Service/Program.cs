@@ -20,7 +20,7 @@ builder.Services.AddCors(options =>
                        .AllowAnyHeader();
             });
     });
-builder.WebHost.UseUrls("http://*:2000");
+builder.WebHost.UseUrls("http://*:9000");
 // Add services to the container.
 
 builder.Services.AddControllers()
