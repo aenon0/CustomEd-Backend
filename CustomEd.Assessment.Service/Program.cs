@@ -23,11 +23,7 @@ builder.Services.AddCors(options =>
 builder.WebHost.UseUrls("http://*:4000");
 // Add services to the container.
 
-builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowNamedFloatingPointLiterals;
-    });
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -57,7 +53,7 @@ builder.Services.AddScoped<IAuthorizationHandler, StudentOnlyPolicy>();
 builder.Services.AddScoped<IAuthorizationHandler, CreatorOnlyPolicy>();
 builder.Services.AddScoped<IAuthorizationHandler, MemberOnlyPolicy>();
 builder.Services.AddMassTransitWithRabbitMq();
-
+builder.Services.AddControllers();
 
 builder.Services.AddSwaggerGen();
 builder.Services.AddSwaggerGen(c =>
